@@ -42,6 +42,7 @@ function Footer() {
                                         <li className='font-avenir-400 text-[16px] text-[#FFFFFF]'>The Royal Promise</li>
                                         <li className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Rediscover Ayurveda</li>
                                         <Link href="/blog" className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Blog</Link>
+                                        <Link href="/contact" className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Contact</Link>
                                     </ul>
                                 </div>
                                 <div>
