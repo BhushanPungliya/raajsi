@@ -1,0 +1,156 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Avenir";
+  src: url("/fonts/Avenir/Avenir-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Avenir";
+  src: url("/fonts/Avenir/Avenir-Heavy.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Rose Velt";
+  src: url("/fonts/rose-velt/Rose.ttf") format("truetype");
+  font-weight: 400;
+}
+
+body {
+  overflow-x: hidden;   
+  /* font-family: Arial, Helvetica, sans-serif; */
+}
+
+.font-avenir-400 { font-family: 'Avenir', sans-serif; font-weight: 400;}
+.font-avenir-800 { font-family: 'Avenir', sans-serif; font-weight: 800;}
+.font-rose { font-family: 'Rose Velt', sans-serif;}
+.nav-link { font-size: 14px; font-family: 'Avenir'; font-weight: 400; text-align: center; text-transform: uppercase; color: #000000; padding: 30px 28px; border-bottom: 6px solid transparent;}
+.nav-link-active { font-weight: 800; border-bottom: 6px solid #000000; font-size: 14px; font-family: 'Avenir'; text-align: center; text-transform: uppercase; color: #000000; padding: 30px 28px;}
+
+
+@media(max-width: 1024px) {
+  .nav-link { font-size: 12px; padding: 10px 10px; text-align: left; border-bottom: 2px solid transparent} 
+  .nav-link-active { font-size: 12px; padding: 10px 10px; text-align: left; border-bottom: 2px solid #000000; }
+}
+
+.hero-section { background-image: url('/images/home/bg1.jpg'); margin-top: 87px; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;}
+
+@keyframes upDown {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-22px);
+  }
+}
+
+.arrow-bounce {
+  animation: upDown 1.5s ease-in-out infinite;
+}
+
+.text-gradient {
+  background: linear-gradient(89.96deg, #6F572A 9.68%, #D5A751 49.51%, #6F572A 86.15%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+
+.an { transition: all 0.5s;}
+.step-section { background-image: url('/images/home/bg2.svg'); width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;}
+
+
+.slick-dots li.slick-active div {
+  background: #FFFFFF !important;
+}
+.blog-slider .slick-dots li.slick-active div {
+  background: #BA7E38 !important;
+}
+
+
+.only-left-1440 {
+  max-width: 538px;
+  margin-left: auto;
+  margin-right: unset;
+}
+.only-right-1440 {
+  max-width: 538px;
+  margin-left: unset;
+  margin-right: auto;
+}
+@media (min-width: 1450px) {
+  .only-left-1440 {
+    max-width: 538px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .only-right-1440 {
+    max-width: 538px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
+
+.auth-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20000;
+  padding: 1rem;
+}
+
+.auth-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.2);
+  padding: 1.75rem 2rem 1.75rem 2rem;
+  color: #2c1e1e;
+}
+
+.auth-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  color: #0F0F0F;
+  font-size: 2.25rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.auth-submit-btn {
+  background: #BA7E38;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 24px;
+  padding: 0.6rem 2.25rem;
+  border: none;
+  transition: all 0.2s ease-in-out;
+}
+.auth-submit-btn:hover {
+  background: #a47030;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 480px) {
+  .auth-modal-card {
+    padding: 1.25rem 1rem;
+    border-radius: 18px;
+  }
+}
