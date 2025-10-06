@@ -148,56 +148,98 @@ export default function TermsConditions() {
       <div className="container">
         <div className="header">
           <h1 className="title">Terms And Conditions</h1>
-          <p className="subtitle">Please read these terms carefully before using our services.</p>
+          <p className="subtitle">Last Updated: October 10, 2025</p>
         </div>
-        
+
         <div className="section">
-          <h2 className="section-title">Terms of Use</h2>
-          <p className="content">
-            Welcome to Raajsi. By accessing or using our website, you agree to the following terms:
+          <p className="subtitle">Welcome to Raajsi, where ancient Ayurveda meets modern care.</p>
+          <p className="subtitle">By accessing or using our website (www.raajsi.in) and services, you agree to be bound by the following terms and conditions. Please read them carefully before making a purchase or using our platform.</p>
+          <h2 className="section-title py-[20px]">1. General</h2>
+          <p className="content pb-[14px]">The website www.raajsi.in is owned and operated by Raajsi (referred to as “we”, “our”, “us”).</p>
+          <p className="content pb-[14px]">By visiting or purchasing from our website, you engage in our “Service” and agree to be bound by these Terms and Conditions, our Privacy Policy, and Refund Policy.</p>
+          <p className="content pb-[14px]">We reserve the right to update or modify these terms at any time without prior notice. Your continued use of the website constitutes acceptance of those changes.</p>
+        </div>
+
+        <div className="section">
+          <h2 className="section-title">2. Products and Descriptions</h2>
+          <p className="content pb-[14px]">
+            All product descriptions, images, and information are provided for general informational purposes and may vary slightly due to lighting, screen display, or packaging updates.
           </p>
-          <ol className="content">
-            <li>All product images, descriptions, and content are for informational purposes and may vary slightly in appearance.</li>
-            <li>Although our products are crafted using natural, ayurvedic ingredients, we recommend conducting a patch test before use, as individual skin responses may vary.</li>
-            <li>We reserve the right to update prices, policies, and product offerings without prior notice.</li>
-            <li>Orders are confirmed only upon successful payment and availability.</li>
-            <li>Raajsi retains ownership of this website&rsquo;s content, trademarks, and intellectual property.</li>
-          </ol>
-          <p className="content">
-            Your use of our platform implies your acceptance of these terms. For questions or clarifications, feel free to contact us.
-          </p>
-          <p className="content" style={{fontStyle: 'italic', textAlign: 'center', marginTop: '20px'}}>
-            &ldquo;Grace begins with clarity.&rdquo;
+          <p className="content pb-[14px]">
+            While our products are made using natural, ayurvedic ingredients, we recommend conducting a patch test before use. Raajsi will not be liable for any allergic reactions or side effects that may occur.
           </p>
         </div>
-        
+
         <div className="section">
-          <h2 className="section-title">Returns And Refund Policy</h2>
-          <p className="content">
-            We hope every Raajsi ritual brings you joy. But in the rare case that something doesn&rsquo;t feel right, we&rsquo;re here to make it better.
+          <h2 className="section-title">3. Pricing and Payment</h2>
+          <p className="content pb-[14px]">
+            All prices listed on the website are in Indian Rupees (INR) and are inclusive of applicable taxes, unless stated otherwise.
           </p>
-          <ul className="content">
-            <li>Returns are accepted within 7 days of delivery for unused, sealed products in their original packaging.</li>
-            <li>For damaged or incorrect items, please contact us within 48 hours of delivery along with clear photographs.</li>
-            <li>All returns, including faulty or damaged items, must be initiated within 15 days of receiving your order.</li>
-            <li>Opened, used, or tampered products cannot be returned due to hygiene and safety standards.</li>
-            <li>Returns will not be accepted if packaging, labels, or included gift/sample items are missing.</li>
-            <li>If your order included a gift or sample, please return it along with the product.</li>
-          </ul>
+          <p className="content pb-[14px]">
+            We reserve the right to modify prices, offers, and discounts without prior notice.
+          </p>
+          <p className="content pb-[14px]">
+            Orders are confirmed only after successful payment and product availability.
+          </p>
+          <p className="content pb-[14px]">
+            Payment gateways like Razorpay are used for secure transactions. We do not store your payment details.
+          </p>
         </div>
-        
         <div className="section">
-          <h2 className="section-title">Refund Process</h2>
-          <ul className="content">
-            <li>Once your return is approved, the refund will be processed within 7–10 working days.</li>
-            <li>For card payments, refunds will be made to the same debit/credit card.</li>
-            <li>For Cash on Delivery (COD) orders, we&rsquo;ll reach out via email to collect your bank details and process the refund via bank transfer within 24–48 business hours of receiving the product. Funds may take 4–5 additional business days to reflect in your account.</li>
-          </ul>
-          <p className="content">
-            We&rsquo;re committed to offering you the best in self-grooming and wellness. If you feel we&rsquo;ve missed the mark, let us know — we&rsquo;ll do our best to make it right. Write to us at Info@phyinternational.com for return initiation.
+          <h2 className="section-title">4. Shipping and Delivery</h2>
+          <p className="content pb-[14px]">
+            Orders are processed within 2–5 working days and shipped through trusted courier partners.
           </p>
-          <p className="content" style={{fontStyle: 'italic', textAlign: 'center', marginTop: '30px', fontSize: '1.1rem'}}>
-            &ldquo;Your satisfaction is part of our royal promise.&rdquo;
+          <p className="content pb-[14px]">
+            Delivery timelines may vary depending on your location.
+          </p>
+          <p className="content pb-[14px]">
+            Raajsi is not responsible for delays caused by courier agencies, weather conditions, or other external factors beyond our control.
+          </p>
+        </div>
+        <div className="section">
+          <h2 className="section-title">5. Returns, Replacements, and Refunds</h2>
+          <p className="content pb-[14px]">
+            Please refer to our detailed Returns & Refund Policy section below:
+          </p>
+          <p className="content pb-[14px]">
+            Returns are accepted within 7 days of delivery for unused, sealed products in their original packaging.
+          </p>
+          <p className="content pb-[14px]">
+            For damaged or incorrect items, please contact us within 48 hours of delivery with clear photos.
+          </p>
+          <p className="content pb-[14px]">
+            Opened or used products cannot be returned due to hygiene reasons.
+          </p>
+          <p className="content pb-[14px]">
+            Refunds (if applicable) will be processed within 7–10 business days after inspection and approval.
+          </p>
+          <p className="content pb-[14px]">
+            For all return or refund requests, please write to us at info@raajsi.in.
+          </p>
+        </div>
+        <div className="section">
+          <h2 className="section-title">6. Cancellations</h2>
+          <p className="content pb-[14px]">
+            Orders can be cancelled only before dispatch. Once shipped, cancellations are not possible.
+          </p>
+          <p className="content pb-[14px]">
+            Refunds for cancelled orders will be processed within 5–7 business days to the original payment method.
+          </p>
+        </div>
+        <div className="section">
+          <h2 className="section-title">7. Limitation of Liability</h2>
+          <p className="content pb-[14px]">
+            Raajsi shall not be held liable for any indirect, incidental, or consequential damages arising from the use or inability to use our products or website.
+          </p>
+          <p className="content pb-[14px]">
+            Product effectiveness may vary from person to person; results are not guaranteed.
+          </p>
+        </div>
+        <div className="section">
+          <h2 className="section-title">8. Contact Us</h2>
+          <p className="content pb-[14px]">
+            For any queries, suggestions, or complaints, please contact info@raajsi.in
           </p>
         </div>
       </div>
