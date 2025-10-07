@@ -16,12 +16,14 @@ const blogs = [
 
 const BlogSlider = () => {
   const settings = {
-    dots: true,
+    dots: false,
     infinite: true,
     speed: 600,
     slidesToShow: 1, // ek baar me ek hi slide
     slidesToScroll: 1,
-    arrows: true, // next/prev arrows
+    arrows: false,
+    centerMode: true, // dono side thoda part visible hoga
+    centerPadding: "30px",
     customPaging: (i) => (
       <div className="w-[20px] h-[8px] bg-[#BA7E384d] rounded-full"></div>
     ),
@@ -36,7 +38,7 @@ const BlogSlider = () => {
     <div className="w-full">
       <Slider {...settings}>
         {blogs?.map((e, i) => (
-          <div key={i} className="px-2">
+          <div key={i} className="lg:px-2 max-w-[96%] w-full mx-auto">
             <div className="w-full rounded-[24px] bg-[#FFFFFF] shadow">
               <Image
                 src={e?.imgs}

@@ -6,37 +6,44 @@ function Footer() {
     return (
         <div>
             <div>
-                <section className="bg-[#BA7E38]">
+                <section className="bg-[#BA7E38] relative">
                     <div className="max-w-[1440px] w-full mx-auto py-[35px] lg:px-[100px] px-[20px]">
-                        <div className="grid lg:grid-cols-4 grid-cols-2 lg:gap-x-[70px] gap-y-[16px]">
-                            <div className="flex gap-[14px] items-center">
+                        <div className="grid lg:grid-cols-4 grid-cols-2 lg:gap-x-[70px] gap-y-[0px]">
+                            <div className="flex gap-[14px] lg:flex-row flex-col items-center lg:pb-0 pb-[30px] lg:pt-0 pt-[26px] lg:border-none border-b border-r border-[#FFFFFF]">
                                 <Image src="/images/faq/icon1.svg" className='lg:h-[45px] h-[20px] lg:w-[45px] w-[20px] object-cover' height={45} width={45} alt="icon1" />
-                                <p className="font-avenir-400 lg:text-[16px] text-[12px] capitalize text-[#FFFFFF]">No tests on animals</p>
+                                <p className="font-avenir-400 lg:text-[16px] text-[12px] lg:max-w-full max-w-[140px] w-full mx-auto lg:text-left text-center capitalize text-[#FFFFFF]">No tests on animals</p>
                             </div>
-                            <div className="flex gap-[14px] items-center">
+                            <div className="flex gap-[14px] lg:flex-row flex-col items-center lg:pb-0 pb-[30px] lg:pt-0 pt-[26px] lg:border-none border-b border-[#FFFFFF]">
                                 <Image src="/images/faq/icon2.svg" className='lg:h-[45px] h-[20px] lg:w-[45px] w-[20px] object-cover' height={45} width={45} alt="icon2" />
-                                <p className="font-avenir-400 lg:text-[16px] text-[12px] capitalize text-[#FFFFFF]">No animal-derived ingredients</p>
+                                <p className="font-avenir-400 lg:text-[16px] text-[12px] lg:max-w-full max-w-[140px] w-full mx-auto text-center lg:text-left capitalize text-[#FFFFFF]">No animal-derived ingredients</p>
                             </div>
-                            <div className="flex gap-[14px] items-center">
+                            <div className="flex gap-[14px] lg:flex-row flex-col items-center lg:pt-0 pt-[30px] lg:pb-0 pb-[26px] lg:border-none border-r border-[#FFFFFF]">
                                 <Image src="/images/faq/icon3.svg" className='lg:h-[45px] h-[20px] lg:w-[45px] w-[20px] object-cover' height={45} width={45} alt="icon3" />
-                                <p className="font-avenir-400 lg:text-[16px] text-[12px] capitalize text-[#FFFFFF]">No gluten, or gluten byproducts</p>
+                                <p className="font-avenir-400 lg:text-[16px] text-[12px] lg:max-w-full max-w-[140px] w-full mx-auto lg:text-left text-center capitalize text-[#FFFFFF]">No gluten, or gluten byproducts</p>
                             </div>
-                            <div className="flex gap-[14px] items-center">
+                            <div className="flex gap-[14px] lg:flex-row flex-col items-center lg:pt-0 pt-[30px] lg:pb-0 pb-[26px] lg:border-none border-[#FFFFFF]">
                                 <Image src="/images/faq/icon4.svg" className='lg:h-[45px] h-[20px] lg:w-[45px] w-[20px] object-cover' height={45} width={45} alt="icon4" />
-                                <p className="font-avenir-400 lg:text-[16px] text-[12px] capitalize text-[#FFFFFF]">Recyclable packaging</p>
+                                <p className="font-avenir-400 lg:text-[16px] text-[12px] lg:max-w-full max-w-[140px] text-center lg:text-left w-full mx-auto capitalize text-[#FFFFFF]">Recyclable packaging</p>
                             </div>
                         </div>
                     </div>
                 </section>
                 <div className='bg-[#4C0A2E] lg:pt-[80px] pt-[40px] lg:pb-[64px] pb-[32px]'>
                     <div className="max-w-[1440px] mx-auto w-full lg:px-[100px] px-[20px]">
+                        <div className='block pb-[52px] lg:hidden'>
+                            <Link href="/">
+                                <Image src="/images/header/logo.svg" height={100} width={111} alt='Logo' />
+                            </Link>
+                        </div>
                         <div className="flex lg:gap-[40px] gap-[20px] lg:flex-row flex-col">
-                            <div className='grid lg:grid-cols-3 w-full grid-cols-1 gap-[20px]'>
-                                <div>
-                                    <Image src="/images/header/logo.svg" height={100} width={111} alt='Logo' />
+                            <div className='grid lg:grid-cols-3 w-full grid-cols-2 gap-[20px]'>
+                                <div className='lg:block hidden'>
+                                    <Link href="/">
+                                        <Image src="/images/header/logo.svg" height={100} width={111} alt='Logo' />
+                                    </Link>
                                 </div>
                                 <div>
-                                    <h6 className="font-avenir-800 text-[24px] text-[#FFFFFF] pb-[16px]">About</h6>
+                                    <h6 className="font-avenir-800 text-[24px] text-[#FFFFFF] lg:pb-[16px] pb-[18px]">About</h6>
                                     <ul className='flex flex-col gap-[8px]'>
                                         <li className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Our Essence</li>
                                         <li className='font-avenir-400 text-[16px] text-[#FFFFFF]'>The Royal Promise</li>
@@ -46,7 +53,7 @@ function Footer() {
                                     </ul>
                                 </div>
                                 <div>
-                                    <h6 className="font-avenir-800 text-[24px] text-[#FFFFFF] pb-[16px]">Products</h6>
+                                    <h6 className="font-avenir-800 text-[24px] text-[#FFFFFF] lg:pb-[16px] pb-[18px]">Products</h6>
                                     <ul className='flex flex-col gap-[8px]'>
                                         <li className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Ritual Kits</li>
                                         <li className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Hair Care</li>
@@ -55,7 +62,7 @@ function Footer() {
                                     </ul>
                                 </div>
                             </div>
-                            <div className="max-w-[600px] w-full">
+                            <div className="max-w-[600px] lg:pt-0 pt-[30px] w-full">
                                 <h6 className="font-avenir-800 text-[24px] text-[#FFFFFF] pb-[16px]">keep in touch with Raajsi</h6>
                                 <p className="font-avenir-400 text-[16px] text-[#FFFFFF] pb-[16px] ">Join the Raajsi newsletter and be first to hear about news, offers and skincare advice</p>
                                 <div className="flex items-end pb-[8px] gap-[16px]">
@@ -96,8 +103,8 @@ function Footer() {
                         </div>
                     </div>
                 </div>
-                <div className="bg-[#14010A] py-[16px]">
-                    <div className="max-w-[1440px] flex lg:flex-row flex-col lg:gap-0 gap-[10px] items-center justify-between w-full mx-auto lg:px-[100px] px-[20px]">
+                <div className="bg-[#14010A] lg:py-[16px] py-[20px]">
+                    <div className="max-w-[1440px] flex lg:flex-row flex-col-reverse lg:gap-0 gap-[20px] lg:items-center justify-between w-full mx-auto lg:px-[100px] px-[20px]">
                         <div className="flex items-center gap-[8px]">
                             <Image alt='copyright' src="/images/footer/copyright.svg" height={24} width={24} />
                             <p className="font-avenir-400 text-[16px] text-[#CBCBCB]">2025 Raajsi. All Rights Reserved.</p>

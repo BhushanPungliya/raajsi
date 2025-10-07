@@ -63,7 +63,7 @@ function FeatureSlider({ featureData }) {
     <>
       {featureData && featureData.length > 0 ? (
         <div>
-          <div className="px-[15px] lg:hidden block">
+          <div className="px-[0px] lg:hidden block">
             <Slider {...settings2}>
               {featureData.map((item, idx) => (
                 <div key={idx}>

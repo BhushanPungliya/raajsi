@@ -153,4 +153,12 @@ body {
     padding: 1.25rem 1rem;
     border-radius: 18px;
   }
+  .the-royal-slider .slick-dots { top: 505px;}
+}
+
+.ritual-slider { position: relative; } 
+.ritual-slider .slick-dots { bottom: 30px;}
+
+.ritual-slider .slick-dots li.slick-active div {
+  background: #4D0B2F !important;
 }

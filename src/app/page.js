@@ -73,7 +73,7 @@ export default function Home() {
             <h2
               className="
         font-[400] 
-        text-[20px] sm:text-[28px] md:text-[36px] lg:text-[41px] 
+        text-[18px] md:text-[36px] lg:text-[41px] 
         leading-[30px] sm:leading-[38px] max-w-[90%] lg:max-w-[634px] md:leading-[48px] lg:leading-[56px]
         text-[#FFFAFA] 
         ml-[20px] lg:ml-[93px] lg:mr-0
@@ -83,7 +83,7 @@ export default function Home() {
               मुग्धे! धानुष्कता केयमपूर्वा त्वयि दृश्यते ।
               यया विध्यसि चेतांसि गुणैरेव न सायकैः ॥
             </h2>
-            <button className="pb-[14px] absolute bottom-0 right-[-20px]" onClick={() => setOpenModal(true)}>
+            <button className="pb-[14px] absolute lg:bottom-0 lg:pl- pl-[20px] bottom-[-60px] lg:right-[-20px]" onClick={() => setOpenModal(true)}>
               <Image
                 src="/images/home/lag.svg"
                 height={40}
@@ -112,8 +112,8 @@ export default function Home() {
           </button>
         </div>
       </section>
-      <section ref={nextSectionRef} className="py-[80px] lg:py-[62px] overflow-hidden">
-        <div className="flex items-center flex-col lg:flex-row lg:gap-[96px] gap-[0px]">
+      <section ref={nextSectionRef} className="py-[50px] lg:py-[62px] overflow-hidden">
+        <div className="flex items-center flex-col-reverse lg:flex-row lg:gap-[96px] gap-[50px]">
 
           {/* Image Section */}
           <div className="relative w-full max-w-[400px] sm:max-w-[500px] md:max-w-[600px] lg:max-w-[787px] h-auto">
@@ -255,7 +255,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="lg:hidden pt-[54px]  block">
+          <div className="lg:hidden pt-[54px] ritual-slider block">
             <RitualSlider />
           </div>
         </div>
@@ -284,7 +284,7 @@ export default function Home() {
         </div>
       </section>
       <section className="lg:pb-[100px] pb-[40px]">
-        <div className="overflow-hidden relative">
+        <div className="overflow-hidden the-royal-slider relative">
           <Slider1 />
         </div>
       </section>
@@ -315,7 +315,7 @@ export default function Home() {
             <Link href="/blog" className="font-avenir-400 text-[18px] text-[#FFFFFF] py-[14px] px-[50px] bg-[#BA7E38] rounded-full border border-[#BA7E38] an hover:bg-transparent hover:text-[#BA7E38]">VIEW ALL </Link>
           </div>
         </div>
-        <div className="pt-[33px] blog-slider max-w-[1440px] w-full mx-auto px-[20px] block lg:hidden">
+        <div className="pt-[33px] blog-slider max-w-[1440px] w-full mx-auto block lg:hidden">
           <BlogSlider />
           <div className="flex justify-center pt-[30px]">
             <Link href="/blog" className="font-avenir-400 text-[18px] text-[#FFFFFF] py-[14px] px-[50px] bg-[#BA7E38] rounded-full border border-[#BA7E38] an hover:bg-transparent hover:text-[#BA7E38]">VIEW ALL </Link>
