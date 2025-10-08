@@ -7,14 +7,14 @@ import Slider1 from "./slider/Slider1";
 import Link from "next/link";
 import RitualSlider from "./slider/RitualSlider";
 import BlogSlider from "./slider/BlogSlider";
-import { getAllProducts, getFaqs, getFeaturedProducts } from "@/api/auth";
+import { getAllProducts, getFaqs, getFeaturedProducts, getAllBlogs } from "@/api/auth";
 
 // const featureData = ["BODY THERAPY ", "SKIN THERAPY ", "SKIN THERAPY ", "RITUAL KIT"]
-const blogs = [
-  { imgs: "/images/home/img5.png" },
-  { imgs: "/images/home/img6.png" },
-  { imgs: "/images/home/img7.png" },
-]
+// const blogs = [
+//   { imgs: "/images/home/img5.png" },
+//   { imgs: "/images/home/img6.png" },
+//   { imgs: "/images/home/img7.png" },
+// ]
 
 // const faq = [
 //   { fTitle: "Is Raajsi for me?", fText: "Raajsi is crafted for individuals who seek luxury without compromise. If you value natural ingredients, ethical sourcing, and holistic wellness, Raajsi products are made for you." },
@@ -31,6 +31,8 @@ export default function Home() {
   const [activeIndex, setActiveIndex] = useState(null);
   const [featureData, setFeatureData] = useState([]);
   const [faqs, setFaqs] = useState([]);
+  const [blogs, setBlogs] = useState([]);
+  const [blogsLoading, setBlogsLoading] = useState(true);
   const nextSectionRef = useRef(null);
 
   useEffect(() => {
@@ -52,9 +54,24 @@ export default function Home() {
         console.error("Error fetching featured products:", err);
       }
     };
+    const fetchBlogs = async () => {
+      try {
+        const data = await getAllBlogs();
+        if (data?.status === "success") {
+          // Get only the 3 most recent blogs
+          const recentBlogs = data?.data?.blogs?.slice(0, 3) || [];
+          setBlogs(recentBlogs);
+        }
+      } catch (err) {
+        console.error("Error fetching blogs:", err);
+      } finally {
+        setBlogsLoading(false);
+      }
+    };
 
     fetchProducts();
     fetchFaqs();
+    fetchBlogs();
   }, []);
 
   const scrollToNext = () => {
@@ -291,26 +308,46 @@ export default function Home() {
       <section className="bg-[#F7F2E3] overflow-hidden lg:pt-[76px] pt-[50px] lg:pb-[94px] pb-[50px]">
         <Heading title="Blogs" />
         <div className="pt-[73px] max-w-[1440px] w-full mx-auto px-[20px] lg:block hidden">
-          <div className="grid lg:grid-cols-3 grid-cols-1 gap-[20px]">
-            {blogs?.map((e, i) => {
-              return (
-                <div key={i} className="w-full rounded-[24px] bg-[#FFFFFF]">
-                  <Image src={e?.imgs} height={219} width={390} alt="blog-img" className="rounded-t-[24px] w-full h-[219px] object-cover" />
-                  <div className="px-[30px] py-[18px]">
-                    <h6 className="font-avenir-400 text-[20px] text-[#000000] pb-[10px]">Natural Ingredients connect it to actual people</h6>
-                    <div className="flex justify-between items-center pb-[16px]">
-                      <p className="font-avenir-400 text-[18px] text-[#6C757D]">June 28, 2018</p>
-                      <div className="flex gap-[10px] items-center">
-                        <Image alt="share" height={16} width={16} src="/images/home/share.svg" />
-                        <p className="font-avenir-400 text-[18px] text-[#6C757D]">1K shares</p>
+          {blogsLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-xl">Loading blogs...</div>
+            </div>
+          ) : blogs.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">No blogs available at the moment.</p>
+            </div>
+          ) : (
+            <div className="grid lg:grid-cols-3 grid-cols-1 gap-[20px]">
+              {blogs?.map((blog, i) => {
+                return (
+                  <div key={blog._id || i} className="w-full rounded-[24px] bg-[#FFFFFF]">
+                    <Image 
+                      src={blog?.displayImage?.[0]?.url || "/images/home/img5.png"} 
+                      height={219} 
+                      width={390} 
+                      alt="blog-img" 
+                      className="rounded-t-[24px] w-full h-[219px] object-cover" 
+                    />
+                    <div className="px-[30px] py-[18px]">
+                      <h6 className="font-avenir-400 text-[20px] text-[#000000] pb-[10px]">{blog.title}</h6>
+                      <div className="flex justify-between items-center pb-[16px]">
+                        <p className="font-avenir-400 text-[18px] text-[#6C757D]">
+                          {new Date(blog.createdAt).toLocaleDateString()}
+                        </p>
+                        <div className="flex gap-[10px] items-center">
+                          <Image alt="share" height={16} width={16} src="/images/home/share.svg" />
+                          <p className="font-avenir-400 text-[18px] text-[#6C757D]">1K shares</p>
+                        </div>
                       </div>
+                      <Link href={`/blog/${blog.slug}`}>
+                        <h6 className="font-avenir-400 text-[20px] underline text-[#000000] cursor-pointer hover:text-[#BA7E38] transition">Read Blog</h6>
+                      </Link>
                     </div>
-                    <h6 className="font-avenir-400 text-[20px] underline text-[#000000]">Read Blog</h6>
                   </div>
-                </div>
-              )
-            })}
-          </div>
+                )
+              })}
+            </div>
+          )}
           <div className="flex justify-center pt-[30px]">
             <Link href="/blog" className="font-avenir-400 text-[18px] text-[#FFFFFF] py-[14px] px-[50px] bg-[#BA7E38] rounded-full border border-[#BA7E38] an hover:bg-transparent hover:text-[#BA7E38]">VIEW ALL </Link>
           </div>

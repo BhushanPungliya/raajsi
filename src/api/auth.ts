@@ -160,3 +160,21 @@ export const resendOTP = async (phoneNumber) => {
     throw error.response?.data || error.message;
   }
 };
+
+export const getAllBlogs = async () => {
+  try {
+    const response = await api.get("blog/all");
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const getBlogBySlug = async (slug) => {
+  try {
+    const response = await api.get(`blog/${slug}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};

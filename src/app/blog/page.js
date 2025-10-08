@@ -1,24 +1,40 @@
+"use client";
+
 import Image from 'next/image'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Heading from '../components/Heading'
 import Link from 'next/link';
-
-const blogs = [
-  {
-    imgs: "/images/home/img5.png",
-    slug: "natural-ingredients-connect",
-  },
-  {
-    imgs: "/images/home/img6.png",
-    slug: "tailwind-css-tips",
-  },
-  {
-    imgs: "/images/home/img7.png",
-    slug: "react-in-2025",
-  },
-];
+import { getAllBlogs } from '@/api/auth';
 
 function Page() {
+    const [blogs, setBlogs] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchBlogs = async () => {
+            try {
+                const response = await getAllBlogs();
+                if (response?.status === "success") {
+                    setBlogs(response?.data?.blogs || []);
+                }
+            } catch (error) {
+                console.error("Error fetching blogs:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchBlogs();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-xl">Loading blogs...</div>
+            </div>
+        );
+    }
+
     return (
         <div>
             <section className="hero-section h-[778px] overflow-hidden">
@@ -36,21 +52,29 @@ function Page() {
                     <Heading title="Blogs" />
                     <div className="pt-[73px] max-w-[1440px] w-full mx-auto px-[20px]">
                         <div className="grid lg:grid-cols-3 grid-cols-1 gap-[20px]">
-                            {blogs?.map((e, i) => {
+                            {blogs?.map((blog, i) => {
                                 return (
-                                    <div key={i} className="w-full rounded-[24px] bg-[#FFFFFF]">
-                                        <Image src={e?.imgs} height={219} width={390} alt="blog-img" className="rounded-t-[24px] w-full h-[219px] object-cover" />
+                                    <div key={blog._id || i} className="w-full rounded-[24px] bg-[#FFFFFF]">
+                                        <Image 
+                                            src={blog?.displayImage?.[0]?.url || "/images/home/img5.png"} 
+                                            height={219} 
+                                            width={390} 
+                                            alt="blog-img" 
+                                            className="rounded-t-[24px] w-full h-[219px] object-cover" 
+                                        />
                                         <div className="px-[30px] py-[18px]">
-                                            <h6 className="font-avenir-400 text-[20px] text-[#000000] pb-[10px]">Natural Ingredients connect it to actual people</h6>
+                                            <h6 className="font-avenir-400 text-[20px] text-[#000000] pb-[10px]">{blog.title}</h6>
                                             <div className="flex justify-between items-center pb-[16px]">
-                                                <p className="font-avenir-400 text-[18px] text-[#6C757D]">June 28, 2018</p>
+                                                <p className="font-avenir-400 text-[18px] text-[#6C757D]">
+                                                    {new Date(blog.createdAt).toLocaleDateString()}
+                                                </p>
                                                 <div className="flex gap-[10px] items-center">
                                                     <Image alt="share" height={16} width={16} src="/images/home/share.svg" />
                                                     <p className="font-avenir-400 text-[18px] text-[#6C757D]">1K shares</p>
                                                 </div>
                                             </div>
                                             <Link
-                                                href={`/blog/${e?.slug}`}
+                                                href={`/blog/${blog.slug}`}
                                                 className="font-avenir-400 text-[20px] underline text-[#000000] hover:text-[#ED6800] transition"
                                             >
                                                 Read Blog
@@ -60,6 +84,11 @@ function Page() {
                                 )
                             })}
                         </div>
+                        {blogs.length === 0 && (
+                            <div className="text-center py-12">
+                                <p className="text-gray-500 text-lg">No blogs available at the moment.</p>
+                            </div>
+                        )}
                         {/* <div className="flex justify-center pt-[30px]">
                             <button className="font-avenir-400 text-[18px] text-[#FFFFFF] py-[14px] px-[50px] bg-[#BA7E38] rounded-full border border-[#BA7E38] an hover:bg-transparent hover:text-[#BA7E38]">VIEW ALL </button>
                         </div> */}
