@@ -48,7 +48,7 @@ function Page() {
                                     <Image src="/images/royal/img1.png" className='rounded-[20px] object-cover h-[246px]' height={246} width={430} alt='img1' />
                                 </div>
                                 <div className='lg:pt-[42px] max-w-[638px] w-full pt-[12px]'>
-                                    <h6 className="font-rose lg:text-[36px] text-[16px] lg:leading-[45px] leading-[24px] text-[#BA7E38]">Time-tested formulas derived from ancient sciences and scriptures</h6>
+                                    <h6 className="font-rose lg:text-[36px] text-[16px] lg:leading-[45px] leading-[24px] text-[#4C0A2E]">Time-tested formulas derived from ancient sciences and scriptures</h6>
                                     <p className="lg:pt-[20px] font-avenir-400 lg:text-[20px] text-[14px] lg:leading-[35px] leading-[20px] text-[#000000]">Rooted in Ayurveda and proven through generations of ritual wisdom.</p>
                                 </div>
                             </div>
@@ -63,7 +63,7 @@ function Page() {
                                     />
                                 </div>
                                 <div className='lg:pt-[42px] max-w-[638px] w-full lg:text-right text-left pt-[12px]'>
-                                    <h6 className="font-rose lg:text-[36px] text-[16px] lg:leading-[45px] leading-[24px]  text-[#BA7E38]">
+                                    <h6 className="font-rose lg:text-[36px] text-[16px] lg:leading-[45px] leading-[24px]  text-[#4C0A2E]">
                                         High-quality, organic ingredients for optimal efficacy
                                     </h6>
                                     <p className="lg:pt-[20px] font-avenir-400 lg:text-[20px] text-[14px] lg:leading-[35px] leading-[20px] text-[#000000]">
@@ -76,7 +76,7 @@ function Page() {
                                     <Image src="/images/royal/img1.png" className='rounded-[20px] object-cover h-[246px]' height={246} width={430} alt='img1' />
                                 </div>
                                 <div className='lg:pt-[42px] max-w-[638px] w-full pt-[12px]'>
-                                    <h6 className="font-rose lg:text-[36px] text-[16px] lg:leading-[45px] leading-[24px]  text-[#BA7E38]">Eco-friendly manufacturing processes</h6>
+                                    <h6 className="font-rose lg:text-[36px] text-[16px] lg:leading-[45px] leading-[24px]  text-[#4C0A2E]">Eco-friendly manufacturing processes</h6>
                                     <p className="lg:pt-[20px] font-avenir-400 lg:text-[20px] text-[14px] lg:leading-[35px] leading-[20px] text-[#000000]">Produced in small batches using low-impact, conscious methods.</p>
                                 </div>
                             </div>
@@ -91,7 +91,7 @@ function Page() {
                                     />
                                 </div>
                                 <div className='lg:pt-[42px] max-w-[638px] w-full pt-[12px] lg:text-right text-'>
-                                    <h6 className="font-rose lg:text-[36px] text-[16px] lg:leading-[45px] leading-[24px]  text-[#BA7E38]">
+                                    <h6 className="font-rose lg:text-[36px] text-[16px] lg:leading-[45px] leading-[24px]  text-[#4C0A2E]">
                                         Cruelty-free and sustainable practices
                                     </h6>
                                     <p className="lg:pt-[20px] font-avenir-400 lg:text-[20px] text-[14px] lg:leading-[35px] leading-[20px] text-[#000000]">
@@ -104,7 +104,7 @@ function Page() {
                                     <Image src="/images/royal/img1.png" className='rounded-[20px] object-cover h-[246px]' height={246} width={430} alt='img1' />
                                 </div>
                                 <div className='lg:pt-[42px] max-w-[638px] w-full pt-[12px]'>
-                                    <h6 className="font-rose lg:text-[36px] text-[16px] lg:leading-[45px] leading-[24px]  text-[#BA7E38]">Biodegradable packaging </h6>
+                                    <h6 className="font-rose lg:text-[36px] text-[16px] lg:leading-[45px] leading-[24px]  text-[#4C0A2E]">Biodegradable packaging </h6>
                                     <p className="lg:pt-[20px] font-avenir-400 lg:text-[20px] text-[14px] lg:leading-[35px] leading-[20px] text-[#000000]">Our packaging is designed to decompose naturally, leaving no lasting footprint</p>
                                 </div>
                             </div>
@@ -119,7 +119,7 @@ function Page() {
                                     />
                                 </div>
                                 <div className='lg:pt-[42px] max-w-[638px] w-full lg:text-right text- pt-[12px]'>
-                                    <h6 className="font-rose lg:text-[36px] text-[16px] lg:leading-[45px] leading-[24px]  text-[#BA7E38]">
+                                    <h6 className="font-rose lg:text-[36px] text-[16px] lg:leading-[45px] leading-[24px]  text-[#4C0A2E]">
                                         Certificates of Analysis
                                     </h6>
                                     <p className="lg:pt-[20px] font-avenir-400 lg:text-[20px] text-[14px] lg:leading-[35px] leading-[20px] text-[#000000]">

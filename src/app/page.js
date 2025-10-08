@@ -203,7 +203,7 @@ export default function Home() {
           <Heading title="Step into royal indulgence." />
           <div className="pt-[54px] relative lg:block hidden">
             <div className="rounded-t-[24px] overflow-hidden bg-[#FEFEFE] lg:px-[100px] px-[16px] pt-[50px] flex justify-between lg:flex-row flex-col">
-              <div className="max-w-[538px] w-full lg:pb-[234px] pb-[30px]">
+              <div className="max-w-[538px] w-full lg:pb-[214px] pb-[30px]">
                 <h6 className="font-rose font-[400] lg:text-[24px] text-[16px] lg:text-left text-center tracking-[4%] text-[#4C0A2E] pb-[14px]">From Palace to You: A Body Ritual</h6>
                 <p className="font-avenir-400 text-[16px] text-[#0C0C0C] lg:text-left text-center pb-[24px]">Rani Padmavati of Chittor indulged in luxurious ubtan rituals
                   —an age-old body remedy made with sandalwood, turmeric, lentils, and rose petals. Applied before her ceremonial baths, this exfoliating paste, followed by herbal oil massages, wasn’t just for beauty—it was a sacred act of self-rejuvenation. At Raajsi, we revive this royal tradition through our body oils, scrubs, and soaps, bringing timeless radiance to your modern-day rituals</p>
@@ -221,7 +221,7 @@ export default function Home() {
                 />
               </div>
             </div>
-            <div className="rounded-t-[24px] group lg:h-[100px] h-auto hover:h-[444px] an lg:mt-[-20px] lg:absolute relative w-full lg:bottom-[100px] z-10 overflow-hidden bg-[#BA7E38] lg:px-[100px] px-[20px] hover:pt-[50px] pt-[20px] flex justify-between lg:flex-row flex-col">
+            <div className="rounded-t-[24px] group lg:h-[100px] h-auto hover:h-[444px] an lg:mt-[-20px] lg:absolute relative w-full lg:bottom-[70px] z-10 overflow-hidden bg-[#BA7E38] lg:px-[100px] px-[20px] hover:pt-[50px] pt-[20px] flex justify-between lg:flex-row flex-col">
               <div className="max-w-[538px] w-full pb-[44px]">
                 <h6 className="font-rose font-[400] text-[24px] tracking-[4%] text-[#FFFFFF] pb-[14px]">Radiance of the Rajput Ranis-Skin Alchemy</h6>
                 <p className="font-avenir-400 text-[16px] text-[#FFFFFF] pb-[24px]">Rani Karnavati of Mewar was known for her disciplined beauty rituals, which were drawn from Ayurveda. Her skincare secrets included cooling aloe vera gels, sandalwood pastes, and saffron mixed with raw milk—applied daily to protect her skin from the harsh desert sun. These remedies not only nourished the skin but symbolised a deeper connection to purity and grace. Raajsi’s creams and cleansers echo these regal traditions—infusing ancient wisdom into every drop.</p>
@@ -237,7 +237,7 @@ export default function Home() {
                 />
               </div>
             </div>
-            <div className="rounded-t-[24px] group lg:h-[100px] h-auto hover:h-[444px] an lg:mt-[-20px] lg:absolute relative w-full lg:bottom-[30px] z-20 overflow-hidden bg-[#4C0A2E] lg:px-[100px] px-[14px] hover:pt-[50px] pt-[20px] flex justify-between lg:flex-row flex-col">
+            <div className="rounded-t-[24px] group lg:h-[100px] h-auto hover:h-[444px] an lg:mt-[-20px] lg:absolute relative w-full lg:bottom-[0px] z-20 overflow-hidden bg-[#4C0A2E] lg:px-[100px] px-[14px] hover:pt-[50px] pt-[20px] flex justify-between lg:flex-row flex-col">
               <div className="max-w-[538px] w-full pb-[44px]">
                 <h6 className="font-rose font-[400] text-[24px] tracking-[4%] text-[#FFFFFF] pb-[14px]">Hair Elixirs Tresses of Tradition</h6>
                 <p className="font-avenir-400 text-[16px] text-[#FFFFFF] pb-[24px]">Rani Karnavati of Mewar was known for her disciplined beauty rituals, which were drawn from Ayurveda. Her skincare secrets included cooling aloe vera gels, sandalwood pastes, and saffron mixed with raw milk—applied daily to protect her skin from the harsh desert sun. These remedies not only nourished the skin but symbolised a deeper connection to purity and grace. Raajsi’s creams and cleansers echo these regal traditions—infusing ancient wisdom into every drop.
@@ -254,7 +254,7 @@ export default function Home() {
                 />
               </div>
             </div>
-            <div className="rounded-t-[24px] group lg:h-[100px] h-auto hover:h-[444px] an lg:mt-[-20px] lg:absolute relative w-full lg:bottom-[-40px] z-30 overflow-hidden bg-[#6A5013] lg:px-[100px] px-[14px] pt-[20px] hover:pt-[50px] flex justify-between lg:flex-row flex-col">
+            <div className="rounded-t-[24px] group lg:h-[70px] h-auto hover:h-[444px] an lg:mt-[-20px] lg:absolute relative w-full lg:bottom-[-40px] z-30 overflow-hidden bg-[#6A5013] lg:px-[100px] px-[14px] pt-[20px] hover:pt-[50px] flex justify-between lg:flex-row flex-col">
               <div className="max-w-[538px] w-full pb-[44px]">
                 <h6 className="font-rose font-[400] text-[24px] tracking-[4%] text-[#FFFFFF] pb-[14px]">Ritual Kits Anointing Grace</h6>
                 <p className="font-avenir-400 text-[16px] text-[#FFFFFF] pb-[24px]">Rani Padmavati of Chittor indulged in luxurious ubtan rituals

@@ -8,21 +8,21 @@ function Footer() {
             <div>
                 <section className="bg-[#BA7E38] relative">
                     <div className="max-w-[1440px] w-full mx-auto py-[35px] lg:px-[100px] px-[20px]">
-                        <div className="grid lg:grid-cols-4 grid-cols-2 lg:gap-x-[70px] gap-y-[0px]">
+                        <div className="grid lg:grid-cols-4 grid-cols-2 lg:gap-x-[0px] gap-y-[0px]">
                             <div className="flex gap-[14px] lg:flex-row flex-col items-center lg:pb-0 pb-[30px] lg:pt-0 pt-[26px] lg:border-none border-b border-r border-[#FFFFFF]">
-                                <Image src="/images/faq/icon1.svg" className='lg:h-[45px] h-[20px] lg:w-[45px] w-[20px] object-cover' height={45} width={45} alt="icon1" />
+                                <Image src="/images/faq/icon1.svg" className='lg:h-[40px] h-[20px] lg:w-[40px] w-[20px] object-cover' height={45} width={45} alt="icon1" />
                                 <p className="font-avenir-400 lg:text-[16px] text-[12px] lg:max-w-full max-w-[140px] w-full mx-auto lg:text-left text-center capitalize text-[#FFFFFF]">No tests on animals</p>
                             </div>
                             <div className="flex gap-[14px] lg:flex-row flex-col items-center lg:pb-0 pb-[30px] lg:pt-0 pt-[26px] lg:border-none border-b border-[#FFFFFF]">
-                                <Image src="/images/faq/icon2.svg" className='lg:h-[45px] h-[20px] lg:w-[45px] w-[20px] object-cover' height={45} width={45} alt="icon2" />
+                                <Image src="/images/faq/icon2.svg" className='lg:h-[40px] h-[20px] lg:w-[40px] w-[20px] object-cover' height={45} width={45} alt="icon2" />
                                 <p className="font-avenir-400 lg:text-[16px] text-[12px] lg:max-w-full max-w-[140px] w-full mx-auto text-center lg:text-left capitalize text-[#FFFFFF]">No animal-derived ingredients</p>
                             </div>
                             <div className="flex gap-[14px] lg:flex-row flex-col items-center lg:pt-0 pt-[30px] lg:pb-0 pb-[26px] lg:border-none border-r border-[#FFFFFF]">
-                                <Image src="/images/faq/icon3.svg" className='lg:h-[45px] h-[20px] lg:w-[45px] w-[20px] object-cover' height={45} width={45} alt="icon3" />
+                                <Image src="/images/faq/icon3.svg" className='lg:h-[40px] h-[20px] lg:w-[40px] w-[20px] object-cover' height={45} width={45} alt="icon3" />
                                 <p className="font-avenir-400 lg:text-[16px] text-[12px] lg:max-w-full max-w-[140px] w-full mx-auto lg:text-left text-center capitalize text-[#FFFFFF]">No gluten, or gluten byproducts</p>
                             </div>
                             <div className="flex gap-[14px] lg:flex-row flex-col items-center lg:pt-0 pt-[30px] lg:pb-0 pb-[26px] lg:border-none border-[#FFFFFF]">
-                                <Image src="/images/faq/icon4.svg" className='lg:h-[45px] h-[20px] lg:w-[45px] w-[20px] object-cover' height={45} width={45} alt="icon4" />
+                                <Image src="/images/faq/icon4.svg" className='lg:h-[40px] h-[20px] lg:w-[40px] w-[20px] object-cover' height={45} width={45} alt="icon4" />
                                 <p className="font-avenir-400 lg:text-[16px] text-[12px] lg:max-w-full max-w-[140px] text-center lg:text-left w-full mx-auto capitalize text-[#FFFFFF]">Recyclable packaging</p>
                             </div>
                         </div>
