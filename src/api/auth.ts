@@ -133,3 +133,30 @@ export const removeUserCart = async ({ productId, varientId = "", quantity }) =>
     throw error.response?.data || error.message;
   }
 };
+
+export const sendOTP = async (phoneNumber) => {
+  try {
+    const response = await api.post("auth/send-otp", { phoneNumber });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const verifyOTP = async (phoneNumber, otp) => {
+  try {
+    const response = await api.post("auth/verify-otp", { phoneNumber, otp });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const resendOTP = async (phoneNumber) => {
+  try {
+    const response = await api.post("auth/resend-otp", { phoneNumber });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};

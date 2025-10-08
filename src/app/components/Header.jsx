@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import OTPLogin from "./OTPLogin";
 import { getUserCart, removeUserCart } from "@/api/auth";
@@ -167,6 +167,7 @@ const FavoritesModal = ({ onClose }) => {
 
 export default function Header() {
     const pathname = usePathname();
+    const router = useRouter();
     const [menuOpen, setMenuOpen] = useState(false);
     const [openModal, setOpenModal] = useState(null);
     const [loginOpen, setLoginOpen] = useState(false);
@@ -386,7 +387,17 @@ export default function Header() {
 
                         <div className="flex gap-[30px] relative">
                             {/* Profile Icon */}
-                            <button className="relative" onClick={() => setLoginOpen(true)}>
+                            <button 
+                                className="relative" 
+                                onClick={() => {
+                                    const token = localStorage.getItem("token");
+                                    if (token) {
+                                        router.push("/account");
+                                    } else {
+                                        setLoginOpen(true);
+                                    }
+                                }}
+                            >
                                 <Image src="/images/header/profile.svg" alt="Profile" width={28} height={28} />
                             </button>
 
@@ -442,7 +453,18 @@ export default function Header() {
                         <Link href="/our-essence" className={`${pathname === "/our-essence" ? "nav-link-active" : "nav-link"}`} onClick={() => setMenuOpen(false)}>Our Essence</Link>
                         <Link href="/feature-products" className={`${pathname === "/feature-products" ? "nav-link-active" : "nav-link"}`} onClick={() => setMenuOpen(false)}>Featured Products</Link>
                         <div className="flex gap-[20px] mt-6">
-                            <Link href=""><Image src="/images/header/profile.svg" alt="Profile" width={28} height={28} /></Link>
+                            <button 
+                                onClick={() => {
+                                    const token = localStorage.getItem("token");
+                                    if (token) {
+                                        router.push("/profile");
+                                    } else {
+                                        setLoginOpen(true);
+                                    }
+                                }}
+                            >
+                                <Image src="/images/header/profile.svg" alt="Profile" width={28} height={28} />
+                            </button>
                             <button onClick={() => setOpenModal(openModal === "favorites" ? null : "favorites")} ><Image src="/images/header/wishlist.svg" alt="Wishlist" width={28} height={28} /></button>
                             <button onClick={() => setOpenModal(openModal === "cart" ? null : "cart")} ><Image src="/images/header/cart.svg" alt="Cart" width={28} height={28} /></button>
                         </div>
