@@ -154,16 +154,17 @@ export default function ProductPage({ onAddToCart }) {
         }
       : fallbackProduct;
 
-  // Price formatting helper: if price is number, format as USD; otherwise show as-is (handles strings with currency symbol)
+  // Price formatting helper: format numbers as INR, otherwise return as-is
   const formatCurrency = (val) => {
     if (val === null || val === undefined) return "-";
     if (typeof val === "number") {
       try {
-        return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(val);
+        return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(val);
       } catch (e) {
         return val;
       }
     }
+    // if it's already a string (like "₹1800") return as-is
     return val;
   };
 
