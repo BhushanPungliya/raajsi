@@ -62,7 +62,16 @@ export default function RitualSlider() {
       <Slider {...settings}>
         {sliderData.map((item, idx) => (
           <div key={idx}>
-            <div className="rounded-t-[24px] overflow-hidden bg-[#FEFEFE] lg:px-[100px] px-[16px] lg:pt-[50px] pt-[26px] flex justify-between lg:flex-row flex-col-reverse lg:gap-0 gap-[50px]">
+            <div className="lg:max-w-[335px] max-w-[251px] mx-auto lg:h-[380px] h-[319px] object-cover w-full">
+              <Image
+                src={item.img}
+                alt={item.title}
+                height={280}
+                width={235}
+                className="object-cover w-full lg:max-w-[335px] max-w-[251px] lg:h-[380px] h-[319px] rounded-t-full"
+              />
+            </div>
+            <div className="overflow-hidden bg-[#FEFEFE] lg:px-[100px] px-[16px] mt-[-100px] h-[510px] pt-[158px] flex justify-between lg:flex-row flex-col-reverse lg:gap-0 gap-[50px]">
               <div className="max-w-[538px] w-full lg:pb-[234px] pb-[20px]">
                 <h6 className="font-rose font-[400] text-[24px] text-left tracking-[4%] text-[#4C0A2E] pb-[18px]">
                   {item.title}
@@ -78,16 +87,6 @@ export default function RitualSlider() {
                     {item.btn}
                   </button>
                 </Link>
-              </div>
-
-              <div className="lg:max-w-[335px] max-w-[251px] mx-auto lg:h-[380px] h-[319px] object-cover w-full">
-                <Image
-                  src={item.img}
-                  alt={item.title}
-                  height={280}
-                  width={235}
-                  className="object-cover w-full lg:max-w-[335px] max-w-[251px] lg:h-[380px] h-[319px] rounded-t-full"
-                />
               </div>
             </div>
           </div>

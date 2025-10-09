@@ -19,7 +19,7 @@ function Page() {
             <section className='pt-[66px] overflow-hidden bg-[#F9F3EC]'>
                 <div className="max-w-[1440px] w-full mx-auto lg:px-[54px] px-[20px]">
                     <Heading title="The Royal Promise" />
-                    <div className='lg:py-[104px] py-[60px] overflow-hidden lg:my-[104px] mt-[0px] relative rounded-[20px] relative'>
+                    <div className='lg:py-[0px] py-[60px] overflow-hidden lg:my-[104px] mt-[0px] relative rounded-[20px] relative'>
                         <div className="lg:flex hidden flex-col gap-[68px] absolute top-[50%] left-[50%] -translate-1/2">
                             <div className="flex flex-col items-center gap-[30px]">
                                 <Image alt='wrap' height={19} width={27} src="/images/royal/wrap1.svg" />

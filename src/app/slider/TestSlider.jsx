@@ -9,7 +9,7 @@ import Image from "next/image";
 const NextArrow = ({ onClick }) => (
     <button
         onClick={onClick}
-        className="absolute right-[0px] top-[calc(50%-30px)]  -translate-y-1/2 z-10 "
+        className="absolute right-[0px] lg:top-[calc(50%-30px)] top-[calc(95%-30px)] -translate-y-1/2 z-10 "
     >
         <Image
             src="/images/faq/next.svg"
@@ -23,7 +23,7 @@ const NextArrow = ({ onClick }) => (
 const PrevArrow = ({ onClick }) => (
     <button
         onClick={onClick}
-        className="absolute left-[0px] top-[calc(50%-30px)]  -translate-y-1/2 z-10"
+        className="absolute left-[0px] lg:top-[calc(50%-30px)] top-[calc(95%-30px)] -translate-y-1/2 z-10"
     >
         <Image
             src="/images/faq/prev.svg"

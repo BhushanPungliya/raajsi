@@ -8,7 +8,7 @@ export default function Contact() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    subject: "",
+    number: "",
     message: "",
   });
 
@@ -20,7 +20,7 @@ export default function Contact() {
     e.preventDefault();
     console.log("Form submitted:", formData);
     alert("Thank you! Your message has been sent.");
-    setFormData({ name: "", email: "", subject: "", message: "" });
+    setFormData({ name: "", email: "", number: "", message: "" });
   };
 
   return (
@@ -63,7 +63,7 @@ export default function Contact() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="Your Name"
+                placeholder="Name"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BA7E38]"
                 required
               />
@@ -72,16 +72,16 @@ export default function Contact() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="Your Email"
+                placeholder="Email"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BA7E38]"
                 required
               />
               <input
-                type="text"
-                name="subject"
-                value={formData.subject}
+                type="number"
+                name="number"
+                value={formData.number}
                 onChange={handleChange}
-                placeholder="Subject"
+                placeholder="Number"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BA7E38]"
                 required
               />
@@ -89,7 +89,7 @@ export default function Contact() {
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
-                placeholder="Your Message"
+                placeholder="Message"
                 rows="4"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BA7E38] lg:col-span-2"
                 required
@@ -98,7 +98,7 @@ export default function Contact() {
                 type="submit"
                 className="bg-[#BA7E38] text-white py-3 rounded-lg hover:bg-[#a36b2f] transition-colors duration-300 lg:col-span-2"
               >
-                Send Message
+                Submit
               </button>
             </form>
           </div>

@@ -16,21 +16,21 @@ import { getAllProducts, getFaqs, getFeaturedProducts, getAllBlogs } from "@/api
 //   { imgs: "/images/home/img7.png" },
 // ]
 
-// const faq = [
-//   { fTitle: "Is Raajsi for me?", fText: "Raajsi is crafted for individuals who seek luxury without compromise. If you value natural ingredients, ethical sourcing, and holistic wellness, Raajsi products are made for you." },
-//   { fTitle: "Is Raajsi safe?", fText: "Raajsi is crafted for individuals who seek luxury without compromise. If you value natural ingredients, ethical sourcing, and holistic wellness, Raajsi products are made for you." },
-//   { fTitle: "Do you offer free shipping?", fText: "Raajsi is crafted for individuals who seek luxury without compromise. If you value natural ingredients, ethical sourcing, and holistic wellness, Raajsi products are made for you." },
-//   { fTitle: "Where do you ship?", fText: "Raajsi is crafted for individuals who seek luxury without compromise. If you value natural ingredients, ethical sourcing, and holistic wellness, Raajsi products are made for you." },
-//   { fTitle: "How long does delivery take?", fText: "Raajsi is crafted for individuals who seek luxury without compromise. If you value natural ingredients, ethical sourcing, and holistic wellness, Raajsi products are made for you." },
-//   { fTitle: "What if Raajsi doesn't work for me?", fText: "Raajsi is crafted for individuals who seek luxury without compromise. If you value natural ingredients, ethical sourcing, and holistic wellness, Raajsi products are made for you." },
-// ]
+const faq = [
+  { fTitle: "Is Raajsi for me?", fText: "Raajsi is crafted for individuals who seek luxury without compromise. If you value natural ingredients, ethical sourcing, and holistic wellness, Raajsi products are made for you." },
+  { fTitle: "Is Raajsi safe?", fText: "Raajsi is crafted for individuals who seek luxury without compromise. If you value natural ingredients, ethical sourcing, and holistic wellness, Raajsi products are made for you." },
+  { fTitle: "Do you offer free shipping?", fText: "Raajsi is crafted for individuals who seek luxury without compromise. If you value natural ingredients, ethical sourcing, and holistic wellness, Raajsi products are made for you." },
+  { fTitle: "Where do you ship?", fText: "Raajsi is crafted for individuals who seek luxury without compromise. If you value natural ingredients, ethical sourcing, and holistic wellness, Raajsi products are made for you." },
+  { fTitle: "How long does delivery take?", fText: "Raajsi is crafted for individuals who seek luxury without compromise. If you value natural ingredients, ethical sourcing, and holistic wellness, Raajsi products are made for you." },
+  { fTitle: "What if Raajsi doesn't work for me?", fText: "Raajsi is crafted for individuals who seek luxury without compromise. If you value natural ingredients, ethical sourcing, and holistic wellness, Raajsi products are made for you." },
+]
 
 export default function Home() {
   const [selected, setSelected] = useState(0);
   const [openModal, setOpenModal] = useState(false)
   const [activeIndex, setActiveIndex] = useState(null);
   const [featureData, setFeatureData] = useState([]);
-  const [faqs, setFaqs] = useState([]);
+  // const [faqs, setFaqs] = useState([]);
   const [blogs, setBlogs] = useState([]);
   const [blogsLoading, setBlogsLoading] = useState(true);
   const nextSectionRef = useRef(null);
@@ -45,15 +45,15 @@ export default function Home() {
         console.error("Error fetching featured products:", err);
       }
     };
-    const fetchFaqs = async () => {
-      try {
-        const data = await getFaqs();
-        console.log("Featured Products:", data);
-        setFaqs(data?.data?.FAQs)
-      } catch (err) {
-        console.error("Error fetching featured products:", err);
-      }
-    };
+    // const fetchFaqs = async () => {
+    //   try {
+    //     const data = await getFaqs();
+    //     console.log("Featured Products:", data);
+    //     setFaqs(data?.data?.FAQs)
+    //   } catch (err) {
+    //     console.error("Error fetching featured products:", err);
+    //   }
+    // };
     const fetchBlogs = async () => {
       try {
         const data = await getAllBlogs();
@@ -70,7 +70,7 @@ export default function Home() {
     };
 
     fetchProducts();
-    fetchFaqs();
+    // fetchFaqs();
     fetchBlogs();
   }, []);
 
@@ -199,7 +199,7 @@ export default function Home() {
       </section>
 
       <section className="step-section pb-[40px] overflow-hidden">
-        <div className="pt-[60px] max-w-[1205px] w-full mx-auto ">
+        <div className="lg:pt-[60px] pt-[46px] max-w-[1205px] w-full mx-auto ">
           <Heading title="Step into royal indulgence." />
           <div className="pt-[54px] relative lg:block hidden">
             <div className="rounded-t-[24px] overflow-hidden bg-[#FEFEFE] lg:px-[100px] px-[16px] pt-[50px] flex justify-between lg:flex-row flex-col">
@@ -300,7 +300,7 @@ export default function Home() {
           <FeatureSlider featureData={featureData} />
         </div>
       </section>
-      <section className="lg:pb-[100px] pb-[40px]">
+      <section className="lg:pb-[100px] pb-[0px]">
         <div className="overflow-hidden the-royal-slider relative">
           <Slider1 />
         </div>
@@ -359,28 +359,28 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="lg:pt-[138px] pt-[50px] relative lg:pb-[114px] pb-[50px]">
-        <div className="absolute top-[95px] left-0">
+      <section className="lg:pt-[138px] pt-[50px] relative lg:pb-[114px] pb-[50px] px-[20px]">
+        <div className="absolute lg:block hidden top-[95px] left-0">
           <Image src="/images/faq/wrap1.svg" height={750.48} width={223} alt="wrap1" />
         </div>
-        <div className="absolute top-[95px] right-0">
+        <div className="absolute lg:block hidden top-[95px] right-0">
           <Image src="/images/faq/wrap2.svg" height={750.48} width={223} alt="wrap1" />
         </div>
         <Heading title="Frequently Asked Questions" />
         <p className="pt-[8px] text-center font-avenir-400 lg:text-[18px] text-[14px] text-[#000000] lg:tracking-[4%] tracking-[2%] lg:pb-[44px] pb-[40px]">Got questions? Find answers to the most common questions about us.</p>
         <div className="max-w-[625px] relative z-10 w-full mx-auto">
-          {faqs.map((item, index) => (
+          {faq.map((item, index) => (
             <div key={index} className=" overflow-hidden">
               <button
                 onClick={() => toggleAccordion(index)}
                 className="w-full flex justify-between border-b-[2px] border-[#00000020] pb-[12px] cursor-pointer items-center p-4 transition"
               >
-                <span className="fontavenir-400 lg:text-[26px] text-[16px] text-[#000000]">{item.question}</span>
+                <span className="fontavenir-400 lg:text-[26px] text-[16px] text-[#000000]">{item.fTitle}</span>
                 <span className="text-xl lg:h-[38px] h-[20px] lg:w-[38px] w-[20px] rounded-full bg-[#12121226] flex justify-center items-center">{activeIndex === index ? "-" : "+"}</span>
               </button>
               {activeIndex === index && (
                 <div className="p-4 bg-white text-gray-700">
-                  {item.answer}
+                  {item.fText}
                 </div>
               )}
             </div>
