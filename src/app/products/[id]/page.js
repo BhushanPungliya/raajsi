@@ -6,6 +6,7 @@ import * as FaIcons from "react-icons/fa";
 import { IoMdStar } from "react-icons/io";
 import ProductCard from "../../components/ProductCard";
 import { useParams } from "next/navigation";
+import { getProductById } from '@/api/auth';
 
 const { FaStar, FaStarHalfAlt, FaRegStar, FaMinus, FaPlus } = FaIcons;
 
@@ -121,8 +122,73 @@ export default function ProductPage({ onAddToCart }) {
     return () => clearTimeout(t);
   }, []);
 
-  // Find product by ID from featureProducts array
-  const product = featureProducts.find((p) => p.id === parseInt(id));
+  // fetched product from backend
+  const [fetchedProduct, setFetchedProduct] = useState(null);
+  const [loadingProduct, setLoadingProduct] = useState(false);
+
+  // Find product by ID from featureProducts array (fallback)
+  const fallbackProduct = featureProducts.find((p) => p.id === parseInt(id));
+
+    // Use backend field names directly. The backend returns either the product object
+    // or an envelope like { product, variants, images } — prefer the `product` field if present.
+    const backendRaw = fetchedProduct?.product || fetchedProduct;
+
+    const product = backendRaw
+      ? {
+          id: backendRaw._id,
+          // Backend fields (use these names exactly): productTitle, productDescription, productImageUrl, salePrice, regularPrice
+          name: backendRaw.productTitle,
+          desc: backendRaw.productDescription,
+          images: Array.isArray(backendRaw.productImageUrl) ? backendRaw.productImageUrl : (backendRaw.productImageUrl ? [backendRaw.productImageUrl] : []),
+          // Availability/stock are often provided on variants; show basic status from isActive
+          availability: backendRaw.isActive ? 'In Stock' : 'Unavailable',
+          stock: null,
+          price: backendRaw.salePrice ?? backendRaw.regularPrice ?? 0,
+          oldPrice: backendRaw.salePrice ? backendRaw.regularPrice : null,
+          rating: backendRaw.rating ?? 4.5,
+          reviewCount: backendRaw.reviewCount ?? 0,
+          highlights: backendRaw.highlights ?? [],
+          ingredients: backendRaw.ingredients ?? '',
+          howToUse: backendRaw.careHandling ?? backendRaw.howToUse ?? '',
+          image: (Array.isArray(backendRaw.productImageUrl) && backendRaw.productImageUrl[0]) || '/images/home/img3.jpg',
+        }
+      : fallbackProduct;
+
+  // Price formatting helper: if price is number, format as USD; otherwise show as-is (handles strings with currency symbol)
+  const formatCurrency = (val) => {
+    if (val === null || val === undefined) return "-";
+    if (typeof val === "number") {
+      try {
+        return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(val);
+      } catch (e) {
+        return val;
+      }
+    }
+    return val;
+  };
+
+  const priceDisplay = formatCurrency(product?.price);
+  const oldPriceDisplay = product?.oldPrice ? formatCurrency(product.oldPrice) : null;
+
+  useEffect(() => {
+    // fetch real product by id
+    const load = async () => {
+      if (!id) return;
+      setLoadingProduct(true);
+      try {
+        const resp = await getProductById(id);
+        const data = resp?.data || resp;
+        setFetchedProduct(data);
+      } catch (err) {
+        console.error('Failed to load product:', err);
+        setFetchedProduct(null);
+      } finally {
+        setLoadingProduct(false);
+      }
+    };
+
+    load();
+  }, [id]);
 
   // Use product images or fallback images
   const galleryImages = product?.images || ["/card21.png", "/card11.png"];
@@ -263,7 +329,12 @@ export default function ProductPage({ onAddToCart }) {
             {/* Price Section */}
             <div className="mb-6 mt-4 text-left lg:text-right">
               <div className="text-gray-600 text-xs mb-2">USD (incl. of all taxes)</div>
-              <div className="text-black text-2xl sm:text-3xl font-normal font-avenir-400">$600.72</div>
+              <div className="text-black text-2xl sm:text-3xl font-normal font-avenir-400">
+                {priceDisplay}
+                {oldPriceDisplay && (
+                  <span className="text-gray-500 text-sm ml-3 line-through">{oldPriceDisplay}</span>
+                )}
+              </div>
             </div>
 
             {/* Quantity Selector */}

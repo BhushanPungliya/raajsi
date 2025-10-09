@@ -83,7 +83,9 @@ const CartModal = ({ onClose, }) => {
                         <div className="grid gap-[16px]">
                             {cartData?.map((e, i) => (
                                 <div className="flex items-center gap-[28px]" key={i}>
-                                    <Image src={e?.productId?.productImageUrl[0]} alt="img-1" className="rounded-[20px] object-cover" height={110} width={160} />
+                                    <div className="w-[180px] h-[90px] rounded-[20px] overflow-hidden relative">
+                                        <Image src={e?.productId?.productImageUrl?.[0] || '/images/placeholder.jpg'} alt="img-1" fill style={{ objectFit: 'cover' }} className="rounded-[20px]" />
+                                    </div>
                                     <div className="w-full">
                                         <h6 className="font-avenir-400 text-[16px] tracking-[4%] text-[#3C3C3C]">{e?.productId?.productTitle}</h6>
                                         <p className="font-avenir-400 text-[16px] tracking-[4%] text-[#3C3C3C] pb-[11px]">₹  {e?.productId?.salePrice}.00</p>
@@ -129,8 +131,10 @@ const CartModal = ({ onClose, }) => {
                 )}
             </div>
 
-            <Link href="/products">
-                <button className="font-avenir-400 mt-5 w-fit px-8 bg-[#BA7E38] hover:bg-[#976d3e] text-white font-medium py-3 rounded-3xl transition duration-200 uppercase text-[15px] tracking-[1px]" style={{ boxShadow: "0px 1px 2px 0px #00000040" }}>
+            <Link href="/checkout">
+                <button className="font-avenir-400 mt-5 w-fit px-8 bg-[#BA7E38] hover:bg-[#976d3e] text-white font-medium py-3 rounded-3xl transition duration-200 uppercase text-[15px] tracking-[1px]" 
+                style={{ boxShadow: "0px 1px 2px 0px #00000040" }}
+                >
                     View Products
                 </button>
             </Link>

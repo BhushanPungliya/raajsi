@@ -54,6 +54,18 @@ export const getUserCart = async () => {
   }
 };
 
+export const updateAddress = async (addressData) => {
+  try {
+    // ensure we send a predictable shape the backend accepts
+    const payload = addressData && addressData.shippingAddress ? addressData : { shippingAddress: addressData };
+    console.debug('updateAddress payload:', payload);
+    const response = await api.post("user/address/update", payload);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
 export const getFeaturedProducts = async () => {
   try {
     const response = await api.get("product/get/featured");
@@ -117,6 +129,15 @@ export const addToCart = async (productId: string, varientId = "", quantity = 1)
   }
 };
 
+export const getCartDetails = async () => {
+  try {
+    const response = await api.get("/user/cart");
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
 export const removeUserCart = async ({ productId, varientId = "", quantity }) => {
   try {
     const response = await api.post(
@@ -173,6 +194,45 @@ export const getAllBlogs = async () => {
 export const getBlogBySlug = async (slug) => {
   try {
     const response = await api.get(`blog/${slug}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const getUserDetails = async () => {
+  try {
+    const response = await api.get("user/details");
+    // Backend wraps payload as { status, data: <user> }
+    // Return the inner user object to make callers simpler
+    return response.data?.data || response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const placeOrder = async (orderData) => {
+  try {
+    const response = await api.post("user/order/place", orderData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const createRazorpayOrder = async (orderData) => {
+  try {
+    const response = await api.post("rzp/create-order", orderData);
+    // backend returns { status: 'success', data: { order } }
+    return response.data?.data || response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const verifyRazorpayPayment = async (verificationData) => {
+  try {
+    const response = await api.post("rzp/payment-verification", verificationData);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
