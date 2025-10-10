@@ -328,8 +328,8 @@ export default function ProductPage({ onAddToCart }) {
             <hr className="border-t border-gray-200 my-4" />
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             {/* Price Section */}
-            <div className="mb-6 mt-4 text-left lg:text-right">
-              <div className="text-gray-600 text-xs mb-2">USD (incl. of all taxes)</div>
+            <div className="mb-6 mt-4 text-left">
+              <div className="text-gray-600 text-xs mb-2">INR (incl. of all taxes)</div>
               <div className="text-black text-2xl sm:text-3xl font-normal font-avenir-400">
                 {priceDisplay}
                 {oldPriceDisplay && (

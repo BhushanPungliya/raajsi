@@ -12,6 +12,7 @@ export default function CheckoutPage() {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [processing, setProcessing] = useState(false);
+    const [removingItems, setRemovingItems] = useState({});
     const [razorpayLoaded, setRazorpayLoaded] = useState(false);
     const [isEditingAddress, setIsEditingAddress] = useState(false);
     const [shippingAddress, setShippingAddress] = useState({
@@ -98,7 +99,11 @@ export default function CheckoutPage() {
     }, [router]);
 
     const handleUpdateCart = async (productId, varientId = '') => {
+        const key = `${productId}-${varientId || ''}`;
         try {
+            // mark this item as removing to disable the button
+            setRemovingItems(prev => ({ ...prev, [key]: true }));
+
             // find current item quantity
             const currentItem = cartData.find(
                 (item) => item.productId._id === productId && item.varientId === varientId
@@ -108,23 +113,27 @@ export default function CheckoutPage() {
             // Call API to remove from server-side cart
             await removeUserCart({ productId, varientId: varientId || '', quantity });
 
-            // Update local state after server call succeeds
-            setCartData((prev) => {
-                const next = prev.filter(
-                    (item) => !(item.productId._id === productId && item.varientId === varientId)
-                );
-                try {
-                    localStorage.setItem('userCart', JSON.stringify(next));
-                } catch (e) {
-                    // ignore localStorage errors
-                }
-                return next;
-            });
+            // Re-fetch latest cart from server to stay authoritative
+            const latestCartResp = await getUserCart();
+            const latestProducts = latestCartResp?.data?.products || [];
+
+            setCartData(latestProducts);
+            try {
+                localStorage.setItem('userCart', JSON.stringify(latestProducts));
+            } catch (e) {
+                // ignore localStorage errors
+            }
 
             toast.success('Item removed from cart');
         } catch (error) {
             console.error('Failed to remove item from cart API:', error);
             toast.error(error?.response?.data?.message || 'Failed to remove item');
+        } finally {
+            setRemovingItems(prev => {
+                const next = { ...prev };
+                delete next[key];
+                return next;
+            });
         }
     };
 
@@ -393,12 +402,21 @@ export default function CheckoutPage() {
                                             </p>
 
                                             <div className="flex justify-between items-center w-full">
-                                                <button
-                                                    onClick={() => handleUpdateCart(item.productId._id, item.varientId)}
-                                                    className="bg-[#BA7E38] rounded-[22px] py-[5px] px-[18px] text-white text-sm"
-                                                >
-                                                    Remove
-                                                </button>
+                                                {
+                                                    (() => {
+                                                        const key = `${item.productId._id}-${item.varientId || ''}`;
+                                                        const isRemoving = !!removingItems[key];
+                                                        return (
+                                                            <button
+                                                                onClick={() => handleUpdateCart(item.productId._id, item.varientId)}
+                                                                className="bg-[#BA7E38] rounded-[22px] py-[5px] px-[18px] text-white text-sm disabled:opacity-60 disabled:cursor-not-allowed"
+                                                                disabled={isRemoving}
+                                                            >
+                                                                {isRemoving ? 'Removing...' : 'Remove'}
+                                                            </button>
+                                                        );
+                                                    })()
+                                                }
 
                                                 <div className="flex items-center gap-2">
                                                     <button

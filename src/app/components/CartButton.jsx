@@ -12,7 +12,7 @@ const CartButton = ({ productId, quantity = 1 }) => {
         localStorage.setItem("userCart", JSON.stringify(result.data.products));
       }
       // console.log("Cart Response:", result);
-      toast.success("Cart fetched successfully!");
+      toast.success("Item added to cart!");
     } catch (err) {
       // console.error("Cart Error:", err);
       toast.error(err?.error?.message);

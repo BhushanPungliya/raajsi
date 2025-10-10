@@ -84,6 +84,8 @@ export const getProductById = async (productId) => {
   }
 };
 
+
+
 export const addToWishlist = async (productId, varientId = "") => {
   try {
     const token = localStorage.getItem("token"); // ya context/Redux
