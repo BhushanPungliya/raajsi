@@ -17,12 +17,13 @@ import { getAllProducts, getFaqs, getFeaturedProducts, getAllBlogs } from "@/api
 // ]
 
 const faq = [
-  { fTitle: "Is Raajsi for me?", fText: "Raajsi is crafted for individuals who seek luxury without compromise. If you value natural ingredients, ethical sourcing, and holistic wellness, Raajsi products are made for you." },
-  { fTitle: "Is Raajsi safe?", fText: "Raajsi is crafted for individuals who seek luxury without compromise. If you value natural ingredients, ethical sourcing, and holistic wellness, Raajsi products are made for you." },
-  { fTitle: "Do you offer free shipping?", fText: "Raajsi is crafted for individuals who seek luxury without compromise. If you value natural ingredients, ethical sourcing, and holistic wellness, Raajsi products are made for you." },
-  { fTitle: "Where do you ship?", fText: "Raajsi is crafted for individuals who seek luxury without compromise. If you value natural ingredients, ethical sourcing, and holistic wellness, Raajsi products are made for you." },
-  { fTitle: "How long does delivery take?", fText: "Raajsi is crafted for individuals who seek luxury without compromise. If you value natural ingredients, ethical sourcing, and holistic wellness, Raajsi products are made for you." },
-  { fTitle: "What if Raajsi doesn't work for me?", fText: "Raajsi is crafted for individuals who seek luxury without compromise. If you value natural ingredients, ethical sourcing, and holistic wellness, Raajsi products are made for you." },
+  { fTitle: "When is the best time to apply ubtan?", fText: "Ubtan can be applied 15-30 mins before bath 2-3 times a week to get the maximum benefits. It is part of bath ritual and can also be applied after oil massage. Application of ubtan post massage provides great results for dry skin. Applying the Cosmic body oil followed by the Lavish body scrub not only gently exfoliates the skin but also acts as a natural polish inducing a smooth, radiant look. " },
+  { fTitle: "Can I use the body cleanser and scrub together?", fText: "Yes! For best results, cleanse first to remove surface impurities, then follow with the scrub to deeply exfoliate and rejuvenate your skin." },
+  { fTitle: "Will RAAJSI body scrub help with ingrown hairs or keratosis pilaris?", fText: "Our exfoliating scrubs help unclog pores and remove dead skin buildup, which can minimize ingrown hairs and smooth rough, bumpy skin. Regular use may improve these conditions over time." },
+  { fTitle: "Can I use RAAJSI products alongside my current skincare products?", fText: "RAAJSI products are mild and easy on skin. They do not cause skin reactions due to being natural. If you have sensitive skin or a dermatological condition, please introduce one product at a time and perform a patch test. " },
+  { fTitle: "Do RAAJSI products contain preservatives?", fText: "We use natural, Ayurveda-approved preservatives to ensure product longevity and safety without compromising purity." },
+  { fTitle: "Does RAAJSI offer international shipping?", fText: "Yes, we ship internationally. Shipping rates and delivery times will be calculated at checkout based on your location." },
+  { fTitle: "Does RAAJSI offer combo packs?", fText: "Yes! We offer curated body care ritual kits for regular deliveries. Check our “Rituals Kit” section for current deals." },
 ]
 
 export default function Home() {
@@ -198,21 +199,21 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="step-section pb-[40px] overflow-hidden">
+      <section className="step-section overflow-hidden">
         <div className="lg:pt-[60px] pt-[46px] max-w-[1205px] w-full mx-auto ">
           <Heading title="Step into royal indulgence." />
-          <div className="pt-[54px] relative lg:block hidden">
-            <div className="rounded-t-[24px] overflow-hidden bg-[#FEFEFE] lg:px-[100px] px-[16px] pt-[50px] flex justify-between lg:flex-row flex-col">
+          <div className="pt-[54px] lg:block hidden">
+            <div className="rounded-t-[24px] group an relative overflow-hidden bg-[#FEFEFE] lg:h-[120px] mb-[-20px] h-auto hover:h-[444px] lg:px-[100px] px-[16px] pt-[50px] flex justify-between lg:flex-row flex-col">
               <div className="max-w-[538px] w-full lg:pb-[214px] pb-[30px]">
                 <h6 className="font-rose font-[400] lg:text-[24px] text-[16px] lg:text-left text-center tracking-[4%] text-[#4C0A2E] pb-[14px]">From Palace to You: A Body Ritual</h6>
-                <p className="font-avenir-400 text-[16px] text-[#0C0C0C] lg:text-left text-center pb-[24px]">Rani Padmavati of Chittor indulged in luxurious ubtan rituals
+                <p className="font-avenir-400 lg:opacity-0 an group-hover:opacity-100 text-[16px] text-[#0C0C0C] lg:text-left text-center pb-[24px]">Rani Padmavati of Chittor indulged in luxurious ubtan rituals
                   —an age-old body remedy made with sandalwood, turmeric, lentils, and rose petals. Applied before her ceremonial baths, this exfoliating paste, followed by herbal oil massages, wasn’t just for beauty—it was a sacred act of self-rejuvenation. At Raajsi, we revive this royal tradition through our body oils, scrubs, and soaps, bringing timeless radiance to your modern-day rituals</p>
                 <p className="font-avenir-400 text-[20px] text-[#727272] lg:text-left text-center pb-[45px]">Step into royal indulgence.</p>
                 <Link href="/feature-products" className="flex items-start items-center">
                   <button className="font-avenir-400 text-[18px] rounded-full text-[#FFFFFF] py-[14px] px-[24px] bg-[#4C0A2E] border border-[#4C0A2E] an hover:bg-transparent hover:text-[#4C0A2E]">VIEW PRODUCTS</button>
                 </Link>
               </div>
-              <div className="max-w-[335px] h-[380px] w-full">
+              <div className="max-w-[335px] lg:opacity-0 an group-hover:opacity-100 h-[380px] w-full">
                 <Image
                   src="/images/home/img2.png"
                   alt="Hero"
@@ -221,10 +222,10 @@ export default function Home() {
                 />
               </div>
             </div>
-            <div className="rounded-t-[24px] group lg:h-[100px] h-auto hover:h-[444px] an lg:mt-[-20px] lg:absolute relative w-full lg:bottom-[70px] z-10 overflow-hidden bg-[#BA7E38] lg:px-[100px] px-[20px] hover:pt-[50px] pt-[20px] flex justify-between lg:flex-row flex-col">
+            <div className="rounded-t-[24px] group lg:h-[100px] h-auto hover:h-[490px] an relative w-full mb-[-40px] z-10 overflow-hidden bg-[#BA7E38] lg:px-[100px] px-[20px] hover:pt-[50px] pt-[20px] flex justify-between lg:flex-row flex-col">
               <div className="max-w-[538px] w-full pb-[44px]">
                 <h6 className="font-rose font-[400] text-[24px] tracking-[4%] text-[#FFFFFF] pb-[14px]">Radiance of the Rajput Ranis-Skin Alchemy</h6>
-                <p className="font-avenir-400 text-[16px] text-[#FFFFFF] pb-[24px]">Rani Karnavati of Mewar was known for her disciplined beauty rituals, which were drawn from Ayurveda. Her skincare secrets included cooling aloe vera gels, sandalwood pastes, and saffron mixed with raw milk—applied daily to protect her skin from the harsh desert sun. These remedies not only nourished the skin but symbolised a deeper connection to purity and grace. Raajsi’s creams and cleansers echo these regal traditions—infusing ancient wisdom into every drop.</p>
+                <p className="font-avenir-400 text-[16px] lg:opacity-0 an group-hover:opacity-100 text-[#FFFFFF] pb-[24px]">Rani Karnavati of Mewar was known for her disciplined beauty rituals, which were drawn from Ayurveda. Her skincare secrets included cooling aloe vera gels, sandalwood pastes, and saffron mixed with raw milk—applied daily to protect her skin from the harsh desert sun. These remedies not only nourished the skin but symbolised a deeper connection to purity and grace. Raajsi’s creams and cleansers echo these regal traditions—infusing ancient wisdom into every drop.</p>
                 <p className="font-avenir-400 text-[20px] text-[#FFFFFF] pb-[45px]">Glow like royalty.</p>
                 <Link href="/feature-products"><button className="font-avenir-400 text-[18px] rounded-full text-[#4C0A2E] py-[14px] px-[24px] bg-[#FFFFFF] border border-[#FFFFFF] an hover:bg-transparent hover:text-[#FFFFFF]">VIEW PRODUCTS</button></Link>
               </div>
@@ -237,10 +238,10 @@ export default function Home() {
                 />
               </div>
             </div>
-            <div className="rounded-t-[24px] group lg:h-[100px] h-auto hover:h-[444px] an lg:mt-[-20px] lg:absolute relative w-full lg:bottom-[0px] z-20 overflow-hidden bg-[#4C0A2E] lg:px-[100px] px-[14px] hover:pt-[50px] pt-[20px] flex justify-between lg:flex-row flex-col">
+            <div className="rounded-t-[24px] group lg:h-[100px] h-auto hover:h-[490px] an relative w-full bottom-[-20px] z-20 overflow-hidden bg-[#4C0A2E] lg:px-[100px] px-[14px] hover:pt-[50px] pt-[20px] flex justify-between lg:flex-row flex-col">
               <div className="max-w-[538px] w-full pb-[44px]">
                 <h6 className="font-rose font-[400] text-[24px] tracking-[4%] text-[#FFFFFF] pb-[14px]">Hair Elixirs Tresses of Tradition</h6>
-                <p className="font-avenir-400 text-[16px] text-[#FFFFFF] pb-[24px]">Rani Karnavati of Mewar was known for her disciplined beauty rituals, which were drawn from Ayurveda. Her skincare secrets included cooling aloe vera gels, sandalwood pastes, and saffron mixed with raw milk—applied daily to protect her skin from the harsh desert sun. These remedies not only nourished the skin but symbolised a deeper connection to purity and grace. Raajsi’s creams and cleansers echo these regal traditions—infusing ancient wisdom into every drop.
+                <p className="font-avenir-400 text-[16px] lg:opacity-0 an group-hover:opacity-100 text-[#FFFFFF] pb-[24px]">Rani Karnavati of Mewar was known for her disciplined beauty rituals, which were drawn from Ayurveda. Her skincare secrets included cooling aloe vera gels, sandalwood pastes, and saffron mixed with raw milk—applied daily to protect her skin from the harsh desert sun. These remedies not only nourished the skin but symbolised a deeper connection to purity and grace. Raajsi’s creams and cleansers echo these regal traditions—infusing ancient wisdom into every drop.
                 </p>
                 <p className="font-avenir-400 text-[20px] text-[#FFFFFF] pb-[45px]">Glow like royalty.</p>
                 <button className="font-avenir-400 text-[18px] rounded-full text-[#4C0A2E] py-[14px] px-[24px] bg-[#FFFFFF] border border-[#FFFFFF] an hover:bg-transparent hover:text-[#FFFFFF]">VIEW PRODUCTS</button>
@@ -254,10 +255,10 @@ export default function Home() {
                 />
               </div>
             </div>
-            <div className="rounded-t-[24px] group lg:h-[70px] h-auto hover:h-[444px] an lg:mt-[-20px] lg:absolute relative w-full lg:bottom-[-40px] z-30 overflow-hidden bg-[#6A5013] lg:px-[100px] px-[14px] pt-[20px] hover:pt-[50px] flex justify-between lg:flex-row flex-col">
+            <div className="rounded-t-[24px] group lg:h-[100px] h-auto hover:h-[444px] an relative w-full bottom-[0px] z-30 overflow-hidden bg-[#6A5013] lg:px-[100px] px-[14px] pt-[20px] hover:pt-[50px] flex justify-between lg:flex-row flex-col">
               <div className="max-w-[538px] w-full pb-[44px]">
                 <h6 className="font-rose font-[400] text-[24px] tracking-[4%] text-[#FFFFFF] pb-[14px]">Ritual Kits Anointing Grace</h6>
-                <p className="font-avenir-400 text-[16px] text-[#FFFFFF] pb-[24px]">Rani Padmavati of Chittor indulged in luxurious ubtan rituals
+                <p className="font-avenir-400 text-[16px] lg:opacity-0 an group-hover:opacity-100 text-[#FFFFFF] pb-[24px]">Rani Padmavati of Chittor indulged in luxurious ubtan rituals
                   —an age-old body remedy made with sandalwood, turmeric, lentils, and rose petals. Applied before her ceremonial baths, this exfoliating paste, followed by herbal oil massages, wasn’t just for beauty—it was a sacred act of self-rejuvenation. At Raajsi, we revive this royal tradition through our body oils, scrubs, and soaps, bringing timeless radiance to your modern-day rituals</p>
                 <p className="font-avenir-400 text-[20px] text-[#FFFFFF] pb-[45px]">Step into royal indulgence.</p>
                 <button className="font-avenir-400 text-[18px] rounded-full text-[#4C0A2E] py-[14px] px-[24px] bg-[#FFFFFF] border border-[#FFFFFF] an hover:bg-transparent hover:text-[#FFFFFF]">VIEW PRODUCTS</button>
@@ -375,7 +376,7 @@ export default function Home() {
                 onClick={() => toggleAccordion(index)}
                 className="w-full flex justify-between border-b-[2px] border-[#00000020] pb-[12px] cursor-pointer items-center p-4 transition"
               >
-                <span className="fontavenir-400 lg:text-[26px] text-[16px] text-[#000000]">{item.fTitle}</span>
+                <span className="fontavenir-400 lg:text-[26px] text-left max-w-[95%] w-full text-[16px] text-[#000000]">{item.fTitle}</span>
                 <span className="text-xl lg:h-[38px] h-[20px] lg:w-[38px] w-[20px] rounded-full bg-[#12121226] flex justify-center items-center">{activeIndex === index ? "-" : "+"}</span>
               </button>
               {activeIndex === index && (

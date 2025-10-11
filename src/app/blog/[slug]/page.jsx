@@ -52,7 +52,7 @@ export default function BlogDetail({ params }) {
     return (
         <div>
             <section className="hero-section h-[778px] overflow-hidden">
-                <div className="relative w-full h-full lg:ml-[93px] ml-[20px] pt-[83px]">
+                <div className="relative w-full h-full lg:pl-[93px] pl-[20px] pt-[83px]">
                     <h2 className='font-rose text-[32px] text-[#FFFFFF] pb-[20px]'>Blog Detail</h2>
                     <button className="absolute bottom-[128px] left-[50%] -translate-x-1/2 ">
                         <Image src="/images/home/arrow.svg" height={42} width={42} className="arrow-bounce" alt="" />
