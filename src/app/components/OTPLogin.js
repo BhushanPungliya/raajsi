@@ -11,7 +11,7 @@ export default function OTPLogin({ setLoginOpen }) {
     const [showOtp, setShowOtp] = useState(false);
     const [resendTimer, setResendTimer] = useState(60);
     const [canResend, setCanResend] = useState(false);
-    
+
     useEffect(() => {
         let interval;
         if (showOtp && resendTimer > 0) {
@@ -136,11 +136,17 @@ export default function OTPLogin({ setLoginOpen }) {
                         <input
                             type="tel"
                             value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            className="font-aviner-400 text-[16px] leading-[20px] text-[#3C3C3C80] py-[11px] px-[25px] bg-[#D9D9D933] border-[0.5px] border-[#D9D9D9] rounded-[4px]"
-                            placeholder="Enter Phone Number"
+                            onChange={(e) => {
+                                const value = e.target.value.replace(/\D/g, "").slice(0, 10);
+                                setPhone(value);
+                            }}
+                            className="w-full font-aviner-400 text-[16px] leading-[24px] text-[#3C3C3C] placeholder-[#3C3C3C80] py-[12px] px-[20px] bg-[#F9FAFB] border border-[#D9D9D9] rounded-[6px] focus:outline-none focus:ring-2 focus:ring-[#00000033] focus:border-[#000000] transition-all duration-200"
+                            placeholder="Enter 10-digit Phone Number"
                             required
+                            inputMode="numeric"
+                            pattern="[0-9]{10}"
                         />
+
                     </div>
                     <div className="text-center mt-4">
                         <button type="submit" className="btn auth-submit-btn">

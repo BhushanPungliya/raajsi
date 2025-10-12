@@ -393,7 +393,7 @@ export default function ProductPage({ onAddToCart }) {
               <div className="max-w-4xl mx-auto px-2 sm:px-0">
                 <div className="mb-6 text-center">
                   <p
-                    className="text-lg sm:text-xl font-medium leading-tight mb-2"
+                    className="text-lg sm:text-xl font-medium leading-tight mb-2 pt-[10px]"
                     style={{
                       background: "linear-gradient(90deg, #382801 0%, #382801 35%, #b07a0d 48%, #bc8c12 50%, #b07a0d 52%, #382801 65%, #382801 100%)",
                       WebkitBackgroundClip: "text",

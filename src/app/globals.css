@@ -38,6 +38,10 @@ body {
 
 .hero-section { background-image: url('/images/home/bg1.jpg'); margin-top: 87px; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;}
 
+@media(max-width: 768px) {
+  .hero-section { margin-top: 70px;}
+}
+
 @keyframes upDown {
   0%, 100% {
     transform: translateY(0);

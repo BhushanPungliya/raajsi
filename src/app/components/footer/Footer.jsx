@@ -63,9 +63,9 @@ function Footer() {
                                 <div>
                                     <h6 className="font-avenir-800 text-[24px] text-[#FFFFFF] lg:pb-[16px] pb-[18px]">About</h6>
                                     <ul className='flex flex-col gap-[8px]'>
-                                        <li className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Our Essence</li>
-                                        <li className='font-avenir-400 text-[16px] text-[#FFFFFF]'>The Royal Promise</li>
-                                        <li className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Rediscover Ayurveda</li>
+                                        <Link href="/our-essence" className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Our Essence</Link>
+                                        <Link href="/the-royal-promise" className='font-avenir-400 text-[16px] text-[#FFFFFF]'>The Royal Promise</Link>
+                                        {/* <li className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Rediscover Ayurveda</li> */}
                                         <Link href="/blog" className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Blog</Link>
                                         <Link href="/contact" className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Contact</Link>
                                     </ul>
@@ -85,14 +85,14 @@ function Footer() {
                                 <p className="font-avenir-400 text-[16px] text-[#FFFFFF] pb-[16px] ">Join the Raajsi newsletter and be first to hear about news, offers and skincare advice</p>
                                 <div className="flex items-end pb-[8px] gap-[16px]">
                                     <input type="text" className='py-[10px] font-avenir-400 px-[16px] border-b border-[#CBCBCB] max-w-[480px] w-full text-[#CBCBCB] placeholder-[#CBCBCB] text-[20px]' placeholder='Email Address' />
-                                    <button className='bg-[#FFFFFF] text-[#BA7E38] py-[9.5px] px-[15px] text-[16px] font-avenir-400'>Subscribe</button>
+                                    <button className='bg-[#FFFFFF] text-[#4c0a2e] py-[9.5px] px-[15px] text-[16px] font-avenir-400'>Subscribe</button>
                                 </div>
                                 <div className="flex gap-[10px] lg:pt-0 pt-[20px] items-start">
                                     <input type="checkbox" className='mt-[6px] bg-transparent border-[2px] border-[#FFFFFF] h-[16px] w-[16px]' name="" id="" />
                                     <p className="font-avenir-400 text-[16px] text-[#FFFFFF] ">By submitting your email, you agree to receive advertising emails fromRaajsi.
                                         Please review our Privacy Policy, which includes our Financial Incentive Notice for CA residents.</p>
                                 </div>
-                                  <div className='flex lg:hidden pt-[34px] pb-[14px] items-center gap-[8px]'>
+                                <div className='flex lg:hidden pt-[34px] pb-[14px] items-center gap-[8px]'>
                                     <Image alt='call' src="/images/footer/call.svg" height={24} width={24} />
                                     <p className="font-avenir-400 text-[16px] text-[#FFFFFF]">1-802-526-2463</p>
                                 </div>

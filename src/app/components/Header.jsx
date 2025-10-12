@@ -185,7 +185,7 @@ const FavoritesModal = ({ onClose }) => {
                 </button>
             </div>
             <p className="mt-2 text-base font-avenir-400 text-gray-600">Your Favorite Cart Is Currently Empty.</p>
-            <Link href="/products">
+            <Link href="/feature-products">
                 <button className="font-avenir-400 mt-5 w-fit px-8 bg-[#BA7E38] hover:bg-[#976d3e] text-white font-medium py-3 rounded-3xl transition duration-200 uppercase text-[15px] tracking-[1px]" style={{ boxShadow: "0px 1px 2px 0px #00000040" }}>
                     Add Products
                 </button>
@@ -216,7 +216,7 @@ export default function Header() {
 
     return (
         <>
-            <header style={{ boxShadow: "0px 2px 1px 0px #00000014" }} className="fixed top-0 left-0 lg:py-0 py-[14px] w-full bg-white z-100">
+            <header style={{ boxShadow: "0px 2px 1px 0px #00000014" }} className="fixed top-0 left-0 lg:py-0 py-[10px] w-full bg-white z-100">
                 <div className="max-w-[1440px] w-full justify-between mx-auto lg:px-[110px] px-[20px] flex items-center">
                     <div className="hidden lg:flex flex-1 justify-start">
                         <Link href="/" className={`${pathname === "/" ? "nav-link-active" : "nav-link"}`}>Royal Home</Link>
@@ -228,6 +228,7 @@ export default function Header() {
                             <Image
                                 src="/images/header/logo.svg"
                                 alt="Logo"
+                                className="lg:h-[72px] h-[50px]"
                                 width={61}
                                 height={72}
                             />
