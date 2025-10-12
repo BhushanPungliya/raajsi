@@ -112,7 +112,12 @@ export default function OTPLogin({ setLoginOpen }) {
                 {showOtp ? "ENTER OTP" : "LOGIN"}
             </div>
             <div className="max-w-[341px] w-full font-avenir-400 text-[16px] leading-[20px] text-center text-[#3C3C3C] mx-auto pb-[22px]">
-                {showOtp ? "Enter the 6-digit OTP sent to your phone" : "Sign-Up For Our Exclusive Launch Now and Get a 0% Discount on Products"}
+                {showOtp ? <div>
+                    <p className="text-center text-[#3C3C3C] mb-2 font-aviner-400 text-[16px]">
+                        OTP sent to <span className="font-semibold">+91     {phone}</span>
+                    </p>
+                    Enter the 6-digit OTP
+                </div> : "Sign-Up For Our Exclusive Launch Now and Get a 0% Discount on Products"}
             </div>
             {!showOtp ? (
                 <form
@@ -154,9 +159,14 @@ export default function OTPLogin({ setLoginOpen }) {
                                 id={`otp-${index}`}
                                 type="text"
                                 value={digit}
-                                onChange={(e) => handleOtpChange(index, e.target.value)}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (/^[0-9]?$/.test(value)) {
+                                        handleOtpChange(index, value);
+                                    }
+                                }}
                                 onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                                className="w-12 h-12 text-center font-aviner-400 text-[16px] leading-[20px] text-[#3C3C3C80] bg-[#D9D9D933] border-[0.5px] border-[#D9D9D9] rounded-[4px] focus:outline-none focus:border-[#4C0A2E]"
+                                className="lg:w-12 w-10 lg:h-12 h-10 text-center font-aviner-400 text-[16px] leading-[20px] text-[#3C3C3C] bg-[#D9D9D933] border-[0.5px] border-[#D9D9D9] rounded-[4px] focus:outline-none focus:border-[#4C0A2E]"
                                 maxLength={1}
                             />
                         ))}

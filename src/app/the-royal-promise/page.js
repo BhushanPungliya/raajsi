@@ -1,22 +1,28 @@
+'use client';
 import Image from 'next/image'
-import React from 'react'
+import React, { useRef } from 'react'
 import Heading from '../components/Heading'
 
 function Page() {
+    const nextSectionRef = useRef(null);
+
+    const handleScroll = () => {
+        nextSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
     return (
         <div>
             <section className="hero-section h-[778px] overflow-hidden">
-                <div className="relative w-full h-full lg:ml-[93px] ml-[0px] lg:pl-0 pl-[20px] pt-[83px]">
+                <div className="relative w-full h-full lg:pl-[93px] pl-[0px] lg:pl-0 pl-[20px] pt-[83px]">
                     <h2 className='font-rose text-[32px] text-[#FFFFFF] pb-[20px]'>At Raajsi, luxury meets responsibility.</h2>
                     <p className="font-avenir-400 text-[18px] uppercase text-[#FFFFFF] max-w-[671px] w-full">Our royal promise is built on integrity, transparency, and timeless care - for you and the planet.</p>
                     {/* <h2 className="max-w-[634px] w-full font-[400] lg:text-[41px] text-[26px] text-[#FFFAFA] ">मुग्धे! धानुष्कता केयमपूर्वा त्वयि दृश्यते ।
                         यया विध्यसि चेतांसि गुणैरेव न सायकैः ॥</h2> */}
-                    <button className="absolute bottom-[128px] left-[50%] -translate-x-1/2 ">
+                    <button onClick={handleScroll} className="absolute cursor-pointer bottom-[128px] left-[50%] -translate-x-1/2 ">
                         <Image src="/images/home/arrow.svg" height={42} width={42} className="arrow-bounce" alt="" />
                     </button>
                 </div>
             </section>
-            <section className='pt-[66px] overflow-hidden bg-[#F9F3EC]'>
+            <section ref={nextSectionRef} className='pt-[66px] overflow-hidden bg-[#F9F3EC]'>
                 <div className="max-w-[1440px] w-full mx-auto lg:px-[54px] px-[20px]">
                     <Heading title="The Royal Promise" />
                     <div className='lg:py-[0px] py-[60px] overflow-hidden lg:my-[104px] mt-[0px] relative rounded-[20px] relative'>

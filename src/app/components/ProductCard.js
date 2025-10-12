@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
-const ProductCard = ({ 
-  product, 
-  className = "", 
+const ProductCard = ({
+  product,
+  className = "",
   style = {},
   showShloka = false,
   showTag = true,
@@ -12,19 +12,21 @@ const ProductCard = ({
   isMobile = false
 }) => {
   const [isTranslated, setIsTranslated] = useState(false);
-  
+  const [openModal1, setOpenModal1] = useState(false);
+  const [benefits, setBenefits] = useState(false);
+
   // Sanskrit and English text
   const sanskritText = "मुग्धे! धानुष्कता केयमपूर्वा त्वयि दृश्यते यया विध्यसि चेतांसि गुणैरेव न सायकैः ॥";
   const englishText = "O Charming One! An unprecedented archery is seen in you, by which you pierce hearts with virtues alone, not with arrows.";
-  
+
   const toggleTranslation = () => {
     setIsTranslated(!isTranslated);
   };
-  
+
   if (!product) return null;
 
   // For mobile slider items, we don't include the outer col div
-  if (isMobile) { 
+  if (isMobile) {
     return (
       <>
         <div
@@ -41,7 +43,7 @@ const ProductCard = ({
           {showShloka && (
             <div
               onClick={toggleTranslation}
-              className="absolute top-4 left-4 text-white text-sm font-serif max-w-[70%] leading-6 z-20 rounded-md flex items-start gap-2 cursor-pointer transition-opacity duration-300"
+              className="absolute cursor-pointer top-4 left-4 text-white text-sm font-serif max-w-[70%] leading-6 z-20 rounded-md flex items-start gap-2 cursor-pointer transition-opacity duration-300"
               style={{ textShadow: '0 2px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.5)' }}
             >
               <Image
@@ -60,7 +62,7 @@ const ProductCard = ({
 
           {/* Tag/Label - Optional */}
           {showTag && (
-            <div className="absolute top-2 right-2 bg-black/60 text-white px-3 py-1 text-xs rounded-full z-20 backdrop-blur-sm">
+            <div onCanPlay={() => setBenefits(true)} className="absolute top-2 right-2 bg-black/60 text-white px-3 py-1 text-xs rounded-full z-20 backdrop-blur-sm">
               Ingredients & Benefits
             </div>
           )}
@@ -105,13 +107,13 @@ const ProductCard = ({
           <div className="absolute top-0 w-full z-10 p-[30px]">
             <div className="flex justify-between lg:flex-row flex-col lg:items-center items-start lg:gap-0 gap-[20px]">
               <div className="flex items-center gap-[14px]">
-                <Image src={product.logo || '/images/home/lag.svg'} alt="logo" width={44} height={44} className="object-contain" />
+                <Image onClick={() => setOpenModal1(true)} src={product.logo || '/images/home/lag.svg'} alt="logo" width={44} height={44} className="object-contain cursor-pointer" />
                 <h6 className="font-avenir-400 text-[12px] text-[#FFFFFF] max-w-[200px] w-full">
                   {product.shloka || product.sanskrit || sanskritText}
                 </h6>
               </div>
               {showTag ? (
-                <button className="bg-[#3030304A] font-avenir-400 text-[14px] text-[#FFFFFF] py-[10px] px-[22px] rounded-full">
+                <button onClick={() => setBenefits(true)} className="bg-[#3030304A] font-avenir-400 text-[14px] text-[#FFFFFF] py-[10px] px-[22px] rounded-full">
                   Ingredients & Benefits
                 </button>
               ) : null}
@@ -148,6 +150,45 @@ const ProductCard = ({
           </div>
         </div>
       </div>
+      {openModal1 && (
+        <div
+          className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
+          onClick={() => setOpenModal1(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-lg w-[90%] max-w-md py-[30px] px-[34px] relative"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="authModalTitle"
+          >
+            <button className="auth-close-btn" onClick={() => setOpenModal1(false)} aria-label="Close login">&times;</button>
+            <h6 className="text-center font-rose text-[24px] font-[400] text-[#4C0A2E] pb-[10px]">Shlok Meaning</h6>
+            <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-center text-[#3C3C3C] max-w-[260px] pb-[30px] w-full mx-auto">मुग्धे! धानुष्कता केयमपूर्वा त्वयि दृश्यते ।
+              यया विध्यसि चेतांसि गुणैरेव न सायकैः ॥</p>
+            <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#191919]">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+          </div>
+        </div>
+      )}
+       {benefits && (
+                <div
+                    className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+                    onClick={() => setBenefits(false)}
+                >
+                    <div
+                        className="bg-white rounded-2xl shadow-lg w-[90%] max-w-md py-[30px] px-[34px] relative"
+                        onClick={(e) => e.stopPropagation()}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="authModalTitle"
+                    >
+                        <button className="auth-close-btn" onClick={() => setBenefits(false)} aria-label="Close login">&times;</button>
+                        <h6 className="text-center font-rose text-[24px] font-[400] text-[#4C0A2E] pb-[10px]">Ingredients</h6>
+                        <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-center text-[#3C3C3C] max-w-[260px] pb-[10px] w-full mx-auto">Cosmic Body Oil</p>
+                        <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#191919]">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                    </div>
+                </div>
+            )}
     </div>
   );
 };

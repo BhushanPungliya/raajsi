@@ -9,7 +9,7 @@ import Image from "next/image";
 const NextArrow = ({ onClick }) => (
     <button
         onClick={onClick}
-        className="absolute right-[0px] lg:top-[calc(50%-30px)] top-[calc(95%-30px)] -translate-y-1/2 z-10 "
+        className="absolute lg:right-[-40px] right-0 lg:top-[calc(50%-30px)] top-[calc(95%-30px)] -translate-y-1/2 z-10 "
     >
         <Image
             src="/images/faq/next.svg"
@@ -23,7 +23,7 @@ const NextArrow = ({ onClick }) => (
 const PrevArrow = ({ onClick }) => (
     <button
         onClick={onClick}
-        className="absolute left-[0px] lg:top-[calc(50%-30px)] top-[calc(95%-30px)] -translate-y-1/2 z-10"
+        className="absolute lg:left-[-40px] left-0 lg:top-[calc(50%-30px)] top-[calc(95%-30px)] -translate-y-1/2 z-10"
     >
         <Image
             src="/images/faq/prev.svg"
@@ -90,7 +90,7 @@ function TestSlider() {
 
     return (
         <div>
-            <div className="relative max-w-[1440px] mx-auto px-4 lg:block hidden lg:px-8">
+            <div className="relative max-w-[1440px] mx-auto px-4 lg:block hidden lg:px-[40px]">
                 <Slider {...settings}>
                     {[1, 2, 3, 4, 5].map((item, i) => (
                         <div key={i} className="mt-[20px] mb-[100px]">

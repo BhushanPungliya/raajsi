@@ -89,8 +89,7 @@ function Footer() {
                                 </div>
                                 <div className="flex gap-[10px] lg:pt-0 pt-[20px] items-start">
                                     <input type="checkbox" className='mt-[6px] bg-transparent border-[2px] border-[#FFFFFF] h-[16px] w-[16px]' name="" id="" />
-                                    <p className="font-avenir-400 text-[16px] text-[#FFFFFF] ">By submitting your email, you agree to receive advertising emails fromRaajsi.
-                                        Please review our Privacy Policy, which includes our Financial Incentive Notice for CA residents.</p>
+                                    <p className="font-avenir-400 text-[16px] text-[#FFFFFF] ">By submitting your email, you agree to receive notification emails from Raajsi.</p>
                                 </div>
                                 <div className='flex lg:hidden pt-[34px] pb-[14px] items-center gap-[8px]'>
                                     <Image alt='call' src="/images/footer/call.svg" height={24} width={24} />
