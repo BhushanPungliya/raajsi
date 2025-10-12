@@ -8,14 +8,15 @@ const CartButton = ({ productId, quantity = 1 }) => {
   const handleAddToCart = async () => {
     try {
       const result = await addToCart(productId, "", quantity);
-      if (result?.data?.products) {
-        localStorage.setItem("userCart", JSON.stringify(result.data.products));
+
+      // Works for both logged-in and guest users
+      if (result?.data?.products || result?.cart?.products) {
+        toast.success("Item added to cart!");
+      } else if (result?.status === "success") {
+        toast.success("Item added to cart!");
       }
-      // console.log("Cart Response:", result);
-      toast.success("Item added to cart!");
     } catch (err) {
-      // console.error("Cart Error:", err);
-      toast.error(err?.error?.message);
+      toast.error(err?.error?.message || "Error adding item to cart");
     }
   };
 

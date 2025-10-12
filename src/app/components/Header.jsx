@@ -43,15 +43,29 @@ const CartModal = ({ onClose, }) => {
     // Remove item from cart
     const handleUpdateCart = async (id) => {
         try {
-            const result = await removeUserCart({
-                productId: id,
-                varientId: "",
-            });
+            const token = localStorage.getItem("token");
 
-            // Update state and localStorage
-            setCartData((prev) => prev.filter((item) => item.productId._id !== id));
+            if (token) {
+                // Logged-in user - remove from server
+                const result = await removeUserCart({
+                    productId: id,
+                    varientId: "",
+                });
 
-            toast.success("Product removed from cart");
+                // Update state and localStorage
+                setCartData((prev) => prev.filter((item) => item.productId._id !== id));
+
+                toast.success("Product removed from cart");
+            } else {
+                // Guest user - remove from localStorage
+                setCartData((prev) => {
+                    const updatedCart = prev.filter((item) => item.productId._id !== id);
+                    localStorage.setItem("userCart", JSON.stringify(updatedCart));
+                    return updatedCart;
+                });
+
+                toast.success("Product removed from cart");
+            }
         } catch (err) {
             console.error("Error removing cart item:", err);
             toast.error("Failed to remove product.");
@@ -94,13 +108,19 @@ const CartModal = ({ onClose, }) => {
                                             <div className="flex items-center gap-[6px]">
                                                 <button
                                                     onClick={() =>
-                                                        setCartData((prev) =>
-                                                            prev.map((item) =>
+                                                        setCartData((prev) => {
+                                                            const updatedCart = prev.map((item) =>
                                                                 item.productId._id === e.productId._id
                                                                     ? { ...item, quantity: Math.max(item.quantity - 1, 1) }
                                                                     : item
-                                                            )
-                                                        )
+                                                            );
+                                                            // Update localStorage for guest users
+                                                            const token = localStorage.getItem("token");
+                                                            if (!token) {
+                                                                localStorage.setItem("userCart", JSON.stringify(updatedCart));
+                                                            }
+                                                            return updatedCart;
+                                                        })
                                                     }
                                                     className="bg-[#12121226] h-[24px] w-[24px] rounded-full flex items-center justify-center"
                                                 >
@@ -109,13 +129,19 @@ const CartModal = ({ onClose, }) => {
                                                 <p className="font-avenir-400 text-[16px] tracking-[4%] text-[#3C3C3C]">{e?.quantity}</p>
                                                 <button
                                                     onClick={() =>
-                                                        setCartData((prev) =>
-                                                            prev.map((item) =>
+                                                        setCartData((prev) => {
+                                                            const updatedCart = prev.map((item) =>
                                                                 item.productId._id === e.productId._id
                                                                     ? { ...item, quantity: item.quantity + 1 }
                                                                     : item
-                                                            )
-                                                        )
+                                                            );
+                                                            // Update localStorage for guest users
+                                                            const token = localStorage.getItem("token");
+                                                            if (!token) {
+                                                                localStorage.setItem("userCart", JSON.stringify(updatedCart));
+                                                            }
+                                                            return updatedCart;
+                                                        })
                                                     }
                                                     className="bg-[#12121226] h-[24px] w-[24px] rounded-full flex items-center justify-center"
                                                 >

@@ -108,26 +108,101 @@ export const addToWishlist = async (productId, varientId = "") => {
 
 export const addToCart = async (productId: string, varientId = "", quantity = 1) => {
   try {
-    const token = localStorage.getItem("token"); // ya context/Redux
+    const token = localStorage.getItem("token");
 
-    const response = await api.post(
-      "/user/cart",
-      {
-        productId,
-        varientId,
-        quantity,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+    if (token) {
+      // Logged-in user - call server API
+      const response = await api.post(
+        "/user/cart",
+        {
+          productId,
+          varientId,
+          quantity,
         },
-      }
-    );
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    return response.data;
+      // Update localStorage with server response for consistency
+      if (response?.data?.cart?.products) {
+        localStorage.setItem("userCart", JSON.stringify(response.data.cart.products));
+      }
+
+      return response.data;
+    } else {
+      // Guest user - handle locally
+      // Get product details to store in localStorage
+      const productDetails = await getProductById(productId);
+
+      // Get existing cart from localStorage
+      const existingCart = localStorage.getItem("userCart");
+      let cartData = existingCart ? JSON.parse(existingCart) : [];
+
+      // Check if product already exists
+      const existingProductIndex = cartData.findIndex(
+        item => item.productId?._id === productId && item.varientId === varientId
+      );
+
+      if (existingProductIndex !== -1) {
+        // Product exists - increment quantity
+        cartData[existingProductIndex].quantity += quantity;
+      } else {
+        // Add new product with details needed for display
+        cartData.push({
+          productId: {
+            _id: productId,
+            productTitle: productDetails.product?.productTitle || "",
+            salePrice: productDetails.product?.salePrice || 0,
+            productImageUrl: productDetails.product?.productImageUrl || []
+          },
+          varientId: varientId,
+          quantity: quantity
+        });
+      }
+
+      // Save to localStorage
+      localStorage.setItem("userCart", JSON.stringify(cartData));
+
+      return {
+        status: "success",
+        data: { products: cartData }
+      };
+    }
   } catch (error: any) {
     console.error("Error adding to cart:", error);
     throw error.response?.data || error.message;
+  }
+};
+
+// New function to merge guest cart with user cart after login
+export const mergeGuestCartWithUserCart = async () => {
+  try {
+    const localCart = localStorage.getItem("userCart");
+    if (!localCart) return;
+
+    const cartData = JSON.parse(localCart);
+    if (!cartData.length) return;
+
+    // Add each local cart item to server cart
+    for (const item of cartData) {
+      try {
+        await addToCart(
+          item.productId._id,
+          item.varientId,
+          item.quantity
+        );
+      } catch (err) {
+        console.error("Error adding item to server cart:", err);
+      }
+    }
+
+    // Clear local cart after successful merge
+    localStorage.removeItem("userCart");
+  } catch (error) {
+    console.error("Error merging carts:", error);
   }
 };
 
