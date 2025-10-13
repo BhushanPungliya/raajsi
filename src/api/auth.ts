@@ -88,7 +88,7 @@ export const getProductById = async (productId) => {
 
 export const addToWishlist = async (productId, varientId = "") => {
   try {
-    const token = localStorage.getItem("token"); // ya context/Redux
+    const token = localStorage.getItem("token");
 
     const response = await api.post("/user/wishlist", {
       productId,
@@ -97,8 +97,39 @@ export const addToWishlist = async (productId, varientId = "") => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
-    );
+    });
+
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const removeFromWishlist = async (productId) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const response = await api.delete(`/user/wishlist/${productId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const getWishlistByUser = async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const response = await api.get("/user/wishlist", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     return response.data;
   } catch (error) {
@@ -152,11 +183,13 @@ export const addToCart = async (productId: string, varientId = "", quantity = 1)
       );
 
       if (existingProductIndex !== -1) {
-        // Product exists - do not increment quantity, just return message
+        // Product exists - update quantity instead of returning error
+        cartData[existingProductIndex].quantity = quantity;
+        localStorage.setItem("userCart", JSON.stringify(cartData));
         return {
-          status: "exists",
+          status: "success",
           data: { products: cartData },
-          message: "Item already exists in cart"
+          message: "Cart updated"
         };
       } else {
         // Add new product with details needed for display

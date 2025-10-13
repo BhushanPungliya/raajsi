@@ -5,7 +5,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import OTPLogin from "./OTPLogin";
-import { getUserCart, removeUserCart } from "@/api/auth";
+import { getUserCart, removeUserCart, getWishlistByUser, removeFromWishlist } from "@/api/auth";
 import { toast } from "react-toastify";
 
 const CartModal = ({ onClose, }) => {
@@ -210,13 +210,91 @@ const CartModal = ({ onClose, }) => {
 
 // --- Favorites Modal Component ---
 const FavoritesModal = ({ onClose }) => {
+    const [wishlistData, setWishlistData] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchWishlist = async () => {
+            setLoading(true);
+            try {
+                const token = localStorage.getItem("token");
+                
+                console.log("Fetching wishlist... Token exists:", !!token);
+                
+                if (!token) {
+                    // Not logged in - show empty state
+                    console.log("No token found, showing empty state");
+                    setWishlistData([]);
+                    setLoading(false);
+                    return;
+                }
+
+                const response = await getWishlistByUser();
+                console.log("Wishlist API Response:", response);
+                
+                // Backend returns { status: "success", data: [...wishlist items...] }
+                // So we access response.data directly (it's already an array)
+                const wishlistItems = Array.isArray(response?.data) ? response.data : [];
+                
+                console.log("Extracted wishlist items:", wishlistItems);
+                console.log("Wishlist length:", wishlistItems.length);
+                
+                setWishlistData(wishlistItems);
+            } catch (err) {
+                console.error("Failed to fetch wishlist:", err);
+                console.error("Error details:", err.response?.data || err.message);
+                toast.error("Failed to load wishlist");
+                setWishlistData([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchWishlist();
+
+        // Listen for localStorage changes (for guest wishlist updates)
+        const handleStorageChange = (e) => {
+            if (e.key === "wishlist") {
+                console.log("Wishlist localStorage changed, refetching...");
+                fetchWishlist();
+            }
+        };
+
+        window.addEventListener("storage", handleStorageChange);
+
+        return () => {
+            window.removeEventListener("storage", handleStorageChange);
+        };
+    }, []);
+
+    // Remove item from wishlist
+    const handleRemoveFromWishlist = async (productId) => {
+        try {
+            await removeFromWishlist(productId);
+            
+            // Update local state optimistically
+            setWishlistData(prev => prev.filter(item => 
+                (item.productId?._id || item.productId) !== productId
+            ));
+            
+            toast.success("Removed from wishlist");
+
+            // Update localStorage
+            let localWishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+            localWishlist = localWishlist.filter(id => id !== productId);
+            localStorage.setItem("wishlist", JSON.stringify(localWishlist));
+        } catch (err) {
+            console.error("Failed to remove from wishlist:", err);
+            toast.error("Failed to remove from wishlist");
+        }
+    };
+
     return (
         <div
-            className="fixed lg:right-[73px] mt-[20px] p-6 w-[360px] bg-white rounded-3xl shadow-2xl border border-gray-100 z-[200]"
+            className="fixed lg:right-[73px] mt-[20px] p-6 max-w-[434px] w-full bg-white rounded-3xl shadow-2xl border border-gray-100 z-[200]"
         >
             <div className="flex justify-between items-start relative">
                 <h3 className="text-[24px] font-light font-rose text-[#600B04] tracking-[1.5px] uppercase">FAVORITE ITEMS</h3>
-                {/* Profile image placeholder - adjust path/logic as needed */}
 
                 <button onClick={() => onClose(false)} className="text-gray-500 hover:text-gray-700">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -224,12 +302,84 @@ const FavoritesModal = ({ onClose }) => {
                     </svg>
                 </button>
             </div>
-            <p className="mt-2 text-base font-avenir-400 text-gray-600">Your Favorite Cart Is Currently Empty.</p>
-            <Link href="/feature-products">
-                <button className="font-avenir-400 mt-5 w-fit px-8 bg-[#BA7E38] hover:bg-[#976d3e] text-white font-medium py-3 rounded-3xl transition duration-200 uppercase text-[15px] tracking-[1px]" style={{ boxShadow: "0px 1px 2px 0px #00000040" }}>
-                    Add Products
-                </button>
-            </Link>
+            
+            <div>
+                {loading ? (
+                    <p className="mt-2 text-base text-gray-600 font-avenir-400 pb-[28px]">
+                        Loading wishlist...
+                    </p>
+                ) : wishlistData?.length === 0 ? (
+                    <>
+                        <p className="mt-2 text-base font-avenir-400 text-gray-600 pb-[28px]">
+                            Your Favorite Cart Is Currently Empty.
+                        </p>
+                        <Link href="/feature-products">
+                            <button className="font-avenir-400 w-fit px-8 bg-[#BA7E38] hover:bg-[#976d3e] text-white font-medium py-3 rounded-3xl transition duration-200 uppercase text-[15px] tracking-[1px]" 
+                                style={{ boxShadow: "0px 1px 2px 0px #00000040" }}
+                            >
+                                Add Products
+                            </button>
+                        </Link>
+                    </>
+                ) : (
+                    <>
+                        <p className="mt-2 text-base text-gray-600 font-avenir-400 pb-[28px]">
+                            Currently {wishlistData?.length} Items in Your Wishlist
+                        </p>
+
+                        <div className="grid gap-[16px] max-h-[400px] overflow-y-auto">
+                            {wishlistData?.map((item, i) => {
+                                // Backend returns populated 'product' field, not 'productId'
+                                const product = item?.product;
+                                const productId = product?._id;
+                                
+                                return (
+                                    <div className="flex items-center gap-[28px]" key={i}>
+                                        <div className="w-[180px] h-[90px] rounded-[20px] overflow-hidden relative">
+                                            <Image 
+                                                src={product?.productImageUrl?.[0] || '/images/placeholder.jpg'} 
+                                                alt={product?.productTitle || 'Product'} 
+                                                fill 
+                                                style={{ objectFit: 'cover' }} 
+                                                className="rounded-[20px]" 
+                                            />
+                                        </div>
+                                        <div className="w-full">
+                                            <h6 className="font-avenir-400 text-[16px] tracking-[4%] text-[#3C3C3C]">
+                                                {product?.productTitle}
+                                            </h6>
+                                            <p className="font-avenir-400 text-[16px] tracking-[4%] text-[#3C3C3C] pb-[11px]">
+                                                ₹ {product?.salePrice || product?.regularPrice}.00
+                                            </p>
+                                            <div className="flex justify-between w-full items-center">
+                                                <button 
+                                                    onClick={() => handleRemoveFromWishlist(productId)} 
+                                                    className="bg-[#BA7E38] cursor-pointer rounded-[22px] py-[5px] px-[18px] text-[#FFFFFF] hover:bg-[#976d3e] transition-colors"
+                                                >
+                                                    Remove
+                                                </button>
+                                                <Link href={`/products/${productId}`}>
+                                                    <button className="bg-[#12121226] cursor-pointer rounded-[22px] py-[5px] px-[18px] text-[#3C3C3C] hover:bg-[#12121240] transition-colors">
+                                                        View
+                                                    </button>
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        <Link href="/feature-products">
+                            <button className="font-avenir-400 mt-5 w-fit px-8 bg-[#BA7E38] hover:bg-[#976d3e] text-white font-medium py-3 rounded-3xl transition duration-200 uppercase text-[15px] tracking-[1px]" 
+                                style={{ boxShadow: "0px 1px 2px 0px #00000040" }}
+                            >
+                                View All Products
+                            </button>
+                        </Link>
+                    </>
+                )}
+            </div>
         </div>
     );
 };

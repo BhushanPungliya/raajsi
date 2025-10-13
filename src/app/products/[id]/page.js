@@ -1,12 +1,13 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import * as FaIcons from "react-icons/fa";
 import { IoMdStar } from "react-icons/io";
 import ProductCard from "../../components/ProductCard";
 import { useParams } from "next/navigation";
-import { getProductById } from '@/api/auth';
+import { getProductById, addToCart, getUserCart, removeUserCart } from '@/api/auth';
+import { toast } from 'react-toastify';
 
 const { FaStar, FaStarHalfAlt, FaRegStar, FaMinus, FaPlus } = FaIcons;
 
@@ -113,14 +114,30 @@ export default function ProductPage({ onAddToCart }) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [autoZoomed, setAutoZoomed] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [inCart, setInCart] = useState(false);
+  const [cartLoading, setCartLoading] = useState(false);
+  const [checkingCart, setCheckingCart] = useState(true);
+  const [lastUserCartActionAt, setLastUserCartActionAt] = useState(0);
   const [activeTab, setActiveTab] = useState("description");
   const [selectedVariantIdx, setSelectedVariantIdx] = useState(0);
+  const [debounceTimer, setDebounceTimer] = useState(null);
+  
+  // Ref to prevent multiple simultaneous cart checks
+  const isCheckingCartRef = useRef(false);
+  const cartCheckedForProductRef = useRef(null);
 
   useEffect(() => {
     // gentle auto-zoom after mount
     const t = setTimeout(() => setAutoZoomed(true), 300);
     return () => clearTimeout(t);
   }, []);
+
+  // Cleanup debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimer) clearTimeout(debounceTimer);
+    };
+  }, [debounceTimer]);
 
   // fetched product from backend
   const [fetchedProduct, setFetchedProduct] = useState(null);
@@ -191,6 +208,108 @@ export default function ProductPage({ onAddToCart }) {
     load();
   }, [id]);
 
+  // Detect if product is already in cart (server-side for logged-in, or localStorage for guests)
+  useEffect(() => {
+    const checkCart = async () => {
+      // Prevent multiple simultaneous checks
+      if (isCheckingCartRef.current) return;
+      
+      // If we already checked this product, don't check again unless user action triggers it
+      if (cartCheckedForProductRef.current === id && !lastUserCartActionAt) return;
+      
+      // If user recently (within 3s) interacted with cart on this page, skip re-check to avoid UI flicker
+      if (lastUserCartActionAt && Date.now() - lastUserCartActionAt < 3000) {
+        return;
+      }
+
+      isCheckingCartRef.current = true;
+      setCheckingCart(true);
+      
+      try {
+        // Try server cart first (for logged-in users)
+        const token = localStorage.getItem('token');
+        
+        if (token) {
+          try {
+            const serverCart = await getUserCart();
+            const products = serverCart?.data?.products || serverCart?.products || serverCart;
+            if (Array.isArray(products)) {
+              const found = products.find(p => (p.productId?._id || p.productId) == id);
+              if (found) {
+                setInCart(true);
+                setQuantity(found.quantity || found.qty || 1);
+                cartCheckedForProductRef.current = id;
+                return;
+              }
+            }
+          } catch (e) {
+            // ignore server cart errors, fall back to local
+            console.error('Server cart check failed:', e);
+          }
+        }
+
+        // Check guest/local cart (for guests or as fallback)
+        const raw = localStorage.getItem('userCart');
+        let cartData = [];
+        if (raw) {
+          try { cartData = JSON.parse(raw); } catch (e) { cartData = []; }
+        }
+        if (!Array.isArray(cartData)) cartData = [cartData];
+
+        const foundLocal = cartData.find(item => (item.productId?._id || item.productId) == id);
+        if (foundLocal) {
+          setInCart(true);
+          setQuantity(foundLocal.quantity || 1);
+        } else {
+          setInCart(false);
+          setQuantity(1);
+        }
+        
+        cartCheckedForProductRef.current = id;
+      } catch (err) {
+        console.error('Error checking cart status', err);
+        setInCart(false);
+        setQuantity(1);
+      } finally {
+        setCheckingCart(false);
+        isCheckingCartRef.current = false;
+      }
+    };
+
+    // only run check once product id is available
+    if (id) {
+      checkCart();
+    }
+  }, [id, lastUserCartActionAt]);
+
+  // Cross-tab sync: listen to localStorage changes and refresh cart state
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      // Only respond to userCart changes
+      if (e.key !== 'userCart') return;
+
+      // Parse new cart data
+      let cartData = [];
+      if (e.newValue) {
+        try { cartData = JSON.parse(e.newValue); } catch (err) { cartData = []; }
+      }
+      if (!Array.isArray(cartData)) cartData = [cartData];
+
+      // Check if current product is in the updated cart
+      const found = cartData.find(item => (item.productId?._id || item.productId) == id);
+      if (found) {
+        setInCart(true);
+        setQuantity(found.quantity || 1);
+      } else {
+        setInCart(false);
+        setQuantity(1);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [id]);
+
   // Use product images or fallback images
   const galleryImages = product?.images || ["/card21.png", "/card11.png"];
 
@@ -220,6 +339,23 @@ export default function ProductPage({ onAddToCart }) {
   };
 
   const handleQuantityChange = (change) => setQuantity((prev) => Math.max(1, prev + change));
+
+  // Debounced cart update function to prevent API spam
+  const updateCartQuantity = async (newQuantity) => {
+    try {
+      await addToCart(product?.id || id, "", newQuantity);
+      // toast.success('Cart updated');
+    } catch (err) {
+      console.error('Failed to update cart quantity', err);
+      toast.error('Failed to update cart');
+      // Revert quantity on error
+      const serverCart = await getUserCart().catch(() => null);
+      if (serverCart?.data?.products) {
+        const found = serverCart.data.products.find(p => (p.productId?._id || p.productId) == (product?.id || id));
+        if (found) setQuantity(found.quantity || 1);
+      }
+    }
+  };
 
   if (!product) {
     return (
@@ -338,27 +474,125 @@ export default function ProductPage({ onAddToCart }) {
               </div>
             </div>
 
-            {/* Quantity Selector */}
+            {/* Add to Cart or Quantity Selector */}
             <div className="flex items-start justify-end">
-              <button
-                className="w-10 h-10 border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={() => handleQuantityChange(-1)}
-                disabled={quantity <= 1}
-                aria-label="decrease quantity"
-              >
-                <span className="text-xl leading-none font-bold">-</span>
-              </button>
-              <span className="w-20 h-10 border-y border-gray-300 text-center font-medium text-lg flex items-center justify-center">
-                {quantity}
-              </span>
-              <button
-                className="w-10 h-10 border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={() => handleQuantityChange(1)}
-                disabled={quantity >= product.stock}
-                aria-label="increase quantity"
-              >
-                <span className="text-xl leading-none font-bold">+</span>
-              </button>
+              {checkingCart ? (
+                <div className="text-sm text-gray-500">Checking cart...</div>
+              ) : inCart ? (
+                <div className="flex items-center gap-2">
+                  <button
+                    className="w-10 h-10 border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={async () => {
+                      if (cartLoading) return; // Prevent multiple clicks
+                      
+                      // Optimistically update UI
+                      const newQ = quantity - 1;
+                      
+                      if (quantity <= 1) {
+                        // Remove from cart if at quantity 1
+                        setLastUserCartActionAt(Date.now());
+                        cartCheckedForProductRef.current = null; // Allow re-check after user action
+                        setCartLoading(true);
+                        try {
+                          await removeUserCart({ productId: product?.id || id, varientId: "", quantity: 1 });
+                          setInCart(false);
+                          setQuantity(1);
+                          // toast.success('Removed from cart');
+                        } catch (err) {
+                          console.error('Failed to remove from cart', err);
+                          toast.error('Failed to remove from cart');
+                        } finally {
+                          setCartLoading(false);
+                        }
+                      } else {
+                        // Decrement quantity
+                        setQuantity(newQ);
+                        setLastUserCartActionAt(Date.now());
+                        
+                        // Clear existing timer
+                        if (debounceTimer) clearTimeout(debounceTimer);
+                        
+                        // Set new debounced API call (500ms delay)
+                        const timer = setTimeout(async () => {
+                          setCartLoading(true);
+                          await updateCartQuantity(newQ);
+                          setCartLoading(false);
+                        }, 500);
+                        
+                        setDebounceTimer(timer);
+                      }
+                    }}
+                    aria-label="decrease quantity"
+                    disabled={cartLoading}
+                  >
+                    <span className="text-xl leading-none font-bold">-</span>
+                  </button>
+
+                  <span className="w-20 h-10 border-y border-gray-300 text-center font-medium text-lg flex items-center justify-center">
+                    {quantity}
+                  </span>
+
+                  <button
+                    className="w-10 h-10 border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={async () => {
+                      if (cartLoading) return; // Prevent multiple clicks
+                      
+                      // Check stock
+                      const newQ = quantity + 1;
+                      if (product?.stock && newQ > product.stock) {
+                        toast.info('Not enough stock');
+                        return;
+                      }
+                      
+                      // Optimistically update UI
+                      setQuantity(newQ);
+                      setLastUserCartActionAt(Date.now());
+                      
+                      // Clear existing timer
+                      if (debounceTimer) clearTimeout(debounceTimer);
+                      
+                      // Set new debounced API call (500ms delay)
+                      const timer = setTimeout(async () => {
+                        setCartLoading(true);
+                        await updateCartQuantity(newQ);
+                        setCartLoading(false);
+                      }, 500);
+                      
+                      setDebounceTimer(timer);
+                    }}
+                    aria-label="increase quantity"
+                    disabled={cartLoading}
+                  >
+                    <span className="text-xl leading-none font-bold">+</span>
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <button
+                    className="inline-flex items-center gap-2 bg-[#BA7E38] text-white px-4 py-2 rounded hover:bg-[#a36b2f] disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={async () => {
+                      if (cartLoading) return; // Prevent double clicks
+                      
+                      setLastUserCartActionAt(Date.now());
+                      cartCheckedForProductRef.current = null; // Allow re-check after user action
+                      setCartLoading(true);
+                      try {
+                        const res = await addToCart(product?.id || id, "", quantity);
+                        // toast.success(res?.message || 'Added to cart');
+                        setInCart(true);
+                      } catch (err) {
+                        console.error('Error adding to cart', err);
+                        toast.error('Failed to add to cart');
+                      } finally {
+                        setCartLoading(false);
+                      }
+                    }}
+                    disabled={cartLoading}
+                  >
+                    {cartLoading ? 'Adding...' : 'Add to Cart'}
+                  </button>
+                </div>
+              )}
             </div>
             </div>
           </div>
@@ -371,7 +605,7 @@ export default function ProductPage({ onAddToCart }) {
           {/* Tab Navigation */}
           <div className="flex justify-center mb-4">
             <div className="flex gap-6">
-              {["Description", "Ingredients", "Reviews"].map((tab) => {
+              {["Description", "Ingredients"].map((tab) => {
                 const key = tab.toLowerCase();
                 return (
                   <button
