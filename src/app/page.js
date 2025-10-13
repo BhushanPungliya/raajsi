@@ -203,7 +203,7 @@ export default function Home() {
         <div className="lg:pt-[60px] pt-[46px] max-w-[1205px] w-full mx-auto ">
           <Heading title="Step into royal indulgence." />
           <div className="pt-[54px] lg:block hidden">
-            <div className="rounded-t-[24px] group an relative overflow-hidden bg-[#FEFEFE] lg:h-[120px] mb-[-20px] h-auto hover:h-[444px] lg:px-[100px] px-[16px] pt-[50px] flex justify-between lg:flex-row flex-col">
+            <div className="rounded-t-[24px] group an relative overflow-hidden bg-[#FEFEFE] lg:h-[120px] mb-[-20px] h-auto hover:h-[444px] lg:px-[100px] px-[16px] pt-[40px] flex justify-between lg:flex-row flex-col">
               <div className="max-w-[538px] w-full lg:pb-[214px] pb-[30px]">
                 <h6 className="font-rose font-[400] lg:text-[24px] text-[16px] lg:text-left text-center tracking-[4%] text-[#4C0A2E] pb-[14px]">From Palace to You: A Body Ritual</h6>
                 <p className="font-avenir-400 lg:opacity-0 an group-hover:opacity-100 text-[16px] text-[#0C0C0C] lg:text-left text-center pb-[24px]">Rani Padmavati of Chittor indulged in luxurious ubtan rituals

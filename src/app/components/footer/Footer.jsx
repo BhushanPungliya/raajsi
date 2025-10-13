@@ -73,10 +73,10 @@ function Footer() {
                                 <div>
                                     <h6 className="font-avenir-800 text-[24px] text-[#FFFFFF] lg:pb-[16px] pb-[18px]">Products</h6>
                                     <ul className='flex flex-col gap-[8px]'>
-                                        <li className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Ritual Kits</li>
-                                        <li className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Hair Care</li>
-                                        <li className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Body care</li>
-                                        <li className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Skin Care</li>
+                                        <Link href="/feature-products" className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Feature Products</Link>
+                                        {/* <Link href="/feature-products" className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Hair Care</Link>
+                                        <Link href="/feature-products" className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Body care</Link>
+                                        <Link href="/feature-products" className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Skin Care</Link> */}
                                     </ul>
                                 </div>
                             </div>
@@ -114,8 +114,15 @@ function Footer() {
                                 </div>
                             </div>
                             <div className='flex gap-[8px]'>
-                                <Image alt='icon1' src="/images/footer/icon1.svg" height={40} width={40} />
-                                <Image alt='icon2' src="/images/footer/icon2.svg" height={40} width={40} />
+                                <a href={"https://www.instagram.com/raajsi.in"} target="_blank"
+                                    rel="noopener noreferrer" >
+                                    <Image alt='icon1' src="/images/footer/icon1.svg" height={40} width={40} />
+                                </a>
+                                {/* <a href="" target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <Image alt='icon2' src="/images/footer/icon2.svg" height={40} width={40} />
+                                </a> */}
                                 {/* <Image alt='icon3' src="/images/footer/icon3.svg" height={40} width={40} />
                                 <Image alt='icon4' src="/images/footer/icon4.svg" height={40} width={40} />
                                 <Image alt='icon5' src="/images/footer/icon5.svg" height={40} width={40} />

@@ -26,7 +26,7 @@ function Page() {
                     <h6 className="font-rose text-[20px] lg:text-[32px] text-center text-[#4C0A2E] pb-[10px]  lg:pb-[14px]">
                         At Raajsi, luxury meets responsibility.
                     </h6>
-                    <p className="max-w-[100%] sm:max-w-[600px] md:max-w-[650px] lg:max-w-[719px] pb-[40px] text-center sm:pb-[45px] lg:pb-[50px] w-full mx-auto font-avenir-400 text-[14px] lg:text-[18px] uppercase text-[#000000] leading-[20px] lg:leading-[26px]">
+                    <p className="max-w-[100%] sm:max-w-[600px] md:max-w-[650px] lg:max-w-[719px] pb-[40px] text-center sm:pb-[45px] lg:pb-[50px] w-full mx-auto font-avenir-400 text-[14px] lg:text-[18px] text-[#000000] leading-[20px] lg:leading-[26px]">
                         Raajsi is a premium ayurvedic beauty and wellness brand with a royal touch. <br />
                         Combining elements of regal rituals and ayurveda, we invite you to immerse yourself in the scents, texture and colours of our heritage.
                     </p>

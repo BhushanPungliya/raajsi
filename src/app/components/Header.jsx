@@ -258,7 +258,7 @@ export default function Header() {
         <>
             <header style={{ boxShadow: "0px 2px 1px 0px #00000014" }} className="fixed top-0 left-0 lg:py-0 py-[10px] w-full bg-white z-100">
                 <div className="max-w-[1440px] w-full justify-between mx-auto lg:px-[110px] px-[20px] flex items-center">
-                    <div className="hidden lg:flex flex-1 justify-start">
+                    <div className="hidden lg:flex flex-1 justify-start gap-[85px]">
                         <Link href="/" className={`${pathname === "/" ? "nav-link-active" : "nav-link"}`}>Royal Home</Link>
                         <Link href="/the-royal-promise" className={`${pathname === "/the-royal-promise" ? "nav-link-active" : "nav-link"}`}>THE Royal Promise</Link>
                     </div>
