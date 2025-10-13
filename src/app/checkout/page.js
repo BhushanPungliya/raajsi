@@ -5,7 +5,8 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
-import { getUserCart, getUserDetails, placeOrder, createRazorpayOrder, verifyRazorpayPayment, updateAddress, removeUserCart } from '@/api/auth';
+import { getUserCart, getUserDetails, placeOrder, createRazorpayOrder, verifyRazorpayPayment, updateAddress, removeUserCart, mergeGuestCartWithUserCart } from '@/api/auth';
+import OTPLogin from '@/app/components/OTPLogin';
 
 export default function CheckoutPage() {
     const [cartData, setCartData] = useState([]);
@@ -15,17 +16,30 @@ export default function CheckoutPage() {
     const [removingItems, setRemovingItems] = useState({});
     const [razorpayLoaded, setRazorpayLoaded] = useState(false);
     const [isEditingAddress, setIsEditingAddress] = useState(false);
-    const [shippingAddress, setShippingAddress] = useState({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phoneNumber: '',
-        street: '',
-        city: '',
-        state: '',
-        zip: '',
-        country: 'India'
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const [shippingAddress, setShippingAddress] = useState(() => {
+        // Try to load from localStorage for guest users
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('guestShippingAddress');
+            if (saved) {
+                try {
+                    return JSON.parse(saved);
+                } catch (e) {}
+            }
+        }
+        return {
+            firstName: '',
+            lastName: '',
+            email: '',
+            phoneNumber: '',
+            street: '',
+            city: '',
+            state: '',
+            zip: '',
+            country: 'India'
+        };
     });
+    const [addressError, setAddressError] = useState('');
     const router = useRouter();
 
     useEffect(() => {
@@ -44,48 +58,62 @@ export default function CheckoutPage() {
             try {
                 // Check if user is logged in
                 const token = localStorage.getItem('token');
-                if (!token) {
-                    toast.error('Please login to proceed with checkout');
-                    router.push('/');
-                    return;
-                }
+                const isLoggedIn = !!token;
 
-                // Fetch user details and cart
-                const [userData, cartResponse] = await Promise.all([
-                    getUserDetails(),
-                    getUserCart()
-                ]);
+                if (isLoggedIn) {
+                    // Logged-in user: fetch user details and cart from server
+                    const [userData, cartResponse] = await Promise.all([
+                        getUserDetails(),
+                        getUserCart()
+                    ]);
 
-                // `getUserDetails()` returns the user object (or a wrapper). normalize it
-                const actualUser = userData?.data || userData || null;
-                setUser(actualUser);
-                setCartData(cartResponse?.data?.products || []);
+                    // `getUserDetails()` returns the user object (or a wrapper). normalize it
+                    const actualUser = userData?.data || userData || null;
+                    setUser(actualUser);
+                    setCartData(cartResponse?.data?.products || []);
 
-                // Pre-fill shipping address if available (use shippingAddress on user)
-                const addr = actualUser?.shippingAddress || {};
-                setShippingAddress(prev => ({
-                    ...prev,
-                    firstName: addr.firstName || prev.firstName,
-                    lastName: addr.lastName || prev.lastName,
-                    email: addr.email || prev.email,
-                    phoneNumber: addr.phoneNumber || prev.phoneNumber,
-                    street: addr.street || prev.street,
-                    city: addr.city || prev.city,
-                    state: addr.state || prev.state,
-                    zip: addr.zip || prev.zip,
-                    country: addr.country || prev.country,
-                }));
-
-                // If name is present on user and firstName is empty, prefill from name
-                if (actualUser?.name && !addr?.firstName) {
-                    const nameParts = actualUser.name.split(' ');
+                    // Pre-fill shipping address if available (use shippingAddress on user)
+                    const addr = actualUser?.shippingAddress || {};
                     setShippingAddress(prev => ({
                         ...prev,
-                        firstName: nameParts[0] || prev.firstName,
-                        lastName: nameParts.slice(1).join(' ') || prev.lastName,
-                        email: actualUser.email || prev.email,
-                        phoneNumber: actualUser.phoneNumber || prev.phoneNumber,
+                        firstName: addr.firstName || prev.firstName,
+                        lastName: addr.lastName || prev.lastName,
+                        email: addr.email || prev.email,
+                        phoneNumber: addr.phoneNumber || prev.phoneNumber,
+                        street: addr.street || prev.street,
+                        city: addr.city || prev.city,
+                        state: addr.state || prev.state,
+                        zip: addr.zip || prev.zip,
+                        country: addr.country || prev.country,
                     }));
+
+                    // If name is present on user and firstName is empty, prefill from name
+                    if (actualUser?.name && !addr?.firstName) {
+                        const nameParts = actualUser.name.split(' ');
+                        setShippingAddress(prev => ({
+                            ...prev,
+                            firstName: nameParts[0] || prev.firstName,
+                            lastName: nameParts.slice(1).join(' ') || prev.lastName,
+                            email: actualUser.email || prev.email,
+                            phoneNumber: actualUser.phoneNumber || prev.phoneNumber,
+                        }));
+                    }
+                } else {
+                    // Guest user: load cart and shipping address from localStorage
+                    const localCart = localStorage.getItem('userCart');
+                    let guestCartData = localCart ? JSON.parse(localCart) : [];
+                    if (!Array.isArray(guestCartData)) {
+                        guestCartData = [guestCartData];
+                    }
+                    setCartData(guestCartData);
+                    setUser(null);
+                    // Load shipping address for guest
+                    const savedAddress = localStorage.getItem('guestShippingAddress');
+                    if (savedAddress) {
+                        try {
+                            setShippingAddress(JSON.parse(savedAddress));
+                        } catch (e) {}
+                    }
                 }
             } catch (error) {
                 console.error('Error initializing checkout:', error);
@@ -96,6 +124,35 @@ export default function CheckoutPage() {
         };
 
         initializeCheckout();
+
+        // Listen for localStorage changes (for guest cart updates)
+        const handleStorageChange = (e) => {
+            if (e.key === "userCart") {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    // Only update for guest users
+                    try {
+                        const localCart = localStorage.getItem('userCart');
+                        let guestCartData = localCart ? JSON.parse(localCart) : [];
+
+                        // Ensure cartData is always an array
+                        if (!Array.isArray(guestCartData)) {
+                            guestCartData = [guestCartData];
+                        }
+
+                        setCartData(guestCartData);
+                    } catch (err) {
+                        console.error("Error updating cart from storage:", err);
+                    }
+                }
+            }
+        };
+
+        window.addEventListener("storage", handleStorageChange);
+
+        return () => {
+            window.removeEventListener("storage", handleStorageChange);
+        };
     }, [router]);
 
     const handleUpdateCart = async (productId, varientId = '') => {
@@ -104,29 +161,48 @@ export default function CheckoutPage() {
             // mark this item as removing to disable the button
             setRemovingItems(prev => ({ ...prev, [key]: true }));
 
-            // find current item quantity
-            const currentItem = cartData.find(
-                (item) => item.productId._id === productId && item.varientId === varientId
-            );
-            const quantity = currentItem?.quantity || 1;
+            const token = localStorage.getItem('token');
+            const isLoggedIn = !!token;
 
-            // Call API to remove from server-side cart
-            await removeUserCart({ productId, varientId: varientId || '', quantity });
+            if (isLoggedIn) {
+                // Logged-in user: remove from server-side cart
+                // find current item quantity
+                const currentItem = cartData.find(
+                    (item) => item.productId._id === productId && item.varientId === varientId
+                );
+                const quantity = currentItem?.quantity || 1;
 
-            // Re-fetch latest cart from server to stay authoritative
-            const latestCartResp = await getUserCart();
-            const latestProducts = latestCartResp?.data?.products || [];
+                // Call API to remove from server-side cart
+                await removeUserCart({ productId, varientId: varientId || '', quantity });
 
-            setCartData(latestProducts);
-            try {
-                localStorage.setItem('userCart', JSON.stringify(latestProducts));
-            } catch (e) {
-                // ignore localStorage errors
+                // Re-fetch latest cart from server to stay authoritative
+                const latestCartResp = await getUserCart();
+                const latestProducts = latestCartResp?.data?.products || [];
+
+                setCartData(latestProducts);
+                try {
+                    localStorage.setItem('userCart', JSON.stringify(latestProducts));
+                } catch (e) {
+                    // ignore localStorage errors
+                }
+            } else {
+                // Guest user: remove from localStorage cart
+                setCartData(prev => {
+                    const updatedCart = prev.filter(
+                        (item) => !(item.productId._id === productId && item.varientId === varientId)
+                    );
+                    try {
+                        localStorage.setItem('userCart', JSON.stringify(updatedCart));
+                    } catch (e) {
+                        // ignore localStorage errors
+                    }
+                    return updatedCart;
+                });
             }
 
             toast.success('Item removed from cart');
         } catch (error) {
-            console.error('Failed to remove item from cart API:', error);
+            console.error('Failed to remove item from cart:', error);
             toast.error(error?.response?.data?.message || 'Failed to remove item');
         } finally {
             setRemovingItems(prev => {
@@ -148,31 +224,69 @@ export default function CheckoutPage() {
     };
 
     const isAddressComplete = () => {
-        const requiredFields = ['firstName', 'phoneNumber', 'street', 'city', 'state', 'zip'];
+        const requiredFields = ['firstName', 'phoneNumber', 'email', 'street', 'city', 'state', 'zip'];
         return requiredFields.every(field => shippingAddress[field] && shippingAddress[field].trim() !== '');
     };
 
     const handleSaveAddress = async () => {
-        try {
-            console.log(shippingAddress);
-            await updateAddress(shippingAddress);
-            setIsEditingAddress(false);
-            toast.success('Address updated successfully');
-        } catch (error) {
-            toast.error('Failed to update address');
+        setAddressError('');
+        if (!isAddressComplete()) {
+            setAddressError('Please add all required details in the form.');
+            toast.error('Please add all required details in the form.');
+            return;
         }
+        const token = localStorage.getItem('token');
+        const isLoggedIn = !!token;
+
+        if (isLoggedIn) {
+            try {
+                await updateAddress(shippingAddress);
+                toast.success('Address updated successfully');
+            } catch (error) {
+                toast.error('Failed to update address');
+                return; // Don't close edit mode on error
+            }
+        } else {
+            // For guest users, just validate and show success
+            toast.success('Address saved for this order');
+        }
+
+        // Save shipping address to localStorage for guest users
+        if (!isLoggedIn) {
+            try {
+                localStorage.setItem('guestShippingAddress', JSON.stringify(shippingAddress));
+            } catch (e) {}
+        }
+        setIsEditingAddress(false);
     };
 
     const handleCancelEdit = () => {
-        // Reset to original address from user data
+        // Reset to original address from user data (only for logged-in users)
         if (user?.shippingAddress) {
             setShippingAddress(prev => ({
                 ...prev,
                 ...user.shippingAddress
             }));
+        } else {
+            // For guest, reload from localStorage
+            const saved = localStorage.getItem('guestShippingAddress');
+            if (saved) {
+                try {
+                    setShippingAddress(JSON.parse(saved));
+                } catch (e) {}
+            }
         }
         setIsEditingAddress(false);
     };
+    // Persist shipping address changes for guest users
+    useEffect(() => {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        if (!token) {
+            try {
+                localStorage.setItem('guestShippingAddress', JSON.stringify(shippingAddress));
+            } catch (e) {}
+        }
+    }, [shippingAddress]);
 
     const subtotal = cartData.reduce(
         (acc, item) => acc + (item.productId?.salePrice || item.productId?.price || 0) * item.quantity,
@@ -181,9 +295,68 @@ export default function CheckoutPage() {
     const shipping = subtotal > 100 ? 50 : 0;
     const total = subtotal + shipping;
 
+    // Handle successful login from modal
+    const handleLoginSuccess = async () => {
+        setShowLoginModal(false);
+        
+        try {
+            // Merge guest cart with user cart
+            await mergeGuestCartWithUserCart();
+            
+            // Reload user details and cart
+            const [userData, cartResponse] = await Promise.all([
+                getUserDetails(),
+                getUserCart()
+            ]);
+            
+            const actualUser = userData?.data || userData || null;
+            setUser(actualUser);
+            setCartData(cartResponse?.data?.products || []);
+            
+            // Pre-fill shipping address from user data if available
+            if (actualUser?.shippingAddress && actualUser.shippingAddress.length > 0) {
+                const userAddr = actualUser.shippingAddress[0];
+                setShippingAddress({
+                    firstName: userAddr.firstName || shippingAddress.firstName,
+                    lastName: userAddr.lastName || shippingAddress.lastName,
+                    email: userAddr.email || actualUser.email || shippingAddress.email,
+                    phoneNumber: userAddr.phoneNumber || actualUser.phoneNumber || shippingAddress.phoneNumber,
+                    street: userAddr.street || shippingAddress.street,
+                    city: userAddr.city || shippingAddress.city,
+                    state: userAddr.state || shippingAddress.state,
+                    zip: userAddr.zip || shippingAddress.zip,
+                    country: userAddr.country || shippingAddress.country || 'India',
+                });
+            } else if (actualUser) {
+                // If no saved address, at least pre-fill email and phone
+                setShippingAddress(prev => ({
+                    ...prev,
+                    email: actualUser.email || prev.email,
+                    phoneNumber: actualUser.phoneNumber || prev.phoneNumber,
+                }));
+            }
+            
+            toast.success('Login successful! You can now proceed with checkout');
+        } catch (error) {
+            console.error('Error after login:', error);
+            toast.error('Please refresh the page and try again');
+        }
+    };
+
     const handleProceedToPayment = async () => {
+        const token = localStorage.getItem('token');
+        const isLoggedIn = !!token;
+
+        // Always require login before proceeding
+        if (!isLoggedIn) {
+            toast.info('Please login to proceed with checkout');
+            setShowLoginModal(true);
+            return;
+        }
+
+        // For logged-in users, check if user exists
         if (!user) {
-            toast.error('Please login to proceed');
+            toast.error('Please refresh the page and try again');
             return;
         }
 
@@ -202,7 +375,7 @@ export default function CheckoutPage() {
         setProcessing(true);
 
         try {
-            // Prepare order data
+            // Only logged-in user flow now - create order in backend
             const orderData = {
                 products: cartData.map(item => ({
                     product: item.productId._id,
@@ -215,7 +388,6 @@ export default function CheckoutPage() {
                 payment_mode: 'ONLINE'
             };
 
-            // Create order in database
             const orderResponse = await placeOrder(orderData);
             const orderId = orderResponse.data._id;
 
@@ -291,32 +463,72 @@ export default function CheckoutPage() {
                             razorpayPaymentId: response.razorpay_payment_id,
                             razorpayOrderId: response.razorpay_order_id,
                             razorpaySignature: response.razorpay_signature,
-                            products: orderData.products,
+                            products: isLoggedIn ? cartData.map(item => ({
+                                product: item.productId._id,
+                                variant: item.varientId || undefined,
+                                quantity: item.quantity,
+                                price: item.productId?.salePrice || item.productId?.price || 0
+                            })) : cartData.map(item => ({
+                                productId: item.productId._id,
+                                variantId: item.varientId || null,
+                                quantity: item.quantity
+                            })),
                             order_price: total,
                             coupon_applied: null,
                             shippingAddress,
-                            payment_mode: 'ONLINE'
+                            payment_mode: 'ONLINE',
+                            isGuestOrder: !isLoggedIn,
+                            // Include guest order data for creation after payment verification
+                            ...(isLoggedIn ? {} : {
+                                guestInfo: {
+                                    email: shippingAddress.email,
+                                    phoneNumber: shippingAddress.phoneNumber,
+                                    name: `${shippingAddress.firstName} ${shippingAddress.lastName}`.trim()
+                                },
+                                billingAddress: {
+                                    firstName: shippingAddress.firstName,
+                                    lastName: shippingAddress.lastName,
+                                    email: shippingAddress.email,
+                                    phoneNumber: shippingAddress.phoneNumber,
+                                    street: shippingAddress.street,
+                                    city: shippingAddress.city,
+                                    state: shippingAddress.state,
+                                    zip: shippingAddress.zip,
+                                    country: shippingAddress.country,
+                                    sameAsShipping: true
+                                }
+                            })
                         };
 
-                        // Verify payment and get updated cart from server (server clears cart on success)
+                        // Verify payment
                         const verificationResp = await verifyRazorpayPayment(verificationData);
 
-                        // Prefer updatedCart returned by server to update frontend state
-                        const updatedCart = verificationResp?.data?.updatedCart || verificationResp?.updatedCart;
-                        if (updatedCart) {
-                            try {
-                                setCartData(updatedCart.products || []);
-                                localStorage.setItem('userCart', JSON.stringify(updatedCart.products || []));
-                            } catch (localErr) {
-                                console.warn('Failed to update local cart state from verification response:', localErr);
+                        if (isLoggedIn) {
+                            // For logged-in users, update cart from server response
+                            const updatedCart = verificationResp?.data?.updatedCart || verificationResp?.updatedCart;
+                            if (updatedCart) {
+                                try {
+                                    setCartData(updatedCart.products || []);
+                                    localStorage.setItem('userCart', JSON.stringify(updatedCart.products || []));
+                                } catch (localErr) {
+                                    console.warn('Failed to update local cart state from verification response:', localErr);
+                                }
+                            } else {
+                                // Fallback: clear local cart
+                                try {
+                                    setCartData([]);
+                                    localStorage.removeItem('userCart');
+                                } catch (localErr) {
+                                    console.warn('Failed to clear local cart state (fallback):', localErr);
+                                }
                             }
                         } else {
-                            // Fallback: clear local cart
+                            // For guest users, clear local cart
                             try {
                                 setCartData([]);
                                 localStorage.removeItem('userCart');
                             } catch (localErr) {
-                                console.warn('Failed to clear local cart state (fallback):', localErr);
+                                console.warn('Failed to clear local cart state for guest:', localErr);
                             }
                         }
 
@@ -538,7 +750,7 @@ export default function CheckoutPage() {
 
                                         <div>
                                             <label className="block text-sm font-medium text-[#3C3C3C] mb-2">
-                                                Email 
+                                                Email *
                                             </label>
                                             <input
                                                 type="email"
@@ -680,6 +892,24 @@ export default function CheckoutPage() {
                 </div>
             </div>
             </div>
+
+            {/* Login Modal */}
+            {showLoginModal && (
+                <div 
+                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                    onClick={() => setShowLoginModal(false)}
+                >
+                    <div 
+                        className="bg-white rounded-lg p-8 max-w-md w-full mx-4"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <OTPLogin 
+                            setLoginOpen={setShowLoginModal}
+                            onLoginSuccess={handleLoginSuccess}
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

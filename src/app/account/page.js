@@ -1,6 +1,8 @@
 'use client' 
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 import OrderItem from "@/app/components/account/order-item"
 import AccountDetails from "@/app/components/account/account-details"
 import HeroCard from "@/app/components/account/hero-card"
@@ -83,6 +85,19 @@ export default function AccountPage() {
         ? REALM_CONTENT 
         : PALACE_CONTENT;
 
+    const router = useRouter();
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+    const handleLogout = () => {
+        // remove token and other auth info
+        try {
+            localStorage.removeItem('token');
+        } catch (e) {}
+        toast.success('Logged out successfully');
+        setShowLogoutConfirm(false);
+        router.push('/');
+    };
+
     // Helper function to apply active/inactive styles to sidebar tabs
     const getTabClasses = (tabName) => {
         const baseClasses = "w-full text-left p-0 py-1 group flex items-center gap-2 cursor-pointer";
@@ -162,10 +177,10 @@ export default function AccountPage() {
                                 
                                 {/* Prasthan - Icon before is sign out/arrow as in the design */}
                                 <li className='pt-2'> {/* Added pt-2 for vertical separation */}
-                                    <a href="#" className="group flex items-center gap-2 text-[#FF0000] font-medium">
-                                        <FiLogOut className="text-md" />
-                                        {"Prasthan"}
-                                    </a>
+                                    <button onClick={() => setShowLogoutConfirm(true)} className="group flex items-center gap-2 text-[#FF0000] font-medium">
+                                            <FiLogOut className="text-md" />
+                                            {"Prasthan"}
+                                        </button>
                                 </li>
                             </ul>
                         </nav>
@@ -237,6 +252,19 @@ export default function AccountPage() {
                     </div>
                 </div>
             </div>
+            {/* Logout confirmation modal */}
+            {showLogoutConfirm && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                    <div className="bg-white rounded-lg p-6 max-w-sm w-full">
+                        <h3 className="text-lg font-semibold mb-4">Confirm Prasthan</h3>
+                        <p className="mb-6">Are you sure you want to logout?</p>
+                        <div className="flex justify-end gap-3">
+                            <button onClick={() => setShowLogoutConfirm(false)} className="px-4 py-2 border rounded">Cancel</button>
+                            <button onClick={handleLogout} className="px-4 py-2 bg-[#BA7E38] text-white rounded">Logout</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

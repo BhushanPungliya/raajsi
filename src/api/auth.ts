@@ -135,11 +135,16 @@ export const addToCart = async (productId: string, varientId = "", quantity = 1)
     } else {
       // Guest user - handle locally
       // Get product details to store in localStorage
-      const productDetails = await getProductById(productId);
-
+  const productDetails = await getProductById(productId);
+  console.log('productDetails at line 139:', JSON.stringify(productDetails));
       // Get existing cart from localStorage
       const existingCart = localStorage.getItem("userCart");
       let cartData = existingCart ? JSON.parse(existingCart) : [];
+
+      // Ensure cartData is always an array (handle legacy single object format)
+      if (!Array.isArray(cartData)) {
+        cartData = [cartData];
+      }
 
       // Check if product already exists
       const existingProductIndex = cartData.findIndex(
@@ -147,29 +152,33 @@ export const addToCart = async (productId: string, varientId = "", quantity = 1)
       );
 
       if (existingProductIndex !== -1) {
-        // Product exists - increment quantity
-        cartData[existingProductIndex].quantity += quantity;
+        // Product exists - do not increment quantity, just return message
+        return {
+          status: "exists",
+          data: { products: cartData },
+          message: "Item already exists in cart"
+        };
       } else {
         // Add new product with details needed for display
         cartData.push({
           productId: {
             _id: productId,
-            productTitle: productDetails.product?.productTitle || "",
-            salePrice: productDetails.product?.salePrice || 0,
-            productImageUrl: productDetails.product?.productImageUrl || []
+            productTitle: productDetails?.data?.product?.productTitle || productDetails?.data?.product?.title || "",
+            salePrice: productDetails?.data?.product?.salePrice || productDetails?.data?.product?.price || 0,
+            productImageUrl: productDetails?.data?.product?.productImageUrl || productDetails?.data?.product?.images || []
           },
           varientId: varientId,
           quantity: quantity
         });
+        // Save to localStorage
+        localStorage.setItem("userCart", JSON.stringify(cartData));
+
+        return {
+          status: "success",
+          data: { products: cartData },
+          message: "Item added to cart"
+        };
       }
-
-      // Save to localStorage
-      localStorage.setItem("userCart", JSON.stringify(cartData));
-
-      return {
-        status: "success",
-        data: { products: cartData }
-      };
     }
   } catch (error: any) {
     console.error("Error adding to cart:", error);
@@ -315,3 +324,14 @@ export const verifyRazorpayPayment = async (verificationData) => {
     throw error.response?.data || error.message;
   }
 };
+
+// DEPRECATED: Guest checkout is no longer used
+// All users must login before placing orders
+// export const placeGuestOrder = async (guestOrderData) => {
+//   try {
+//     const response = await api.post("guest/order/place", guestOrderData);
+//     return response.data;
+//   } catch (error) {
+//     throw error.response?.data || error.message;
+//   }
+// };

@@ -24,7 +24,14 @@ const CartModal = ({ onClose, }) => {
             } else {
                 // Not logged in — use localStorage
                 const localCart = localStorage.getItem("userCart");
-                setCartData(localCart ? JSON.parse(localCart) : []);
+                let guestCartData = localCart ? JSON.parse(localCart) : [];
+
+                // Ensure cartData is always an array (handle legacy single object format)
+                if (!Array.isArray(guestCartData)) {
+                    guestCartData = [guestCartData];
+                }
+
+                setCartData(guestCartData);
             }
         } catch (err) {
             console.error("Error fetching cart:", err);
@@ -32,12 +39,45 @@ const CartModal = ({ onClose, }) => {
     };
 
     fetchCart();
-}, []);
+
+    // Listen for localStorage changes (for guest cart updates)
+    const handleStorageChange = (e) => {
+        if (e.key === "userCart") {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                // Only update for guest users
+                try {
+                    const localCart = localStorage.getItem("userCart");
+                    let guestCartData = localCart ? JSON.parse(localCart) : [];
+
+                    // Ensure cartData is always an array
+                    if (!Array.isArray(guestCartData)) {
+                        guestCartData = [guestCartData];
+                    }
+
+                    setCartData(guestCartData);
+                } catch (err) {
+                    console.error("Error updating cart from storage:", err);
+                }
+            }
+        }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+        window.removeEventListener("storage", handleStorageChange);
+    };
+}, []); // Only run on mount - cart data is static during modal session
 
 
-    // Update localStorage whenever cartData changes
+    // Update localStorage whenever cartData changes, but only for logged-in users
     useEffect(() => {
-        localStorage.setItem("userCart", JSON.stringify(cartData));
+        const token = localStorage.getItem("token");
+        if (token) {
+            localStorage.setItem("userCart", JSON.stringify(cartData));
+        }
+        // For guests, localStorage is only updated on add/remove/quantity change, not here
     }, [cartData]);
 
     // Remove item from cart

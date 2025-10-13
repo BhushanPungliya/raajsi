@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 // import { auth } from "@/lib/firebaseConfig";
 
-export default function OTPLogin({ setLoginOpen }) {
+export default function OTPLogin({ setLoginOpen, onLoginSuccess }) {
     const [phone, setPhone] = useState("");
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);
     const [showOtp, setShowOtp] = useState(false);
@@ -70,6 +70,11 @@ export default function OTPLogin({ setLoginOpen }) {
                 }
 
                 setLoginOpen(false);
+                
+                // Call success callback if provided (for checkout page)
+                if (onLoginSuccess) {
+                    onLoginSuccess();
+                }
             } else {
                 toast.warning(res?.message || "Invalid OTP");
             }
