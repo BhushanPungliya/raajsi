@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 
 import React, { useState } from "react";
 import Image from "next/image";
@@ -77,13 +77,19 @@ export default function Contact() {
                 required
               />
               <input
-                type="number"
+                type="text"
                 name="number"
                 value={formData.number}
-                onChange={handleChange}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^\d{0,10}$/.test(value)) {
+                    handleChange(e);
+                  }
+                }}
                 placeholder="Number"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BA7E38]"
                 required
+                inputMode="numeric"
               />
               <textarea
                 name="message"

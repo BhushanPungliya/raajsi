@@ -335,10 +335,10 @@ export default function Home() {
                         <p className="font-avenir-400 text-[18px] text-[#6C757D]">
                           {new Date(blog.createdAt).toLocaleDateString()}
                         </p>
-                        <div className="flex gap-[10px] items-center">
+                        {/* <div className="flex gap-[10px] items-center">
                           <Image alt="share" height={16} width={16} src="/images/home/share.svg" />
                           <p className="font-avenir-400 text-[18px] text-[#6C757D]">1K shares</p>
-                        </div>
+                        </div> */}
                       </div>
                       <Link href={`/blog/${blog.slug}`}>
                         <h6 className="font-avenir-400 text-[20px] underline text-[#000000] cursor-pointer hover:text-[#BA7E38] transition">Read Blog</h6>

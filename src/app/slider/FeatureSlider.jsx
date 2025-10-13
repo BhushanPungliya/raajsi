@@ -11,7 +11,7 @@ import WishlistButton from "../components/WishlistButton";
 const NextArrow = ({ onClick }) => (
   <button
     onClick={onClick}
-    className="absolute lg:top-1/2 top-[30%] right-[-10px] z-20 transform -translate-y-1/2"
+    className="absolute lg:top-1/2 top-[30%] lg:right-[-50px] right-[-10px] z-20 transform -translate-y-1/2"
   >
     <img src="/images/home/next.svg" alt="Next" className="w-[30px] h-[30px] lg:w-[40px] lg:h-[40px]" />
   </button>
@@ -28,6 +28,7 @@ const PrevArrow = ({ onClick }) => (
 
 function FeatureSlider({ featureData }) {
   const [openModal, setOpenModal] = useState(false);
+  const [benefits, setBenefits] = useState(false);
   const settings = {
     dots: false,
     infinite: true,
@@ -97,7 +98,7 @@ function FeatureSlider({ featureData }) {
                               मुग्धे! धानुष्कता केयमपूर्वा त्वयि दृश्यते ।
                             </h6>
                           </div>
-                          <button className="bg-[#3030304A] font-avenir-400 text-[12px] md:text-[14px] text-[#FFFFFF] py-[6px] px-[14px] md:py-[10px] md:px-[22px] rounded-full">
+                          <button onClick={() => setBenefits(true)} className="bg-[#3030304A] cursor-pointer font-avenir-400 text-[12px] md:text-[14px] text-[#FFFFFF] py-[6px] px-[14px] md:py-[10px] md:px-[22px] rounded-full">
                             Ingredients & Benefits
                           </button>
                         </div>
@@ -184,7 +185,7 @@ function FeatureSlider({ featureData }) {
                               मुग्धे! धानुष्कता केयमपूर्वा त्वयि दृश्यते ।
                             </h6>
                           </div>
-                          <button className="bg-[#3030304A] font-avenir-400 text-[12px] md:text-[14px] text-[#FFFFFF] py-[6px] px-[14px] md:py-[10px] md:px-[22px] rounded-full">
+                          <button onClick={() => setBenefits(true)} className="bg-[#3030304A] font-avenir-400 text-[12px] md:text-[14px] text-[#FFFFFF] py-[6px] px-[14px] md:py-[10px] md:px-[22px] rounded-full">
                             Ingredients & Benefits
                           </button>
                         </div>
@@ -262,7 +263,25 @@ function FeatureSlider({ featureData }) {
           Features Product will be available soon. Stay tuned!
         </p>
       )}
-
+      {benefits && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          onClick={() => setBenefits(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-lg w-[90%] max-w-md py-[30px] px-[34px] relative"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="authModalTitle"
+          >
+            <button className="auth-close-btn" onClick={() => setBenefits(false)} aria-label="Close login">&times;</button>
+            <h6 className="text-center font-rose text-[24px] font-[400] text-[#4C0A2E] pb-[10px]">Ingredients</h6>
+            <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-center text-[#3C3C3C] max-w-[260px] pb-[10px] w-full mx-auto">Cosmic Body Oil</p>
+            <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#191919]">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+          </div>
+        </div>
+      )}
     </>
   );
 }

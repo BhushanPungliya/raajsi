@@ -1,7 +1,15 @@
+'use client';
 import Image from 'next/image'
-import React from 'react'
+import React, { useRef } from 'react'
 
 function Page() {
+    const nextSectionRef = useRef(null);
+
+    const handleScroll = () => {
+        nextSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+
     return (
         <div>
             <section className="relative mt-[120px] sm:mt-[150px] lg:mt-[209px]">
@@ -22,7 +30,9 @@ function Page() {
                         Raajsi is a premium ayurvedic beauty and wellness brand with a royal touch. <br />
                         Combining elements of regal rituals and ayurveda, we invite you to immerse yourself in the scents, texture and colours of our heritage.
                     </p>
-                    <button className="absolute bottom-[40px] sm:bottom-[48px] lg:bottom-[54px] left-1/2 -translate-x-1/2">
+                    <button
+                        onClick={handleScroll}
+                        className="absolute bottom-[40px] cursor-pointer sm:bottom-[48px] lg:bottom-[54px] left-1/2 -translate-x-1/2">
                         <Image
                             src="/images/home/arrow.svg"
                             height={36}
@@ -31,11 +41,10 @@ function Page() {
                             alt="scroll arrow"
                         />
                     </button>
-
                 </div>
             </section>
 
-            <section className="py-[62px]">
+            <section className="py-[62px]" ref={nextSectionRef} >
                 <div className='max-w-[1440px] w-full mx-auto'>
                     <div className="grid lg:gap-[18px] gap-[50px]">
                         <div className="flex items-center justify-center lg:flex-row flex-col lg:gap-[96px] gap-[50px]">

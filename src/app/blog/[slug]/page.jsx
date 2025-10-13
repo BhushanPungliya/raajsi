@@ -1,11 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getBlogBySlug } from "@/api/auth";
 
 export default function BlogDetail({ params }) {
     const { slug } = params;
+    const nextSectionRef = useRef(null);
+
+    const handleScroll = () => {
+        nextSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+    const [openModal1, setOpenModal1] = useState(false)
     const [blog, setBlog] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -53,13 +59,34 @@ export default function BlogDetail({ params }) {
         <div>
             <section className="hero-section h-[778px] overflow-hidden">
                 <div className="relative w-full h-full lg:pl-[93px] pl-[20px] pt-[83px]">
-                    <h2 className='font-rose text-[32px] text-[#FFFFFF] pb-[20px]'>Blog Detail</h2>
-                    <button className="absolute bottom-[128px] left-[50%] -translate-x-1/2 ">
-                        <Image src="/images/home/arrow.svg" height={42} width={42} className="arrow-bounce" alt="" />
+                    <div className="relative max-w-[474px] w-full">
+                        <h2 className="max-w-[90%] sm:max-w-[500px] md:max-w-[600px] lg:max-w-[634px] 
+                                                   w-full font-[400] text-[24px] sm:text-[28px] md:text-[34px] lg:text-[41px] 
+                                                   text-[#FFFAFA] leading-[30px] sm:leading-[36px] md:leading-[40px] lg:leading-[40px]">
+                            शरीरमाद्यं खलु धर्मसाधनम्।
+                        </h2>
+                        <button className="absolute lg:bottom-0 bottom-[0px] lg:right-[-20px]" onClick={() => setOpenModal1(true)}>
+                            <Image
+                                src="/images/home/lag.svg"
+                                height={40}
+                                width={40}
+                                alt="le"
+                            />
+                        </button>
+                    </div>
+                    <h2 className='font-rose text-[32px] text-[#FFFFFF] py-[20px]'>Blog Detail</h2>
+                    <button onClick={handleScroll} className="absolute bottom-[90px] cursor-pointer sm:bottom-[110px] md:bottom-[120px] lg:bottom-[128px] left-1/2 -translate-x-1/2">
+                        <Image
+                            src="/images/home/arrow.svg"
+                            height={36}
+                            width={36}
+                            className="arrow-bounce"
+                            alt="scroll arrow"
+                        />
                     </button>
                 </div>
             </section>
-            <article className="max-w-4xl mx-auto px-4 py-12">
+            <article ref={nextSectionRef} className="max-w-4xl mx-auto px-4 py-12">
                 {/* Image */}
                 <img
                     src={blog.displayImage?.[0]?.url || "/images/home/img5.png"}
@@ -81,6 +108,26 @@ export default function BlogDetail({ params }) {
                     dangerouslySetInnerHTML={{ __html: blog.content }}
                 />
             </article>
+            {openModal1 && (
+                <div
+                    className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
+                    onClick={() => setOpenModal1(false)}
+                >
+                    <div
+                        className="bg-white rounded-2xl shadow-lg w-[90%] max-w-md py-[30px] px-[34px] relative"
+                        onClick={(e) => e.stopPropagation()}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="authModalTitle"
+                    >
+                        <button className="auth-close-btn" onClick={() => setOpenModal1(false)} aria-label="Close login">&times;</button>
+                        <h6 className="text-center font-rose text-[24px] font-[400] text-[#4C0A2E] pb-[10px]">Shlok Meaning</h6>
+                        <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-center text-[#3C3C3C] max-w-[260px] pb-[30px] w-full mx-auto">मुग्धे! धानुष्कता केयमपूर्वा त्वयि दृश्यते ।
+                            यया विध्यसि चेतांसि गुणैरेव न सायकैः ॥</p>
+                        <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#191919]">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
