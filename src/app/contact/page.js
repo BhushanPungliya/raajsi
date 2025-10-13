@@ -11,6 +11,7 @@ export default function Contact() {
     number: "",
     message: "",
   });
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -18,9 +19,37 @@ export default function Contact() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const valErrors = {};
+
+    // Name required
+    if (!formData.name || formData.name.trim().length < 2) {
+      valErrors.name = 'Please enter your name (2+ characters)';
+    }
+
+    // Basic email check
+    if (!formData.email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(formData.email)) {
+      valErrors.email = 'Please enter a valid email address';
+    }
+
+    // Number - digits only, 10 characters
+    if (!formData.number || !/^\d{10}$/.test(formData.number)) {
+      valErrors.number = 'Please enter a 10-digit phone number';
+    }
+
+    // Message min length
+    if (!formData.message || formData.message.trim().length < 10) {
+      valErrors.message = 'Please enter a message (10+ characters)';
+    }
+
+    setErrors(valErrors);
+    if (Object.keys(valErrors).length > 0) {
+      return;
+    }
+
     console.log("Form submitted:", formData);
     alert("Thank you! Your message has been sent.");
     setFormData({ name: "", email: "", number: "", message: "" });
+    setErrors({});
   };
 
   return (
@@ -67,6 +96,7 @@ export default function Contact() {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BA7E38]"
                 required
               />
+              {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
               <input
                 type="email"
                 name="email"
@@ -76,6 +106,7 @@ export default function Contact() {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BA7E38]"
                 required
               />
+              {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
               <input
                 type="text"
                 name="number"
@@ -91,6 +122,7 @@ export default function Contact() {
                 required
                 inputMode="numeric"
               />
+              {errors.number && <p className="text-sm text-red-600">{errors.number}</p>}
               <textarea
                 name="message"
                 value={formData.message}
@@ -100,6 +132,7 @@ export default function Contact() {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BA7E38] lg:col-span-2"
                 required
               ></textarea>
+              {errors.message && <p className="text-sm text-red-600 lg:col-span-2">{errors.message}</p>}
               <button
                 type="submit"
                 className="bg-[#BA7E38] text-white py-3 rounded-lg hover:bg-[#a36b2f] transition-colors duration-300 lg:col-span-2"

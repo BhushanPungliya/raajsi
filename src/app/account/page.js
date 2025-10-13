@@ -1,12 +1,12 @@
-'use client' 
-
-import { useState } from 'react';
+"use client"
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
+import { getUserDetails, updateUser, getUserOrders } from '@/api/auth';
 import OrderItem from "@/app/components/account/order-item"
 import AccountDetails from "@/app/components/account/account-details"
 import HeroCard from "@/app/components/account/hero-card"
-import { FiLogOut } from 'react-icons/fi'; 
+import { FiLogOut, FiUser, FiHome } from 'react-icons/fi'; 
 // --- CONSTANTS AND DATA (Unchanged) ---
 const ORDERS = [
   {
@@ -46,34 +46,7 @@ const REALM_CONTENT = {
     )
 }
 
-const PALACE_CONTENT = {
-    title: "Address Details",
-    component: (
-        <form className="space-y-4">
-            <input type="text" placeholder="Full Name" className="w-full p-2 border border-gray-300 rounded" />
-            <input type="email" placeholder="Email Address" className="w-full p-2 border border-gray-300 rounded" />
-            <input type="text" placeholder="Company" className="w-full p-2 border border-gray-300 rounded" />
-            <input type="text" placeholder="Address" className="w-full p-2 border border-gray-300 rounded" />
-            <div className="flex space-x-4">
-                <input type="text" placeholder="Country" defaultValue="India" className="w-1/2 p-2 border border-gray-300 rounded" />
-                <input type="text" placeholder="Zip Code" defaultValue="452339" className="w-1/2 p-2 border border-gray-300 rounded" />
-            </div>
-            <input type="tel" placeholder="Phone" defaultValue="+91 9898989898" className="w-full p-2 border border-gray-300 rounded" />
-            <div className="pt-4">
-                <button
-                    type="submit"
-                    className="inline-flex h-10 items-center justify-center rounded-full px-8 text-sm font-medium"
-                    style={{
-                        background: "#BA7E38",
-                        color: "white",
-                    }}
-                >
-                    {"Add Address"}
-                </button>
-            </div>
-        </form>
-    )
-}
+// PALACE (Address) content will be rendered dynamically inside the component
 
 // --- ACCOUNT PAGE COMPONENT ---
 
@@ -81,9 +54,147 @@ export default function AccountPage() {
     // Set initial state to 'palace' to match the active state shown in your design image
     const [activeTab, setActiveTab] = useState('palace'); 
 
-    const mainContent = activeTab === 'realm' 
-        ? REALM_CONTENT 
-        : PALACE_CONTENT;
+    const [addressForm, setAddressForm] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        company: '',
+        street: '',
+        city: '',
+        state: '',
+        zip: '',
+        country: 'India',
+        phoneNumber: ''
+    });
+    const [errors, setErrors] = useState({});
+    const [orders, setOrders] = useState([]);
+
+    useEffect(() => {
+        const load = async () => {
+            try {
+                        const user = await getUserDetails();
+                        // Use the shippingAddress object exclusively (no top-level fallbacks)
+                        const addr = user?.shippingAddress || {};
+                        setAddressForm({
+                            firstName: addr.firstName || '',
+                            lastName: addr.lastName || '',
+                            email: addr.email || '',
+                            company: addr.company || '',
+                            street: addr.street || '',
+                            city: addr.city || '',
+                            state: addr.state || '',
+                            zip: addr.zip || '',
+                            country: addr.country || 'India',
+                            phoneNumber: addr.phoneNumber || ''
+                        });
+            } catch (err) {
+                console.error('Failed to load user details for account page', err);
+            }
+        };
+        load();
+    }, []);
+
+    // Load user orders when the realm tab becomes active
+    useEffect(() => {
+        const loadOrders = async () => {
+            if (activeTab !== 'realm') return;
+            try {
+                const data = await getUserOrders();
+                // Normalize possible response shapes from backend
+                // backend returns: successRes(res, { orders }) -> data = { orders: [...] }
+                let list = [];
+                if (Array.isArray(data)) {
+                    list = data;
+                } else if (data?.orders && Array.isArray(data.orders)) {
+                    list = data.orders;
+                } else if (data?.data && Array.isArray(data.data)) {
+                    list = data.data;
+                } else if (data?.data?.orders && Array.isArray(data.data.orders)) {
+                    list = data.data.orders;
+                }
+                setOrders(list);
+            } catch (err) {
+                console.error('Failed to load orders', err);
+            }
+        };
+        loadOrders();
+    }, [activeTab]);
+
+    // Flatten orders into per-product entries and sort by order date desc
+    const productEntries = useMemo(() => {
+        if (!orders || !orders.length) return [];
+        const entries = orders.flatMap((order) =>
+            (order.products || []).map((item) => ({ order, item }))
+        );
+        entries.sort((a, b) => new Date(b.order?.createdAt || b.order?._id) - new Date(a.order?.createdAt || a.order?._id));
+        return entries;
+    }, [orders]);
+
+    const mainContent = activeTab === 'realm'
+        ? REALM_CONTENT
+        : null; // palace handled inline below
+
+    // Compute a safe heading title so we don't read .title from null
+    const headingTitle = activeTab === 'realm' ? REALM_CONTENT.title : 'My Palace';
+
+    const handleAddressChange = (key, value) => {
+        setAddressForm(prev => ({ ...prev, [key]: value }));
+        // clear field error on change
+        setErrors(prev => ({ ...prev, [key]: '' }));
+    };
+
+    const validateForm = () => {
+        const requiredFields = [
+            'firstName',
+            'lastName',
+            'email',
+            //'company', // hidden by design
+            'street',
+            'city',
+            'state',
+            'zip',
+            'country',
+            'phoneNumber'
+        ];
+        const newErrors = {};
+        requiredFields.forEach((f) => {
+            if (!addressForm[f] || String(addressForm[f]).trim() === '') {
+                newErrors[f] = 'This field is required';
+            }
+        });
+
+        // basic email format
+        if (addressForm.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(addressForm.email)) {
+            newErrors.email = 'Enter a valid email';
+        }
+
+        // basic phone format (10-15 digits)
+        if (addressForm.phoneNumber && !/^[0-9+\-() ]{7,20}$/.test(addressForm.phoneNumber)) {
+            newErrors.phoneNumber = 'Enter a valid phone number';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleSaveAddress = async (e) => {
+        e.preventDefault();
+        try {
+            const ok = validateForm();
+            if (!ok) {
+                toast.error('Please fix validation errors');
+                return;
+            }
+
+            // Send shippingAddress only; frontend should not update top-level user fields here
+            const payload = { shippingAddress: addressForm };
+            await updateUser(payload);
+            toast.success('Profile and address updated');
+        } catch (err) {
+            console.error('Failed to update profile/address', err);
+            toast.error('Failed to update profile/address');
+        }
+    };
 
     const router = useRouter();
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -149,13 +260,11 @@ export default function AccountPage() {
                                 <li>
                                     <button 
                                         onClick={() => setActiveTab('realm')} 
-                                        className={getTabClasses('realm')}
+                                        className={`${getTabClasses('realm')}`}
+                                        title="Profile"
+                                        aria-label="Profile"
                                     >
-                                        <span
-                                            aria-hidden="true"
-                                            className={getIndicatorClasses('realm')}
-                                            style={{ borderLeftColor: activeTab === 'realm' ? "oklch(0.45 0.15 20)" : 'transparent' }}
-                                        />
+                                        <FiUser className="text-sm mr-2" aria-hidden="true" />
                                         {"My Realm"}
                                     </button>
                                 </li>
@@ -164,20 +273,18 @@ export default function AccountPage() {
                                 <li>
                                     <button 
                                         onClick={() => setActiveTab('palace')} 
-                                        className={getTabClasses('palace')}
+                                        className={`${getTabClasses('palace')}`}
+                                        title="Location"
+                                        aria-label="Location"
                                     >
-                                        <span
-                                            aria-hidden="true"
-                                            className={getIndicatorClasses('palace')}
-                                            style={{ borderLeftColor: activeTab === 'palace' ? "oklch(0.45 0.15 20)" : 'transparent' }}
-                                        />
+                                        <FiHome className="text-sm mr-2" aria-hidden="true" />
                                         {"My Palace"}
                                     </button>
                                 </li>
                                 
                                 {/* Prasthan - Icon before is sign out/arrow as in the design */}
                                 <li className='pt-2'> {/* Added pt-2 for vertical separation */}
-                                    <button onClick={() => setShowLogoutConfirm(true)} className="group flex items-center gap-2 text-[#FF0000] font-medium">
+                                    <button onClick={() => setShowLogoutConfirm(true)} className="group flex items-center gap-2 text-[#FF0000] font-medium" title="Logout" aria-label="Logout">
                                             <FiLogOut className="text-md" />
                                             {"Prasthan"}
                                         </button>
@@ -192,10 +299,10 @@ export default function AccountPage() {
                         {/* Greeting */}
                         <div className="text-sm md:text-base">
                             <p>
-                                {"Hello Vipul Sharma( Not Vipul Sharma? "}
-                                <a href="#" className="underline text-[var(--brand-maroon)]">
+                                {`Hello ${addressForm?.firstName || 'Guest'} (Not ${addressForm?.firstName || 'Guest'}? `}
+                                <button type="button" onClick={() => setShowLogoutConfirm(true)} className="underline text-[var(--brand-maroon)]">
                                     {"Log Out)"}
-                                </a>
+                                </button>
                                 {""}
                             </p>
                         </div>
@@ -206,13 +313,38 @@ export default function AccountPage() {
                             className="bg-card py-4"
                         >
                             <h2 id="main-content-heading" className="font-averin-400 mb-4 text-lg font-semibold text-[var(--brand-maroon)]">
-                                {mainContent.title} {/* Dynamic Heading */}
+                                {headingTitle} {/* Dynamic Heading */}
                             </h2>
 
                             {/* Conditional rendering of content */}
                             {activeTab === 'realm' ? (
                                 <>
-                                    {REALM_CONTENT.component}
+                                    <div style={{ maxHeight: 320, overflowY: 'auto' }} className="space-y-4">
+                                        {productEntries && productEntries.length ? (
+                                            productEntries.map(({ order, item }, idx) => (
+                                                <div key={(order._id || '') + '-' + idx} className=" bg-white">
+                                                    {/* <div className="text-xs text-muted-foreground mb-2">{new Date(order.createdAt).toLocaleDateString()} • {order.order_status}</div> */}
+                                                    {
+                                                        // derive display values from product/variant
+                                                    }
+                                                    <OrderItem
+                                                        title={item.product?.productTitle || 'Product'}
+                                                        price={
+                                                            (item.price != null && item.price !== '')
+                                                                ? item.price
+                                                                : (item.product?.salePrice ?? '')
+                                                        }
+                                                        statusLabel={order.order_status || 'Pending'}
+                                                        itemsCount={item.quantity}
+                                                        imageAlt={item.product?.productTitle || ''}
+                                                        imageSrc={item.product?.productImageUrl?.[0] || '/images/home/img3.jpg'}
+                                                    />
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="text-sm text-muted-foreground">No orders found.</div>
+                                        )}
+                                    </div>
                                     {/* Account Details for Realm tab */}
                                     <div
                                         aria-labelledby="account-details-heading"
@@ -221,7 +353,7 @@ export default function AccountPage() {
                                         <h2 id="account-details-heading" className="mb-4 text-lg font-semibold text-[var(--brand-maroon)]">
                                             {"Account Details"}
                                         </h2>
-                                        <AccountDetails name="Vipul Sharma" email="vipul@gmail.com" />
+                                        <AccountDetails name={addressForm.firstName + ' ' + addressForm.lastName} email={addressForm.email} />
                                         <div className="pt-4">
                                             <button
                                                 type="button"
@@ -237,8 +369,68 @@ export default function AccountPage() {
                                     </div>
                                 </>
                             ) : (
-                                // Address Details for Palace tab
-                                PALACE_CONTENT.component
+                                // Address Details for Palace tab - dynamic form
+                                <form onSubmit={handleSaveAddress} className="space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="sr-only">First Name</label>
+                                            <input value={addressForm.firstName} onChange={(e) => handleAddressChange('firstName', e.target.value)} type="text" placeholder="First Name" className="w-full p-2 border border-gray-300 rounded" />
+                                            {errors.firstName && <p className="text-sm text-red-600 mt-1">{errors.firstName}</p>}
+                                        </div>
+                                        <div>
+                                            <label className="sr-only">Last Name</label>
+                                            <input value={addressForm.lastName} onChange={(e) => handleAddressChange('lastName', e.target.value)} type="text" placeholder="Last Name" className="w-full p-2 border border-gray-300 rounded" />
+                                            {errors.lastName && <p className="text-sm text-red-600 mt-1">{errors.lastName}</p>}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="sr-only">Email</label>
+                                        <input value={addressForm.email} onChange={(e) => handleAddressChange('email', e.target.value)} type="email" placeholder="Email Address" className="w-full p-2 border border-gray-300 rounded" />
+                                        {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
+                                    </div>
+
+                                    {/* Company field is temporarily hidden per request */}
+                                    {/* <input value={addressForm.company} onChange={(e) => handleAddressChange('company', e.target.value)} type="text" placeholder="Company" className="w-full p-2 border border-gray-300 rounded" /> */}
+
+                                    <div>
+                                        <label className="sr-only">Street</label>
+                                        <input value={addressForm.street} onChange={(e) => handleAddressChange('street', e.target.value)} type="text" placeholder="Address" className="w-full p-2 border border-gray-300 rounded" />
+                                        {errors.street && <p className="text-sm text-red-600 mt-1">{errors.street}</p>}
+                                    </div>
+
+                                    <div className="flex space-x-4">
+                                        <div className="w-1/2">
+                                            <label className="sr-only">Country</label>
+                                            <input value={addressForm.country} onChange={(e) => handleAddressChange('country', e.target.value)} type="text" placeholder="Country" className="w-full p-2 border border-gray-300 rounded" />
+                                            {errors.country && <p className="text-sm text-red-600 mt-1">{errors.country}</p>}
+                                        </div>
+                                        <div className="w-1/2">
+                                            <label className="sr-only">Zip</label>
+                                            <input value={addressForm.zip} onChange={(e) => handleAddressChange('zip', e.target.value)} type="text" placeholder="Zip Code" className="w-full p-2 border border-gray-300 rounded" />
+                                            {errors.zip && <p className="text-sm text-red-600 mt-1">{errors.zip}</p>}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="sr-only">Phone</label>
+                                        <input value={addressForm.phoneNumber} onChange={(e) => handleAddressChange('phoneNumber', e.target.value)} type="tel" placeholder="Phone" className="w-full p-2 border border-gray-300 rounded" />
+                                        {errors.phoneNumber && <p className="text-sm text-red-600 mt-1">{errors.phoneNumber}</p>}
+                                    </div>
+
+                                    <div className="pt-4">
+                                        <button
+                                            type="submit"
+                                            className="inline-flex h-10 items-center justify-center rounded-full px-8 text-sm font-medium"
+                                            style={{
+                                                background: "#BA7E38",
+                                                color: "white",
+                                            }}
+                                        >
+                                            {"Save Address"}
+                                        </button>
+                                    </div>
+                                </form>
                             )}
 
                         </div>
@@ -254,7 +446,7 @@ export default function AccountPage() {
             </div>
             {/* Logout confirmation modal */}
             {showLogoutConfirm && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
                     <div className="bg-white rounded-lg p-6 max-w-sm w-full">
                         <h3 className="text-lg font-semibold mb-4">Confirm Prasthan</h3>
                         <p className="mb-6">Are you sure you want to logout?</p>

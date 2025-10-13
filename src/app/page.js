@@ -244,7 +244,7 @@ export default function Home() {
                 <p className="font-avenir-400 text-[16px] lg:opacity-0 an group-hover:opacity-100 text-[#FFFFFF] pb-[24px]">Rani Karnavati of Mewar was known for her disciplined beauty rituals, which were drawn from Ayurveda. Her skincare secrets included cooling aloe vera gels, sandalwood pastes, and saffron mixed with raw milk—applied daily to protect her skin from the harsh desert sun. These remedies not only nourished the skin but symbolised a deeper connection to purity and grace. Raajsi’s creams and cleansers echo these regal traditions—infusing ancient wisdom into every drop.
                 </p>
                 <p className="font-avenir-400 text-[20px] text-[#FFFFFF] pb-[45px]">Glow like royalty.</p>
-                <button className="font-avenir-400 text-[18px] rounded-full text-[#4C0A2E] py-[14px] px-[24px] bg-[#FFFFFF] border border-[#FFFFFF] an hover:bg-transparent hover:text-[#FFFFFF]">VIEW PRODUCTS</button>
+                <Link href="/feature-products"><button className="font-avenir-400 text-[18px] rounded-full text-[#4C0A2E] py-[14px] px-[24px] bg-[#FFFFFF] border border-[#FFFFFF] an hover:bg-transparent hover:text-[#FFFFFF]">VIEW PRODUCTS</button></Link>
               </div>
               <div className="max-w-[335px] lg:opacity-0 an group-hover:opacity-100 h-[380px] w-full">
                 <Image
@@ -261,7 +261,7 @@ export default function Home() {
                 <p className="font-avenir-400 text-[16px] lg:opacity-0 an group-hover:opacity-100 text-[#FFFFFF] pb-[24px]">Rani Padmavati of Chittor indulged in luxurious ubtan rituals
                   —an age-old body remedy made with sandalwood, turmeric, lentils, and rose petals. Applied before her ceremonial baths, this exfoliating paste, followed by herbal oil massages, wasn’t just for beauty—it was a sacred act of self-rejuvenation. At Raajsi, we revive this royal tradition through our body oils, scrubs, and soaps, bringing timeless radiance to your modern-day rituals</p>
                 <p className="font-avenir-400 text-[20px] text-[#FFFFFF] pb-[45px]">Step into royal indulgence.</p>
-                <button className="font-avenir-400 text-[18px] rounded-full text-[#4C0A2E] py-[14px] px-[24px] bg-[#FFFFFF] border border-[#FFFFFF] an hover:bg-transparent hover:text-[#FFFFFF]">VIEW PRODUCTS</button>
+                <Link href="/feature-products"><button className="font-avenir-400 text-[18px] rounded-full text-[#4C0A2E] py-[14px] px-[24px] bg-[#FFFFFF] border border-[#FFFFFF] an hover:bg-transparent hover:text-[#FFFFFF]">VIEW PRODUCTS</button></Link>
               </div>
               <div className="max-w-[335px] lg:opacity-0 an group-hover:opacity-100 h-[380px] w-full">
                 <Image

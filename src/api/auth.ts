@@ -297,6 +297,32 @@ export const getUserDetails = async () => {
   }
 };
 
+export const updateUser = async (payload) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await api.put('user/updateuser', payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const getUserOrders = async () => {
+  try {
+    const response = await api.get('user/order/all');
+    // backend probably returns { status, data: { orders: [...] } } or similar
+    console.log(response.data);
+    return response.data?.data || response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
 export const placeOrder = async (orderData) => {
   try {
     const response = await api.post("user/order/place", orderData);

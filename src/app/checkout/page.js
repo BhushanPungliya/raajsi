@@ -72,7 +72,7 @@ export default function CheckoutPage() {
                     setUser(actualUser);
                     setCartData(cartResponse?.data?.products || []);
 
-                    // Pre-fill shipping address if available (use shippingAddress on user)
+                    // Pre-fill My Palace if available (use shippingAddress on user)
                     const addr = actualUser?.shippingAddress || {};
                     setShippingAddress(prev => ({
                         ...prev,
@@ -99,7 +99,7 @@ export default function CheckoutPage() {
                         }));
                     }
                 } else {
-                    // Guest user: load cart and shipping address from localStorage
+                    // Guest user: load cart and My Palace from localStorage
                     const localCart = localStorage.getItem('userCart');
                     let guestCartData = localCart ? JSON.parse(localCart) : [];
                     if (!Array.isArray(guestCartData)) {
@@ -107,7 +107,7 @@ export default function CheckoutPage() {
                     }
                     setCartData(guestCartData);
                     setUser(null);
-                    // Load shipping address for guest
+                    // Load My Palace for guest
                     const savedAddress = localStorage.getItem('guestShippingAddress');
                     if (savedAddress) {
                         try {
@@ -251,7 +251,7 @@ export default function CheckoutPage() {
             toast.success('Address saved for this order');
         }
 
-        // Save shipping address to localStorage for guest users
+        // Save My Palace to localStorage for guest users
         if (!isLoggedIn) {
             try {
                 localStorage.setItem('guestShippingAddress', JSON.stringify(shippingAddress));
@@ -278,7 +278,7 @@ export default function CheckoutPage() {
         }
         setIsEditingAddress(false);
     };
-    // Persist shipping address changes for guest users
+    // Persist My Palace changes for guest users
     useEffect(() => {
         const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
         if (!token) {
@@ -313,7 +313,7 @@ export default function CheckoutPage() {
             setUser(actualUser);
             setCartData(cartResponse?.data?.products || []);
             
-            // Pre-fill shipping address from user data if available
+            // Pre-fill My Palace from user data if available
             if (actualUser?.shippingAddress && actualUser.shippingAddress.length > 0) {
                 const userAddr = actualUser.shippingAddress[0];
                 setShippingAddress({
@@ -360,9 +360,9 @@ export default function CheckoutPage() {
             return;
         }
 
-        // Validate shipping address
+        // Validate My Palace
         if (!isAddressComplete()) {
-            toast.error('Please complete your shipping address before proceeding to payment');
+            toast.error('Please complete your My Palace before proceeding to payment');
             setIsEditingAddress(true);
             return;
         }
@@ -582,7 +582,7 @@ export default function CheckoutPage() {
 
             <div className="max-w-[1440px] w-full mx-auto lg:pb-[100px] pb-[50px] lg:px-[100px] px-[20px]">
                 <div className="flex flex-col lg:flex-row gap-10">
-                    {/* Left: Cart Items and Shipping Address */}
+                    {/* Left: Cart Items and My Palace */}
                     <div className="flex-1 space-y-6">
                         {/* Cart Items */}
                         <div className="bg-white p-6 rounded-[20px] shadow-md">
@@ -662,16 +662,16 @@ export default function CheckoutPage() {
                             )}
                         </div>
 
-                        {/* Shipping Address */}
+                        {/* My Palace */}
                         <div className="bg-white p-6 rounded-[20px] shadow-md">
                             <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-xl font-semibold">Shipping Address</h2>
+                                <h2 className="text-xl font-semibold">My Palace</h2>
                                 {!isEditingAddress && (
                                     <button
                                         onClick={() => setIsEditingAddress(true)}
                                         className="bg-[#BA7E38] text-white px-4 py-2 rounded-lg hover:bg-[#a96f2e] transition"
                                     >
-                                        Edit Address
+                                        Edit Palace
                                     </button>
                                 )}
                             </div>
@@ -708,13 +708,13 @@ export default function CheckoutPage() {
                                         </div>
                                     ) : (
                                         <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
-                                            <p className="text-red-600 font-medium">⚠️ Shipping address is incomplete</p>
-                                            <p className="text-red-500 text-sm mt-1">Please add your complete shipping address to proceed with checkout.</p>
+                                            <p className="text-red-600 font-medium">⚠️ My Palace is incomplete</p>
+                                            <p className="text-red-500 text-sm mt-1">Please add your complete My Palace to proceed with checkout.</p>
                                             <button
                                                 onClick={() => setIsEditingAddress(true)}
                                                 className="mt-3 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
                                             >
-                                                Add Address
+                                                Add Palace
                                             </button>
                                         </div>
                                     )}
@@ -844,7 +844,7 @@ export default function CheckoutPage() {
                                             onClick={handleSaveAddress}
                                             className="bg-[#BA7E38] text-white px-6 py-2 rounded-lg hover:bg-[#a96f2e] transition"
                                         >
-                                            Save Address
+                                            Save Palace
                                         </button>
                                         <button
                                             onClick={handleCancelEdit}
@@ -896,12 +896,12 @@ export default function CheckoutPage() {
             {/* Login Modal */}
             {showLoginModal && (
                 <div 
-                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                    className="auth-modal-overlay"
                     onClick={() => setShowLoginModal(false)}
                 >
                     <div 
-                        className="bg-white rounded-lg p-8 max-w-md w-full mx-4"
-                        onClick={(e) => e.stopPropagation()}
+                        className="auth-modal-card"
+                        onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="authModalTitle"
                     >
                         <OTPLogin 
                             setLoginOpen={setShowLoginModal}
