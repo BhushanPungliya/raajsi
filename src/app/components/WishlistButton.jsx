@@ -10,20 +10,21 @@ const WishlistButton = ({ productId }) => {
 
             if (result?.status === "success") {
                 toast.success("Product added to wishlist! ❤️");
-
-                // Update localStorage
-                let localWishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
-                if (!localWishlist.includes(productId)) {
-                    localWishlist.push(productId);
-                    localStorage.setItem("wishlist", JSON.stringify(localWishlist));
-                }
+                // Note: localStorage is already updated by addToWishlist API function
+                // No need to manually update it here
             } else {
                 toast.error(result?.message || "Failed to add to wishlist");
             }
 
         } catch (err) {
             console.error("Wishlist Error:", err);
-            toast.error(err?.message || "Failed to add to wishlist");
+            
+            // Check if it's a duplicate error
+            if (err?.message?.includes("already exists")) {
+                toast.info("Product is already in your wishlist");
+            } else {
+                toast.error(err?.message || "Failed to add to wishlist");
+            }
         }
     };
 
@@ -41,3 +42,4 @@ const WishlistButton = ({ productId }) => {
 };
 
 export default WishlistButton;
+

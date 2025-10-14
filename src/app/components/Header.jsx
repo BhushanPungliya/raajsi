@@ -144,7 +144,7 @@ const CartModal = ({ onClose, }) => {
                                         <h6 className="font-avenir-400 text-[16px] tracking-[4%] text-[#3C3C3C]">{e?.productId?.productTitle}</h6>
                                         <p className="font-avenir-400 text-[16px] tracking-[4%] text-[#3C3C3C] pb-[11px]">₹  {e?.productId?.salePrice}.00</p>
                                         <div className="flex justify-between w-full items-center">
-                                            <button onClick={() => handleUpdateCart(e?.productId?._id)} className="bg-[#BA7E38] cursor-pointer rounded-[22px] py-[5px] px-[18px] text-[#FFFFFF]">Remove</button>
+                                            <button onClick={() => handleUpdateCart(e?.productId?._id)} className="bg-[#12121226] cursor-pointer rounded-[22px] py-[5px] px-[18px] text-[#3C3C3C] hover:bg-[#12121240]">Remove</button>
                                             <div className="flex items-center gap-[6px]">
                                                 <button
                                                     onClick={() =>
@@ -197,13 +197,23 @@ const CartModal = ({ onClose, }) => {
                 )}
             </div>
 
-            <Link href="/checkout">
+            {cartData?.length === 0 ? (
+                <Link href="/feature-products">
                 <button className="font-avenir-400 mt-5 w-fit px-8 bg-[#BA7E38] hover:bg-[#976d3e] text-white font-medium py-3 rounded-3xl transition duration-200 uppercase text-[15px] tracking-[1px]" 
                 style={{ boxShadow: "0px 1px 2px 0px #00000040" }}
                 >
-                    View Products
+                    Add Products
                 </button>
             </Link>
+            ) : (
+                <Link href="/checkout">
+                <button className="font-avenir-400 mt-5 w-fit px-8 bg-[#BA7E38] hover:bg-[#976d3e] text-white font-medium py-3 rounded-3xl transition duration-200 uppercase text-[15px] tracking-[1px]" 
+                style={{ boxShadow: "0px 1px 2px 0px #00000040" }}
+                >
+                    Buy Now
+                </button>
+            </Link>
+            )}
         </div>
     );
 };
@@ -220,17 +230,11 @@ const FavoritesModal = ({ onClose }) => {
                 const token = localStorage.getItem("token");
                 
                 console.log("Fetching wishlist... Token exists:", !!token);
-                
-                if (!token) {
-                    // Not logged in - show empty state
-                    console.log("No token found, showing empty state");
-                    setWishlistData([]);
-                    setLoading(false);
-                    return;
-                }
 
+                // Call API for both guest and logged-in users
                 const response = await getWishlistByUser();
                 console.log("Wishlist API Response:", response);
+                console.log("Response data:", response?.data);
                 
                 // Backend returns { status: "success", data: [...wishlist items...] }
                 // So we access response.data directly (it's already an array)
@@ -238,6 +242,11 @@ const FavoritesModal = ({ onClose }) => {
                 
                 console.log("Extracted wishlist items:", wishlistItems);
                 console.log("Wishlist length:", wishlistItems.length);
+                
+                // Log each item's product structure
+                wishlistItems.forEach((item, idx) => {
+                    console.log(`Item ${idx} product:`, item?.product);
+                });
                 
                 setWishlistData(wishlistItems);
             } catch (err) {
@@ -351,18 +360,19 @@ const FavoritesModal = ({ onClose }) => {
                                             <p className="font-avenir-400 text-[16px] tracking-[4%] text-[#3C3C3C] pb-[11px]">
                                                 ₹ {product?.salePrice || product?.regularPrice}.00
                                             </p>
-                                            <div className="flex justify-between w-full items-center">
-                                                <button 
-                                                    onClick={() => handleRemoveFromWishlist(productId)} 
-                                                    className="bg-[#BA7E38] cursor-pointer rounded-[22px] py-[5px] px-[18px] text-[#FFFFFF] hover:bg-[#976d3e] transition-colors"
-                                                >
-                                                    Remove
-                                                </button>
+                                            <div className="flex justify-start w-full items-center gap-2">
                                                 <Link href={`/products/${productId}`}>
-                                                    <button className="bg-[#12121226] cursor-pointer rounded-[22px] py-[5px] px-[18px] text-[#3C3C3C] hover:bg-[#12121240] transition-colors">
+                                                    <button className="bg-[#BA7E38] cursor-pointer rounded-[22px] py-[5px] px-[18px] text-[#FFFFFF] hover:bg-[#976d3e] transition-colors">
                                                         View
                                                     </button>
                                                 </Link>
+                                                <button 
+                                                    onClick={() => handleRemoveFromWishlist(productId)} 
+                                                    className="bg-[#12121226] cursor-pointer rounded-[22px] py-[5px] px-[18px] text-[#3C3C3C] hover:bg-[#12121240] transition-colors"
+                                                >
+                                                    Remove
+                                                </button>
+                                                
                                             </div>
                                         </div>
                                     </div>
@@ -370,13 +380,13 @@ const FavoritesModal = ({ onClose }) => {
                             })}
                         </div>
 
-                        <Link href="/feature-products">
+                        {/* <Link href="/feature-products">
                             <button className="font-avenir-400 mt-5 w-fit px-8 bg-[#BA7E38] hover:bg-[#976d3e] text-white font-medium py-3 rounded-3xl transition duration-200 uppercase text-[15px] tracking-[1px]" 
                                 style={{ boxShadow: "0px 1px 2px 0px #00000040" }}
                             >
                                 View All Products
                             </button>
-                        </Link>
+                        </Link> */}
                     </>
                 )}
             </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { sendOTP, verifyOTP, resendOTP, mergeGuestCartWithUserCart } from "@/api/auth";
+import { sendOTP, verifyOTP, resendOTP, mergeGuestCartWithUserCart, mergeGuestDataOnLogin } from "@/api/auth";
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 // import { auth } from "@/lib/firebaseConfig";
@@ -58,17 +58,18 @@ export default function OTPLogin({ setLoginOpen, onLoginSuccess }) {
         try {
             const res = await verifyOTP(phone, otpString);
             if (res?.status === "success") {
-                localStorage.setItem("token", res?.data?.user?.token);
-                toast.success("Login successful 🎉");
-
-                // Merge guest cart with user cart after successful login
+                const token = res?.data?.user?.token;
+                localStorage.setItem("token", token);
+                
+                // Merge guest cart and wishlist with user data after successful login
                 try {
-                    await mergeGuestCartWithUserCart();
+                    await mergeGuestDataOnLogin(token);
                 } catch (mergeError) {
-                    console.error("Error merging carts:", mergeError);
-                    // Don't block login if cart merging fails
+                    console.error("Error merging guest data:", mergeError);
+                    // Don't block login if merging fails
                 }
 
+                toast.success("Login successful 🎉");
                 setLoginOpen(false);
                 
                 // Call success callback if provided (for checkout page)

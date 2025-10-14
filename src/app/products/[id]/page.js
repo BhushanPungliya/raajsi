@@ -450,14 +450,14 @@ export default function ProductPage({ onAddToCart }) {
             </h1>
 
             {/* Rating */}
-            <div className="flex items-center gap-2 mb-3">
+            {/* <div className="flex items-center gap-2 mb-3">
               <div className="flex gap-1">{renderStars(product.rating)}</div>
               <div className="text-sm text-gray-600">({product.reviewCount})</div>
-            </div>
+            </div> */}
 
             {/* Product Description */}
             <div className="mb-6">
-              <p className="text-black text-sm sm:text-base leading-relaxed mb-2 font-avenir-400">{product.desc}</p>
+              <p className="text-black text-sm sm:text-base leading-relaxed mb-2 font-avenir-400">{product?.desc}</p>
               <p className="text-gray-700 text-sm">मुग्धे! धानुष्कता केयमपूर्वा त्वयि दृश्यते यया विध्यसि चेतांसि गुणैरेव न सायकैः</p>
             </div>
 

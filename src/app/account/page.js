@@ -1,8 +1,8 @@
 "use client"
 import { useState, useEffect, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'react-toastify';
-import { getUserDetails, updateUser, getUserOrders } from '@/api/auth';
+import { getUserDetails, updateUser, getUserOrders, clearUserDataOnLogout } from '@/api/auth';
 import OrderItem from "@/app/components/account/order-item"
 import AccountDetails from "@/app/components/account/account-details"
 import HeroCard from "@/app/components/account/hero-card"
@@ -51,8 +51,18 @@ const REALM_CONTENT = {
 // --- ACCOUNT PAGE COMPONENT ---
 
 export default function AccountPage() {
-    // Set initial state to 'palace' to match the active state shown in your design image
-    const [activeTab, setActiveTab] = useState('palace'); 
+    const searchParams = useSearchParams();
+    const tabFromUrl = searchParams.get('tab');
+    
+    // Set initial state based on URL parameter or default to 'palace'
+    const [activeTab, setActiveTab] = useState(tabFromUrl || 'palace');
+    
+    // Update active tab when URL parameter changes
+    useEffect(() => {
+        if (tabFromUrl) {
+            setActiveTab(tabFromUrl);
+        }
+    }, [tabFromUrl]);
 
     const [addressForm, setAddressForm] = useState({
         firstName: '',
@@ -200,10 +210,9 @@ export default function AccountPage() {
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
     const handleLogout = () => {
-        // remove token and other auth info
-        try {
-            localStorage.removeItem('token');
-        } catch (e) {}
+        // Clear all user data (token, cart, wishlist)
+        clearUserDataOnLogout();
+        
         toast.success('Logged out successfully');
         setShowLogoutConfirm(false);
         router.push('/');

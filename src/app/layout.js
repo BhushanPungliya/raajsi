@@ -19,7 +19,18 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={geist.className}>
         <Header />
-        <ToastContainer position="top-right" reverseOrder={false} />
+        <ToastContainer 
+          position="top-right" 
+          autoClose={2000}
+          hideProgressBar={false}
+          newestOnTop={true}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
         <main>{children}</main>
         <Footer />
       </body>

@@ -9,7 +9,6 @@ export default function OrderSuccessPage() {
     useEffect(() => {
         // Clear cart from localStorage on successful order
         localStorage.removeItem('userCart');
-        toast.success('Order placed successfully!');
     }, []);
 
     return (
@@ -48,7 +47,7 @@ export default function OrderSuccessPage() {
                             </button>
                         </Link>
 
-                        <Link href="/account">
+                        <Link href="/account?tab=realm">
                             <button className="border-2 border-[#BA7E38] text-[#BA7E38] px-8 py-3 rounded-[20px] font-semibold hover:bg-[#BA7E38] hover:text-white transition">
                                 View Order History
                             </button>

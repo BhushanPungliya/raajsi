@@ -90,16 +90,85 @@ export const addToWishlist = async (productId, varientId = "") => {
   try {
     const token = localStorage.getItem("token");
 
-    const response = await api.post("/user/wishlist", {
-      productId,
-      varientId,
-    }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    if (token) {
+      // Logged-in user - call server API
+      const response = await api.post("/user/wishlist", {
+        productId,
+        varientId,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      // Also update localStorage for consistency
+      const wishlistData = response.data?.data || {};
+      let localWishlist = [];
+      try {
+        const stored = localStorage.getItem("wishlist");
+        localWishlist = stored ? JSON.parse(stored) : [];
+      } catch (e) {
+        localWishlist = [];
+      }
+      
+      // Add to local if not exists
+      const exists = localWishlist.some(item => 
+        (item.product?._id || item.product) === productId
+      );
+      if (!exists) {
+        localWishlist.push({
+          _id: wishlistData._id,
+          product: productId,
+          variant: varientId || null,
+          user: wishlistData.user
+        });
+        localStorage.setItem("wishlist", JSON.stringify(localWishlist));
+      }
 
-    return response.data;
+      return response.data;
+    } else {
+      // Guest user - add to localStorage only
+      let localWishlist = [];
+      try {
+        const stored = localStorage.getItem("wishlist");
+        localWishlist = stored ? JSON.parse(stored) : [];
+      } catch (e) {
+        localWishlist = [];
+      }
+
+      // Check if already exists
+      const exists = localWishlist.some(item => 
+        (item.product?._id || item.product) === productId
+      );
+
+      if (exists) {
+        throw new Error("Item already exists in wishlist");
+      }
+
+      // Add new item
+      const newItem = {
+        _id: `guest_${Date.now()}`,
+        product: productId,
+        variant: varientId || null,
+        user: null,
+        createdAt: new Date().toISOString()
+      };
+
+      localWishlist.push(newItem);
+      localStorage.setItem("wishlist", JSON.stringify(localWishlist));
+      
+      // Dispatch storage event for cross-tab sync
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: 'wishlist',
+        newValue: JSON.stringify(localWishlist),
+        url: window.location.href
+      }));
+
+      return {
+        status: "success",
+        data: newItem
+      };
+    }
   } catch (error) {
     throw error.response?.data || error.message;
   }
@@ -109,13 +178,51 @@ export const removeFromWishlist = async (productId) => {
   try {
     const token = localStorage.getItem("token");
 
-    const response = await api.delete(`/user/wishlist/${productId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    if (token) {
+      // Logged-in user - call server API
+      const response = await api.delete(`/user/wishlist/${productId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      // Also update localStorage
+      const stored = localStorage.getItem("wishlist");
+      if (stored) {
+        let localWishlist = JSON.parse(stored);
+        localWishlist = localWishlist.filter(item => 
+          (item.product?._id || item.product) !== productId
+        );
+        localStorage.setItem("wishlist", JSON.stringify(localWishlist));
+      }
 
-    return response.data;
+      return response.data;
+    } else {
+      // Guest user - remove from localStorage
+      const stored = localStorage.getItem("wishlist");
+      if (!stored) {
+        throw new Error("Wishlist not found");
+      }
+
+      let localWishlist = JSON.parse(stored);
+      const filtered = localWishlist.filter(item => 
+        (item.product?._id || item.product) !== productId
+      );
+
+      localStorage.setItem("wishlist", JSON.stringify(filtered));
+      
+      // Dispatch storage event for cross-tab sync
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: 'wishlist',
+        newValue: JSON.stringify(filtered),
+        url: window.location.href
+      }));
+
+      return {
+        status: "success",
+        data: { message: "Item removed from wishlist" }
+      };
+    }
   } catch (error) {
     throw error.response?.data || error.message;
   }
@@ -125,13 +232,93 @@ export const getWishlistByUser = async () => {
   try {
     const token = localStorage.getItem("token");
 
-    const response = await api.get("/user/wishlist", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    if (token) {
+      // Logged-in user - fetch from server
+      const response = await api.get("/user/wishlist", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    return response.data;
+      return response.data;
+    } else {
+      // Guest user - fetch from localStorage
+      const stored = localStorage.getItem("wishlist");
+      let localWishlist = stored ? JSON.parse(stored) : [];
+      
+      // Clean up old format (if wishlist has string items instead of objects)
+      localWishlist = localWishlist.filter(item => {
+        // If item is a string (old format), remove it
+        if (typeof item === 'string') {
+          console.warn('Found old format wishlist item (string), removing:', item);
+          return false;
+        }
+        // Keep only proper object format items
+        return item && typeof item === 'object' && item.product;
+      });
+      
+      // Save cleaned wishlist back to localStorage
+      localStorage.setItem("wishlist", JSON.stringify(localWishlist));
+
+      // If empty after cleanup, return empty array
+      if (localWishlist.length === 0) {
+        return {
+          status: "success",
+          data: []
+        };
+      }
+
+      // For guest users, we need to fetch product details for each item
+      // This requires calling the product API for each productId
+      const productsWithDetails = await Promise.all(
+        localWishlist.map(async (item) => {
+          try {
+            const productId = item.product?._id || item.product;
+            
+            if (!productId) {
+              console.error('Invalid wishlist item, missing product ID:', item);
+              return null;
+            }
+            
+            console.log(`Fetching product details for: ${productId}`);
+            
+            // Fetch product details
+            const productResponse = await api.get(`/product/${productId}`);
+            console.log(`Product response for ${productId}:`, productResponse);
+            
+            // The backend might return data in different structures
+            // Try multiple paths to get the product data
+            let productData = productResponse.data?.data?.product || 
+                            productResponse.data?.data || 
+                            productResponse.data?.product ||
+                            productResponse.data;
+            
+            console.log(`Extracted product data for ${productId}:`, productData);
+            
+            // If productData is still wrapped, try to unwrap it
+            if (productData && productData.product && !productData.productTitle) {
+              productData = productData.product;
+            }
+            
+            return {
+              ...item,
+              product: productData // Replace productId with full product object
+            };
+          } catch (err) {
+            console.error(`Failed to fetch product ${item.product}:`, err);
+            return null; // Return null if fetch fails
+          }
+        })
+      );
+      
+      // Filter out null items (failed fetches)
+      const validProducts = productsWithDetails.filter(item => item !== null);
+
+      return {
+        status: "success",
+        data: validProducts
+      };
+    }
   } catch (error) {
     throw error.response?.data || error.message;
   }
@@ -259,16 +446,66 @@ export const getCartDetails = async () => {
 
 export const removeUserCart = async ({ productId, varientId = "", quantity }) => {
   try {
-    const response = await api.post(
-      "user/cart/remove",
-      { productId, varientId, quantity },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
+    const token = localStorage.getItem("token");
+    
+    if (token) {
+      // Logged-in user - call server API
+      const response = await api.post(
+        "user/cart/remove",
+        { productId, varientId, quantity },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      
+      // Also update localStorage for consistency
+      const localCart = localStorage.getItem("userCart");
+      if (localCart) {
+        let cartData = JSON.parse(localCart);
+        if (!Array.isArray(cartData)) cartData = [cartData];
+        
+        // Remove item from local cart
+        const filtered = cartData.filter(item => {
+          const itemProductId = item.productId?._id || item.productId;
+          const itemVarientId = item.varientId || "";
+          return !(itemProductId == productId && itemVarientId == varientId);
+        });
+        
+        localStorage.setItem("userCart", JSON.stringify(filtered));
       }
-    );
-    return response.data;
+      
+      return response.data;
+    } else {
+      // Guest user - remove from localStorage only
+      const localCart = localStorage.getItem("userCart");
+      if (!localCart) {
+        throw new Error("Cart not found");
+      }
+      
+      let cartData = JSON.parse(localCart);
+      if (!Array.isArray(cartData)) cartData = [cartData];
+      
+      // Remove item
+      const filtered = cartData.filter(item => {
+        const itemProductId = item.productId?._id || item.productId;
+        const itemVarientId = item.varientId || "";
+        return !(itemProductId == productId && itemVarientId == varientId);
+      });
+      
+      localStorage.setItem("userCart", JSON.stringify(filtered));
+      
+      // Dispatch storage event for cross-tab sync
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: 'userCart',
+        newValue: JSON.stringify(filtered),
+        url: window.location.href
+      }));
+      
+      return { status: "success", data: { products: filtered } };
+    }
   } catch (error) {
     throw error.response?.data || error.message;
   }
@@ -394,3 +631,112 @@ export const verifyRazorpayPayment = async (verificationData) => {
 //     throw error.response?.data || error.message;
 //   }
 // };
+
+// Merge guest cart and wishlist data with server on login
+export const mergeGuestDataOnLogin = async (token: string) => {
+  try {
+    console.log("Starting guest data merge...");
+    
+    // Merge Cart
+    const guestCart = localStorage.getItem("userCart");
+    if (guestCart) {
+      const cartItems = JSON.parse(guestCart);
+      if (Array.isArray(cartItems) && cartItems.length > 0) {
+        console.log(`Merging ${cartItems.length} cart items...`);
+        
+        // Add each cart item to server (backend handles duplicates)
+        for (const item of cartItems) {
+          try {
+            const productId = item.productId?._id || item.productId;
+            const varientId = item.varientId || "";
+            const quantity = item.quantity || 1;
+            
+            await api.post(
+              "/user/cart/",
+              { productId, varientId, quantity },
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+          } catch (err) {
+            console.error("Failed to merge cart item:", err);
+            // Continue with other items even if one fails
+          }
+        }
+        
+        console.log("Cart merge complete");
+      }
+    }
+
+    // Merge Wishlist
+    const guestWishlist = localStorage.getItem("wishlist");
+    if (guestWishlist) {
+      const wishlistItems = JSON.parse(guestWishlist);
+      if (Array.isArray(wishlistItems) && wishlistItems.length > 0) {
+        console.log(`Merging ${wishlistItems.length} wishlist items...`);
+        
+        // Add each wishlist item to server
+        for (const item of wishlistItems) {
+          try {
+            const productId = item.product?._id || item.product;
+            const variantId = item.variant || "";
+            
+            await api.post(
+              "/user/wishlist",
+              { productId, varientId: variantId },
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+          } catch (err) {
+            console.error("Failed to merge wishlist item:", err);
+            // Continue with other items even if one fails
+          }
+        }
+        
+        console.log("Wishlist merge complete");
+      }
+    }
+
+    console.log("Guest data merged successfully");
+  } catch (error) {
+    console.error("Failed to merge guest data:", error);
+    // Don't throw - we don't want login to fail if merge fails
+  }
+};
+
+// Clear all user data on logout (start fresh)
+export const clearUserDataOnLogout = () => {
+  try {
+    console.log("Clearing user data on logout...");
+    
+    // Clear authentication
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    
+    // Clear cart and wishlist (start fresh)
+    localStorage.removeItem("userCart");
+    localStorage.removeItem("wishlist");
+    
+    // Dispatch storage events for cross-tab sync
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'userCart',
+      newValue: null,
+      url: window.location.href
+    }));
+    
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'wishlist',
+      newValue: null,
+      url: window.location.href
+    }));
+    
+    console.log("User data cleared successfully");
+  } catch (error) {
+    console.error("Error clearing user data:", error);
+  }
+};
