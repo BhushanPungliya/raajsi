@@ -73,7 +73,7 @@ function Footer() {
                                 <div>
                                     <h6 className="font-avenir-800 text-[24px] text-[#FFFFFF] lg:pb-[16px] pb-[18px]">Products</h6>
                                     <ul className='flex flex-col gap-[8px]'>
-                                        <Link href="/feature-products" className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Feature Products</Link>
+                                        <Link href="/feature-products" className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Featured Products</Link>
                                         {/* <Link href="/feature-products" className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Hair Care</Link>
                                         <Link href="/feature-products" className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Body care</Link>
                                         <Link href="/feature-products" className='font-avenir-400 text-[16px] text-[#FFFFFF]'>Skin Care</Link> */}
