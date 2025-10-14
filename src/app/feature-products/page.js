@@ -140,7 +140,7 @@ function Page() {
                         </button>
                     </div>
                     <p className="font-avenir-400 text-[20px] lg:text-[18px] 
-                  text-[#FFFFFF] uppercase max-w-[100%] lg:max-w-[671px] 
+                  text-[#FFFFFF] max-w-[100%] lg:max-w-[671px] 
                   w-full leading-[28px] lg:leading-[26px] 
                   pt-[12px] sm:pt-[14px] md:pt-[16px] lg:pt-[18px]">
                         Explore our wide range of luxurious skincare and wellness products to celebrate beauty that is timeless.

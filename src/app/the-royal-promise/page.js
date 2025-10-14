@@ -14,7 +14,7 @@ function Page() {
             <section className="hero-section h-[778px] overflow-hidden">
                 <div className="relative w-full h-full lg:pl-[93px] pl-[0px] lg:pl-0 pl-[20px] pt-[83px]">
                     <h2 className='font-rose text-[32px] text-[#FFFFFF] pb-[20px]'>At Raajsi, luxury meets responsibility.</h2>
-                    <p className="font-avenir-400 text-[18px] uppercase text-[#FFFFFF] max-w-[671px] w-full">Our royal promise is built on integrity, transparency, and timeless care - for you and the planet.</p>
+                    <p className="font-avenir-400 text-[18px] text-[#FFFFFF] max-w-[671px] w-full">Our royal promise is built on integrity, transparency, and timeless care - for you and the planet.</p>
                     {/* <h2 className="max-w-[634px] w-full font-[400] lg:text-[41px] text-[26px] text-[#FFFAFA] ">मुग्धे! धानुष्कता केयमपूर्वा त्वयि दृश्यते ।
                         यया विध्यसि चेतांसि गुणैरेव न सायकैः ॥</h2> */}
                     <button onClick={handleScroll} className="absolute cursor-pointer bottom-[128px] left-[50%] -translate-x-1/2 ">
