@@ -118,11 +118,16 @@ function FeatureSlider({ featureData }) {
                     {/* Bottom actions */}
                     <div className="flex justify-between md:items-center items-start md:gap-0 gap-[10px] flex-row py-[18px]">
                       <div className="flex gap-[6px] md:flex-row flex-col items-start w-full">
-                        <Link href="/products/1" className="w-full md:w-auto">
+                      <div className="w-full md:w-auto flex flex-col gap-[10px]">
+                        <Link href="/products/1">
                           <button className="font-avenir-400 w-full md:max-w-[206px] text-[14px] text-[#FFFFFF] py-[6px] px-[10px] bg-[#BA7E38] rounded-full border border-[#BA7E38] hover:bg-transparent hover:text-[#BA7E38] transition-all">
                             VIEW PRODUCT
                           </button>
                         </Link>
+                        <button className="font-avenir-400 text-[14px] text-[#FFFFFF] py-[6px] px-[10px] bg-[#BA7E38] rounded-full border border-[#BA7E38] hover:bg-transparent hover:text-[#BA7E38] transition-all">
+                          Buy from Amazon
+                        </button>
+                      </div>
                         <div className="flex gap-[10px]">
                           <CartButton productId={item._id} />
                           <WishlistButton productId={item._id} />
@@ -205,11 +210,16 @@ function FeatureSlider({ featureData }) {
                     {/* Bottom actions */}
                     <div className="flex justify-between md:items-center items-start md:gap-0 gap-[10px] md:flex-row flex-col py-[18px]">
                       <div className="flex gap-[6px] md:flex-row items-center w-full">
-                        <Link href="/products/1" className="w-full md:w-auto">
-                          <button className="font-avenir-400 w-full md:max-w-[206px] text-[16px] md:text-[18px] text-[#FFFFFF] py-[10px] md:py-[12px] px-[20px] md:px-[34px] bg-[#BA7E38] rounded-full border border-[#BA7E38] hover:bg-transparent hover:text-[#BA7E38] transition-all">
-                            VIEW PRODUCT
+                        <div className="w-full md:w-auto flex flex-col gap-[10px]">
+                          <Link href="/products/1">
+                            <button className="font-avenir-400 w-full md:max-w-[206px] text-[16px] md:text-[18px] text-[#FFFFFF] py-[10px] md:py-[12px] px-[20px] md:px-[34px] bg-[#BA7E38] rounded-full border border-[#BA7E38] hover:bg-transparent hover:text-[#BA7E38] transition-all">
+                              VIEW PRODUCT
+                            </button>
+                          </Link>
+                          <button className="font-avenir-400 text-[16px] md:text-[18px] text-[#FFFFFF] py-[10px] md:py-[12px] px-[20px] md:px-[34px] bg-[#BA7E38] rounded-full border border-[#BA7E38] hover:bg-transparent hover:text-[#BA7E38] transition-all">
+                            Buy from Amazon
                           </button>
-                        </Link>
+                        </div>
                         <div className="flex gap-[10px]">
                           <CartButton productId={item._id} />
                           <WishlistButton productId={item._id} />

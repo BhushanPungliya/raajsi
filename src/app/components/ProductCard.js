@@ -130,11 +130,16 @@ const ProductCard = ({
         {/* Bottom Section */}
         <div className="flex justify-between lg:flex-row flex-col lg:items-center items-start lg:gap-0 gap-[20px] py-[18px]">
           <div className="flex gap-[6px]">
-            <Link href={`/products/${product.id || product._id || '1'}`}>
+            <div className="w-full md:w-auto flex flex-col gap-[10px]">
+              <Link href={`/products/${product.id || product._id || '1'}`}>
+                <button className="font-avenir-400 text-[18px] text-[#FFFFFF] py-[20px] px-[34px] bg-[#BA7E38] rounded-full border border-[#BA7E38] hover:bg-transparent hover:text-[#BA7E38] transition">
+                  VIEW PRODUCT
+                </button>
+              </Link>
               <button className="font-avenir-400 text-[18px] text-[#FFFFFF] py-[20px] px-[34px] bg-[#BA7E38] rounded-full border border-[#BA7E38] hover:bg-transparent hover:text-[#BA7E38] transition">
-                VIEW PRODUCT
+                Buy from Amazon
               </button>
-            </Link>
+            </div>
 
             <button aria-label="Add to cart">
               <Image src="/images/home/cart.svg" alt="cart" height={52} width={52} className="object-cover" />
@@ -170,25 +175,25 @@ const ProductCard = ({
           </div>
         </div>
       )}
-       {benefits && (
-                <div
-                    className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-                    onClick={() => setBenefits(false)}
-                >
-                    <div
-                        className="bg-white rounded-2xl shadow-lg w-[90%] max-w-md py-[30px] px-[34px] relative"
-                        onClick={(e) => e.stopPropagation()}
-                        role="dialog"
-                        aria-modal="true"
-                        aria-labelledby="authModalTitle"
-                    >
-                        <button className="auth-close-btn" onClick={() => setBenefits(false)} aria-label="Close login">&times;</button>
-                        <h6 className="text-center font-rose text-[24px] font-[400] text-[#4C0A2E] pb-[10px]">Ingredients</h6>
-                        <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-center text-[#3C3C3C] max-w-[260px] pb-[10px] w-full mx-auto">Cosmic Body Oil</p>
-                        <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#191919]">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                    </div>
-                </div>
-            )}
+      {benefits && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          onClick={() => setBenefits(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-lg w-[90%] max-w-md py-[30px] px-[34px] relative"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="authModalTitle"
+          >
+            <button className="auth-close-btn" onClick={() => setBenefits(false)} aria-label="Close login">&times;</button>
+            <h6 className="text-center font-rose text-[24px] font-[400] text-[#4C0A2E] pb-[10px]">Ingredients</h6>
+            <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-center text-[#3C3C3C] max-w-[260px] pb-[10px] w-full mx-auto">Cosmic Body Oil</p>
+            <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#191919]">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

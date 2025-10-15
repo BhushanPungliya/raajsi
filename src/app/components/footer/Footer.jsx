@@ -113,16 +113,21 @@ function Footer() {
                                     <p className="font-avenir-400 text-[16px] text-[#FFFFFF]">1-802-526-2463</p>
                                 </div>
                             </div>
-                            <div className='flex gap-[8px]'>
+                            <div className='flex gap-[8px] items-center'>
                                 <a href={"https://www.instagram.com/raajsi.in"} target="_blank"
                                     rel="noopener noreferrer" >
                                     <Image alt='icon1' src="/images/footer/icon1.svg" height={40} width={40} />
                                 </a>
-                                {/* <a href="" target="_blank"
+                                <a href="" target="_blank"
                                     rel="noopener noreferrer"
                                 >
                                     <Image alt='icon2' src="/images/footer/icon2.svg" height={40} width={40} />
-                                </a> */}
+                                </a>
+                                <a href="" target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <Image alt='icon2' src="/images/footer/a.svg" height={30} width={30} />
+                                </a>
                                 {/* <Image alt='icon3' src="/images/footer/icon3.svg" height={40} width={40} />
                                 <Image alt='icon4' src="/images/footer/icon4.svg" height={40} width={40} />
                                 <Image alt='icon5' src="/images/footer/icon5.svg" height={40} width={40} />

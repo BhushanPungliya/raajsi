@@ -203,73 +203,94 @@ export default function Home() {
         <div className="lg:pt-[60px] pt-[46px] max-w-[1205px] w-full mx-auto ">
           <Heading title="Step into royal indulgence." />
           <div className="pt-[54px] lg:block hidden">
-            <div className="rounded-t-[24px] group an relative overflow-hidden bg-[#FEFEFE] lg:h-[120px] mb-[-20px] h-auto hover:h-[444px] lg:px-[100px] px-[16px] pt-[40px] flex justify-between lg:flex-row flex-col">
-              <div className="max-w-[538px] w-full lg:pb-[214px] pb-[30px]">
-                <h6 className="font-rose font-[400] lg:text-[24px] text-[16px] lg:text-left text-center tracking-[4%] text-[#4C0A2E] pb-[14px]">From Palace to You: A Body Ritual</h6>
-                <p className="font-avenir-400 lg:opacity-0 an group-hover:opacity-100 text-[16px] text-[#0C0C0C] lg:text-left text-center pb-[24px]">Rani Padmavati of Chittor indulged in luxurious ubtan rituals
-                  —an age-old body remedy made with sandalwood, turmeric, lentils, and rose petals. Applied before her ceremonial baths, this exfoliating paste, followed by herbal oil massages, wasn’t just for beauty—it was a sacred act of self-rejuvenation. At Raajsi, we revive this royal tradition through our body oils, scrubs, and soaps, bringing timeless radiance to your modern-day rituals</p>
-                <p className="font-avenir-400 text-[16px] text-[#0C0C0C] lg:text-left text-center pb-[45px]">Step into royal indulgence.</p>
-                <Link href="/feature-products" className="flex items-start items-center">
-                  <button className="font-avenir-400 text-[18px] rounded-full text-[#FFFFFF] py-[14px] px-[24px] bg-[#4C0A2E] border border-[#4C0A2E] an hover:bg-transparent hover:text-[#4C0A2E]">VIEW PRODUCTS</button>
-                </Link>
-              </div>
-              <div className="max-w-[335px] lg:opacity-0 an group-hover:opacity-100 h-[380px] w-full">
-                <Image
-                  src="/images/home/img2.png"
-                  alt="Hero"
-                  height={380} width={335}
-                  className="object-cover rounded-t-full"
-                />
-              </div>
-            </div>
-            <div className="rounded-t-[24px] group lg:h-[100px] h-auto hover:h-[490px] an relative w-full mb-[-40px] z-10 overflow-hidden bg-[#BA7E38] lg:px-[100px] px-[20px] hover:pt-[50px] pt-[20px] flex justify-between lg:flex-row flex-col">
-              <div className="max-w-[538px] w-full pb-[44px]">
-                <h6 className="font-rose font-[400] text-[24px] tracking-[4%] text-[#FFFFFF] pb-[14px]">Radiance of the Rajput Ranis-Skin Alchemy</h6>
-                <p className="font-avenir-400 text-[16px] lg:opacity-0 an group-hover:opacity-100 text-[#FFFFFF] pb-[24px]">Rani Karnavati of Mewar was known for her disciplined beauty rituals, which were drawn from Ayurveda. Her skincare secrets included cooling aloe vera gels, sandalwood pastes, and saffron mixed with raw milk—applied daily to protect her skin from the harsh desert sun. These remedies not only nourished the skin but symbolised a deeper connection to purity and grace. Raajsi’s creams and cleansers echo these regal traditions—infusing ancient wisdom into every drop.</p>
-                <p className="font-avenir-400 text-[16px]  text-[#FFFFFF] pb-[45px]">Glow like royalty.</p>
-                <Link href="/feature-products"><button className="font-avenir-400 text-[18px] rounded-full text-[#4C0A2E] py-[14px] px-[24px] bg-[#FFFFFF] border border-[#FFFFFF] an hover:bg-transparent hover:text-[#FFFFFF]">VIEW PRODUCTS</button></Link>
-              </div>
-              <div className="max-w-[335px] lg:opacity-0 an group-hover:opacity-100 h-[380px] w-full">
-                <Image
-                  src="/images/home/img2.png"
-                  alt="Hero"
-                  height={380} width={335}
-                  className="object-cover rounded-t-full"
-                />
+            <div className="rounded-t-[24px] group an relative overflow-hidden bg-[#14010A] lg:h-[84px] mb-[-20px] h-auto hover:h-[484px] pt-[14px]">
+              <h6 className="font-rose font-[400] lg:text-[24px] text-[16px] lg:text-left text-center tracking-[4%] text-[#FFFFFF] pb-[34px] lg:px-[100px] px-[16px]">From Palace to You: A Body Ritual</h6>
+              <div className="flex justify-between lg:flex-row flex-col bg-[#FFFFFF] pt-[20px] pb-[20px]">
+                <div className="max-w-[538px] w-full lg:pb-[214px] pb-[30px]">
+                  <div className="lg:pl-[100px] pl-[16px]">
+                    <p className="font-avenir-400 lg:opacity-0 an group-hover:opacity-100 text-[16px] text-[#0C0C0C] lg:text-left text-center pb-[24px]">Rani Padmavati of Chittor indulged in luxurious ubtan rituals
+                      —an age-old body remedy made with sandalwood, turmeric, lentils, and rose petals. Applied before her ceremonial baths, this exfoliating paste, followed by herbal oil massages, wasn’t just for beauty—it was a sacred act of self-rejuvenation. At Raajsi, we revive this royal tradition through our body oils, scrubs, and soaps, bringing timeless radiance to your modern-day rituals</p>
+                    <p className="font-avenir-400 text-[16px] text-[#0C0C0C] lg:text-left text-center pb-[45px]">Step into royal indulgence.</p>
+                    <Link href="/feature-products" className="flex items-start items-center">
+                      <button className="font-avenir-400 text-[18px] rounded-full text-[#FFFFFF] py-[14px] px-[24px] bg-[#4C0A2E] border border-[#4C0A2E] an hover:bg-transparent hover:text-[#4C0A2E]">VIEW PRODUCTS</button>
+                    </Link>
+                  </div>
+                </div>
+                <div className="max-w-[335px] mt-[-50px] lg:mr-[110px] mr-0 lg:opacity-0 an group-hover:opacity-100 h-[380px] w-full">
+                  <Image
+                    src="/images/home/img2.png"
+                    alt="Hero"
+                    height={380} width={335}
+                    className="object-cover rounded-t-full"
+                  />
+                </div>
               </div>
             </div>
-            <div className="rounded-t-[24px] group lg:h-[100px] h-auto hover:h-[490px] an relative w-full bottom-[-20px] z-20 overflow-hidden bg-[#4C0A2E] lg:px-[100px] px-[14px] hover:pt-[50px] pt-[20px] flex justify-between lg:flex-row flex-col">
-              <div className="max-w-[538px] w-full pb-[44px]">
-                <h6 className="font-rose font-[400] text-[24px] tracking-[4%] text-[#FFFFFF] pb-[14px]">Hair Elixirs Tresses of Tradition</h6>
-                <p className="font-avenir-400 text-[16px] lg:opacity-0 an group-hover:opacity-100 text-[#FFFFFF] pb-[24px]">Rani Karnavati of Mewar was known for her disciplined beauty rituals, which were drawn from Ayurveda. Her skincare secrets included cooling aloe vera gels, sandalwood pastes, and saffron mixed with raw milk—applied daily to protect her skin from the harsh desert sun. These remedies not only nourished the skin but symbolised a deeper connection to purity and grace. Raajsi’s creams and cleansers echo these regal traditions—infusing ancient wisdom into every drop.
-                </p>
-                <p className="font-avenir-400 text-[16px]  text-[#FFFFFF] pb-[45px]">Glow like royalty.</p>
-                <Link href="/feature-products"><button className="font-avenir-400 text-[18px] rounded-full text-[#4C0A2E] py-[14px] px-[24px] bg-[#FFFFFF] border border-[#FFFFFF] an hover:bg-transparent hover:text-[#FFFFFF]">VIEW PRODUCTS</button></Link>
-              </div>
-              <div className="max-w-[335px] lg:opacity-0 an group-hover:opacity-100 h-[380px] w-full">
-                <Image
-                  src="/images/home/img2.png"
-                  alt="Hero"
-                  height={380} width={335}
-                  className="object-cover rounded-t-full"
-                />
+            <div className="rounded-t-[24px] group an relative overflow-hidden bg-[#BA7E38] lg:h-[84px] mb-[-20px] h-auto hover:h-[514px] pt-[14px]">
+              <h6 className="font-rose font-[400] lg:text-[24px] text-[16px] lg:text-left text-center tracking-[4%] text-[#FFFFFF] pb-[34px] lg:px-[100px] px-[16px]">Radiance of the Rajput Ranis-Skin Alchemy</h6>
+              <div className="flex justify-between lg:flex-row flex-col bg-[#FFFFFF] pt-[20px] pb-[20px]">
+                <div className="max-w-[538px] w-full lg:pb-[214px] pb-[30px]">
+                  <div className="lg:pl-[100px] pl-[16px]">
+                    <p className="font-avenir-400 lg:opacity-0 an group-hover:opacity-100 text-[16px] text-[#0C0C0C] lg:text-left text-center pb-[24px]">Rani Karnavati of Mewar was known for her disciplined beauty rituals, which were drawn from Ayurveda. Her skincare secrets included cooling aloe vera gels, sandalwood pastes, and saffron mixed with raw milk—applied daily to protect her skin from the harsh desert sun. These remedies not only nourished the skin but symbolised a deeper connection to purity and grace. Raajsi’s creams and cleansers echo these regal traditions—infusing ancient wisdom into every drop.</p>
+                    <p className="font-avenir-400 text-[16px] text-[#0C0C0C] lg:text-left text-center pb-[45px]">Glow like royalty.</p>
+                    <Link href="/feature-products" className="flex items-start items-center">
+                      <button className="font-avenir-400 text-[18px] rounded-full text-[#FFFFFF] py-[14px] px-[24px] bg-[#4C0A2E] border border-[#4C0A2E] an hover:bg-transparent hover:text-[#4C0A2E]">VIEW PRODUCTS</button>
+                    </Link>
+                  </div>
+                </div>
+                <div className="max-w-[335px] mt-[-50px] lg:mr-[110px] mr-0 lg:opacity-0 an group-hover:opacity-100 h-[380px] w-full">
+                  <Image
+                    src="/images/home/img2.png"
+                    alt="Hero"
+                    height={380} width={335}
+                    className="object-cover rounded-t-full"
+                  />
+                </div>
               </div>
             </div>
-            <div className="rounded-t-[24px] group lg:h-[100px] h-auto hover:h-[444px] an relative w-full bottom-[0px] z-30 overflow-hidden bg-[#6A5013] lg:px-[100px] px-[14px] pt-[20px] hover:pt-[50px] flex justify-between lg:flex-row flex-col">
-              <div className="max-w-[538px] w-full pb-[44px]">
-                <h6 className="font-rose font-[400] text-[24px] tracking-[4%] text-[#FFFFFF] pb-[14px]">Ritual Kits Anointing Grace</h6>
-                <p className="font-avenir-400 text-[16px] lg:opacity-0 an group-hover:opacity-100 text-[#FFFFFF] pb-[24px]">Rani Padmavati of Chittor indulged in luxurious ubtan rituals
-                  —an age-old body remedy made with sandalwood, turmeric, lentils, and rose petals. Applied before her ceremonial baths, this exfoliating paste, followed by herbal oil massages, wasn’t just for beauty—it was a sacred act of self-rejuvenation. At Raajsi, we revive this royal tradition through our body oils, scrubs, and soaps, bringing timeless radiance to your modern-day rituals</p>
-                <p className="font-avenir-400 text-[16px]  text-[#FFFFFF] pb-[45px]">Step into royal indulgence.</p>
-                <Link href="/feature-products"><button className="font-avenir-400 text-[18px] rounded-full text-[#4C0A2E] py-[14px] px-[24px] bg-[#FFFFFF] border border-[#FFFFFF] an hover:bg-transparent hover:text-[#FFFFFF]">VIEW PRODUCTS</button></Link>
+            <div className="rounded-t-[24px] group an relative overflow-hidden bg-[#4C0A2E] lg:h-[84px] mb-[-20px] h-auto hover:h-[484px] pt-[14px]">
+              <h6 className="font-rose font-[400] lg:text-[24px] text-[16px] lg:text-left text-center tracking-[4%] text-[#FFFFFF] pb-[34px] lg:px-[100px] px-[16px]">Hair Elixirs Tresses of Tradition</h6>
+              <div className="flex justify-between lg:flex-row flex-col bg-[#FFFFFF] pt-[20px] pb-[20px]">
+                <div className="max-w-[538px] w-full lg:pb-[214px] pb-[30px]">
+                  <div className="lg:pl-[100px] pl-[16px]">
+                    <p className="font-avenir-400 lg:opacity-0 an group-hover:opacity-100 text-[16px] text-[#0C0C0C] lg:text-left text-center pb-[24px]">Rani Padmavati of Chittor indulged in luxurious ubtan rituals
+                      —an age-old body remedy made with sandalwood, turmeric, lentils, and rose petals. Applied before her ceremonial baths, this exfoliating paste, followed by herbal oil massages, wasn’t just for beauty—it was a sacred act of self-rejuvenation. At Raajsi, we revive this royal tradition through our body oils, scrubs, and soaps, bringing timeless radiance to your modern-day rituals</p>
+                    <p className="font-avenir-400 text-[16px] text-[#0C0C0C] lg:text-left text-center pb-[45px]">Step into royal indulgence.</p>
+                    <Link href="/feature-products" className="flex items-start items-center">
+                      <button className="font-avenir-400 text-[18px] rounded-full text-[#FFFFFF] py-[14px] px-[24px] bg-[#4C0A2E] border border-[#4C0A2E] an hover:bg-transparent hover:text-[#4C0A2E]">VIEW PRODUCTS</button>
+                    </Link>
+                  </div>
+                </div>
+                <div className="max-w-[335px] mt-[-50px] lg:mr-[110px] mr-0 lg:opacity-0 an group-hover:opacity-100 h-[380px] w-full">
+                  <Image
+                    src="/images/home/img2.png"
+                    alt="Hero"
+                    height={380} width={335}
+                    className="object-cover rounded-t-full"
+                  />
+                </div>
               </div>
-              <div className="max-w-[335px] lg:opacity-0 an group-hover:opacity-100 h-[380px] w-full">
-                <Image
-                  src="/images/home/img2.png"
-                  alt="Hero"
-                  height={380} width={335}
-                  className="object-cover rounded-t-full"
-                />
+            </div>
+            <div className="rounded-t-[24px] group an relative overflow-hidden bg-[#6A5013] lg:h-[84px] mb-[-20px] h-auto hover:h-[514px] pt-[14px]">
+              <h6 className="font-rose font-[400] lg:text-[24px] text-[16px] lg:text-left text-center tracking-[4%] text-[#FFFFFF] pb-[34px] lg:px-[100px] px-[16px]">Ritual Kits Anointing Grace</h6>
+              <div className="flex justify-between lg:flex-row flex-col bg-[#FFFFFF] pt-[20px] pb-[20px]">
+                <div className="max-w-[538px] w-full lg:pb-[214px] pb-[30px]">
+                  <div className="lg:pl-[100px] pl-[16px]">
+                    <p className="font-avenir-400 lg:opacity-0 an group-hover:opacity-100 text-[16px] text-[#0C0C0C] lg:text-left text-center pb-[24px]">Rani Karnavati of Mewar was known for her disciplined beauty rituals, which were drawn from Ayurveda. Her skincare secrets included cooling aloe vera gels, sandalwood pastes, and saffron mixed with raw milk—applied daily to protect her skin from the harsh desert sun. These remedies not only nourished the skin but symbolised a deeper connection to purity and grace. Raajsi’s creams and cleansers echo these regal traditions—infusing ancient wisdom into every drop.</p>
+                    <p className="font-avenir-400 text-[16px] text-[#0C0C0C] lg:text-left text-center pb-[45px]">Glow like royalty.</p>
+                    <Link href="/feature-products" className="flex items-start items-center">
+                      <button className="font-avenir-400 text-[18px] rounded-full text-[#FFFFFF] py-[14px] px-[24px] bg-[#4C0A2E] border border-[#4C0A2E] an hover:bg-transparent hover:text-[#4C0A2E]">VIEW PRODUCTS</button>
+                    </Link>
+                  </div>
+                </div>
+                <div className="max-w-[335px] mt-[-50px] lg:mr-[110px] mr-0 lg:opacity-0 an group-hover:opacity-100 h-[380px] w-full">
+                  <Image
+                    src="/images/home/img2.png"
+                    alt="Hero"
+                    height={380} width={335}
+                    className="object-cover rounded-t-full"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -322,12 +343,12 @@ export default function Home() {
               {blogs?.map((blog, i) => {
                 return (
                   <div key={blog._id || i} className="w-full rounded-[24px] bg-[#FFFFFF]">
-                    <Image 
-                      src={blog?.displayImage?.[0]?.url || "/images/home/img5.png"} 
-                      height={219} 
-                      width={390} 
-                      alt="blog-img" 
-                      className="rounded-t-[24px] w-full h-[219px] object-cover" 
+                    <Image
+                      src={blog?.displayImage?.[0]?.url || "/images/home/img5.png"}
+                      height={219}
+                      width={390}
+                      alt="blog-img"
+                      className="rounded-t-[24px] w-full h-[219px] object-cover"
                     />
                     <div className="px-[30px] py-[18px]">
                       <h6 className="font-avenir-400 text-[20px] text-[#000000] pb-[10px]">{blog.title}</h6>

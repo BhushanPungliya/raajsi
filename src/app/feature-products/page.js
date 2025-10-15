@@ -217,11 +217,16 @@ function Page() {
                                             {/* Bottom actions */}
                                             <div className="flex justify-between md:items-center items-start md:gap-0 gap-[10px] flex-row py-[18px]">
                                                 <div className="flex gap-[6px] md:flex-row flex-col items-start w-full">
-                                                    <Link href={`/products/${product._id}`} className="w-full md:w-auto">
+                                                    <div className="w-full md:w-auto flex flex-col gap-[10px]">
+                                                        <Link href={`/products/${product._id}`}>
+                                                            <button className="font-avenir-400 cursor-pointer w-full md:max-w-[206px] text-[12px] md:text-[18px] text-[#FFFFFF] py-[8px] md:py-[12px] px-[10px] md:px-[30px] bg-[#BA7E38] rounded-full border border-[#BA7E38] hover:bg-transparent hover:text-[#BA7E38] transition-all">
+                                                                VIEW PRODUCT
+                                                            </button>
+                                                        </Link>
                                                         <button className="font-avenir-400 cursor-pointer w-full md:max-w-[206px] text-[12px] md:text-[18px] text-[#FFFFFF] py-[8px] md:py-[12px] px-[10px] md:px-[30px] bg-[#BA7E38] rounded-full border border-[#BA7E38] hover:bg-transparent hover:text-[#BA7E38] transition-all">
-                                                            VIEW PRODUCT
+                                                            Buy from Amazon
                                                         </button>
-                                                    </Link>
+                                                    </div>
                                                     <div className="flex gap-[10px]">
                                                         <CartButton productId={product._id} />
                                                         <WishlistButton productId={product._id} />
