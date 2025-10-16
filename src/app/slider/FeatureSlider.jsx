@@ -126,6 +126,14 @@ function FeatureSlider({ featureData }) {
                         <div className="flex gap-[10px]">
                           <CartButton productId={item._id} />
                           <WishlistButton productId={item._id} />
+                          {item.amazonLink && (
+                            <button 
+                              onClick={() => window.open(item.amazonLink, '_blank')}
+                              className="bg-[#FF9900] hover:bg-[#E47911] rounded-full transition-all flex items-center justify-center cursor-pointer"
+                            >
+                              <Image src="/images/amazon.svg" alt="Amazon" height={40} width={40} className="object-cover md:h-[52px] md:w-[52px]" />
+                            </button>
+                          )}
                         </div>
                       </div>
                       <div className="text-right w-full md:max-w-[170px]">
@@ -251,7 +259,7 @@ function FeatureSlider({ featureData }) {
               >
                 <button className="auth-close-btn" onClick={() => setOpenModal(false)} aria-label="Close login">&times;</button>
                 <h6 className="text-center font-rose text-[24px] font-[400] text-[#4C0A2E] pb-[10px]">Shlok Meaning</h6>
-                <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-center text-[#3C3C3C] max-w-[260px] pb-[30px] w-full mx-auto">मुग्धे! धानुष्कता केयमपूर्वा त्वयि दृश्यते ।
+                <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#3C3C3C] max-w-[260px] pb-[30px] w-full mx-auto">मुग्धे! धानुष्कता केयमपूर्वा त्वयि दृश्यते ।
                   यया विध्यसि चेतांसि गुणैरेव न सायकैः ॥</p>
                 <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#191919]">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
               </div>
@@ -277,7 +285,7 @@ function FeatureSlider({ featureData }) {
           >
             <button className="auth-close-btn" onClick={() => setBenefits(false)} aria-label="Close login">&times;</button>
             <h6 className="text-center font-rose text-[24px] font-[400] text-[#4C0A2E] pb-[10px]">Ingredients</h6>
-            <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-center text-[#3C3C3C] max-w-[260px] pb-[10px] w-full mx-auto">Cosmic Body Oil</p>
+            <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#3C3C3C] max-w-[260px] pb-[10px] w-full mx-auto">Cosmic Body Oil</p>
             <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#191919]">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
           </div>
         </div>

@@ -55,9 +55,9 @@ function Slider1() {
                         <div className="flex justify-between relative items-center lg:flex-row flex-col lg:gap-0 gap-[50px]">
                             <div className="lg:px-[50px] px-[20px] lg:pb-[36px] lg:pt-[36px]">
                                 <h6 className="font-rose font-[400] lg:pb-[16px] pb-[40px] text-[32px] text-[#FFB660]">The Royal Promise</h6>
-                                <p className="max-w-[538px] lg:pb-[16px] pb-[20px] w-full font-avenir-400 lg:lg:text-[20px] text-[18px] text-[18px] text-[#FFFFFF]">At Raajsi, luxury meets responsibility. Our royal promise is built on integrity, transparency, and timeless care - for you and the planet.</p>
+                                <p className="max-w-[538px] lg:pb-[16px] pb-[20px] w-full font-avenir-400 lg:lg:text-[20px]  text-[#FFFFFF]">At Raajsi, luxury meets responsibility. Our royal promise is built on integrity, transparency, and timeless care - for you and the planet.</p>
                                 <p className="max-w-[587px] w-full font-avenir-400 text-[20px] leading-[28px] text-[#FFFFFF] lg:pb-[16px] pb-[20px]">Time-tested formulas derived from ancient sciences and scriptures</p>
-                                <p className="font-avenir-400 lg:pb-[78px] pb-[70px] lg:lg:text-[20px] text-[18px] text-[18px] text-[#FFFFFF]">Rooted in Ayurveda and proven through generations of ritual wisdom.</p>
+                                <p className="font-avenir-400 lg:pb-[78px] pb-[70px] lg:lg:text-[20px] text-[18px] text-[#FFFFFF]">Rooted in Ayurveda and proven through generations of ritual wisdom.</p>
                                 <Link href="/the-royal-promise">
                                     <button className="font-avenir-400 text-[18px] text-[#FFFFFF] lg:py-[14px] py-[10px] px-[50px] bg-[#BA7E38] rounded-full border border-[#BA7E38] an hover:bg-transparent hover:text-[#BA7E38]">
                                         EXPLORE

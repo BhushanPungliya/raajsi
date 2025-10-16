@@ -24,7 +24,7 @@ const CartButton = ({ productId, quantity = 1 }) => {
   };
 
   return (
-    <button onClick={handleAddToCart}>
+    <button onClick={handleAddToCart} className="cursor-pointer">
       <Image
         src="/images/home/cart.svg"
         alt="cart"

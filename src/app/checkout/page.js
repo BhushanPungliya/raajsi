@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { getUserCart, getUserDetails, placeOrder, createRazorpayOrder, verifyRazorpayPayment, updateAddress, removeUserCart, mergeGuestCartWithUserCart } from '@/api/auth';
 import OTPLogin from '@/app/components/OTPLogin';
+import AddressFields from '@/app/components/AddressFields';
 
 export default function CheckoutPage() {
     const [cartData, setCartData] = useState([]);
@@ -17,27 +18,16 @@ export default function CheckoutPage() {
     const [razorpayLoaded, setRazorpayLoaded] = useState(false);
     const [isEditingAddress, setIsEditingAddress] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
-    const [shippingAddress, setShippingAddress] = useState(() => {
-        // Try to load from localStorage for guest users
-        if (typeof window !== 'undefined') {
-            const saved = localStorage.getItem('guestShippingAddress');
-            if (saved) {
-                try {
-                    return JSON.parse(saved);
-                } catch (e) {}
-            }
-        }
-        return {
-            firstName: '',
-            lastName: '',
-            email: '',
-            phoneNumber: '',
-            street: '',
-            city: '',
-            state: '',
-            zip: '',
-            country: 'India'
-        };
+    const [shippingAddress, setShippingAddress] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: '',
+        street: '',
+        city: '',
+        state: '',
+        zip: '',
+        country: 'India'
     });
     const [addressError, setAddressError] = useState('');
     const router = useRouter();
@@ -72,7 +62,7 @@ export default function CheckoutPage() {
                     setUser(actualUser);
                     setCartData(cartResponse?.data?.products || []);
 
-                    // Pre-fill My Palace if available (use shippingAddress on user)
+                    // Pre-fill address from user's shippingAddress
                     const addr = actualUser?.shippingAddress || {};
                     setShippingAddress(prev => ({
                         ...prev,
@@ -99,7 +89,7 @@ export default function CheckoutPage() {
                         }));
                     }
                 } else {
-                    // Guest user: load cart and My Palace from localStorage
+                    // Guest user: load cart only (no address needed)
                     const localCart = localStorage.getItem('userCart');
                     let guestCartData = localCart ? JSON.parse(localCart) : [];
                     if (!Array.isArray(guestCartData)) {
@@ -107,13 +97,6 @@ export default function CheckoutPage() {
                     }
                     setCartData(guestCartData);
                     setUser(null);
-                    // Load My Palace for guest
-                    const savedAddress = localStorage.getItem('guestShippingAddress');
-                    if (savedAddress) {
-                        try {
-                            setShippingAddress(JSON.parse(savedAddress));
-                        } catch (e) {}
-                    }
                 }
             } catch (error) {
                 console.error('Error initializing checkout:', error);
@@ -246,47 +229,21 @@ export default function CheckoutPage() {
                 toast.error('Failed to update address');
                 return; // Don't close edit mode on error
             }
-        } else {
-            // For guest users, just validate and show success
-            toast.success('Address saved for this order');
         }
 
-        // Save My Palace to localStorage for guest users
-        if (!isLoggedIn) {
-            try {
-                localStorage.setItem('guestShippingAddress', JSON.stringify(shippingAddress));
-            } catch (e) {}
-        }
         setIsEditingAddress(false);
     };
 
     const handleCancelEdit = () => {
-        // Reset to original address from user data (only for logged-in users)
+        // Reset to original address from user data
         if (user?.shippingAddress) {
             setShippingAddress(prev => ({
                 ...prev,
                 ...user.shippingAddress
             }));
-        } else {
-            // For guest, reload from localStorage
-            const saved = localStorage.getItem('guestShippingAddress');
-            if (saved) {
-                try {
-                    setShippingAddress(JSON.parse(saved));
-                } catch (e) {}
-            }
         }
         setIsEditingAddress(false);
     };
-    // Persist My Palace changes for guest users
-    useEffect(() => {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-        if (!token) {
-            try {
-                localStorage.setItem('guestShippingAddress', JSON.stringify(shippingAddress));
-            } catch (e) {}
-        }
-    }, [shippingAddress]);
 
     const subtotal = cartData.reduce(
         (acc, item) => acc + (item.productId?.salePrice || item.productId?.price || 0) * item.quantity,
@@ -344,6 +301,12 @@ export default function CheckoutPage() {
     };
 
     const handleProceedToPayment = async () => {
+        // Prevent double submission
+        if (processing) {
+            console.log('⚠️ Already processing, ignoring duplicate click');
+            return;
+        }
+
         const token = localStorage.getItem('token');
         const isLoggedIn = !!token;
 
@@ -362,7 +325,7 @@ export default function CheckoutPage() {
 
         // Validate My Palace
         if (!isAddressComplete()) {
-            toast.error('Please complete your My Palace before proceeding to payment');
+            toast.error('Please complete your Palace details before proceeding to payment');
             setIsEditingAddress(true);
             return;
         }
@@ -389,7 +352,9 @@ export default function CheckoutPage() {
             };
 
             const orderResponse = await placeOrder(orderData);
-            const orderId = orderResponse.data._id;
+            console.log('📦 Order created:', orderResponse);
+            const orderId = orderResponse.data.data._id;
+            console.log('📦 Order ID extracted:', orderId);
 
             // Create Razorpay order
             const razorpayOrderData = {
@@ -457,8 +422,13 @@ export default function CheckoutPage() {
                 },
                 handler: async function (response) {
                     try {
+                        console.log('💳 Payment handler called');
+                        console.log('💳 orderId in handler:', orderId);
+                        console.log('💳 Razorpay response:', response);
+                        
                         // Verify payment
                         const verificationData = {
+                            orderId: orderId, // CRITICAL: Include orderId to update existing order
                             orderCreationId: rzpOrder.id,
                             razorpayPaymentId: response.razorpay_payment_id,
                             razorpayOrderId: response.razorpay_order_id,
@@ -499,6 +469,8 @@ export default function CheckoutPage() {
                                 }
                             })
                         };
+
+                        console.log('💳 Verification data being sent:', verificationData);
 
                         // Verify payment
                         const verificationResp = await verifyRazorpayPayment(verificationData);
@@ -662,19 +634,20 @@ export default function CheckoutPage() {
                             )}
                         </div>
 
-                        {/* My Palace */}
-                        <div className="bg-white p-6 rounded-[20px] shadow-md">
-                            <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-xl font-semibold">My Palace</h2>
-                                {!isEditingAddress && (
-                                    <button
-                                        onClick={() => setIsEditingAddress(true)}
-                                        className="bg-[#BA7E38] text-white px-4 py-2 rounded-lg hover:bg-[#a96f2e] transition"
-                                    >
-                                        Edit Palace
-                                    </button>
-                                )}
-                            </div>
+                        {/* My Palace - Only show for logged-in users */}
+                        {user && (
+                            <div className="bg-white p-6 rounded-[20px] shadow-md">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h2 className="text-xl font-semibold">My Palace</h2>
+                                    {!isEditingAddress && (
+                                        <button
+                                            onClick={() => setIsEditingAddress(true)}
+                                            className="bg-[#BA7E38] text-white px-4 py-2 rounded-lg hover:bg-[#a96f2e] transition"
+                                        >
+                                            Edit Palace
+                                        </button>
+                                    )}
+                                </div>
 
                             {!isEditingAddress ? (
                                 // Display Address
@@ -787,29 +760,14 @@ export default function CheckoutPage() {
                                             />
                                         </div>
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-[#3C3C3C] mb-2">
-                                                City *
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={shippingAddress.city}
-                                                onChange={(e) => setShippingAddress(prev => ({ ...prev, city: e.target.value }))}
-                                                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BA7E38]"
-                                                required
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-[#3C3C3C] mb-2">
-                                                State *
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={shippingAddress.state}
-                                                onChange={(e) => setShippingAddress(prev => ({ ...prev, state: e.target.value }))}
-                                                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BA7E38]"
-                                                required
+                                        {/* Address Fields: Country, State, City (Searchable Dropdowns) */}
+                                        <div className="md:col-span-2">
+                                            <AddressFields
+                                                address={shippingAddress}
+                                                onChange={(updatedAddress) => setShippingAddress(updatedAddress)}
+                                                disabled={false}
+                                                showLabels={true}
+                                                layout="grid"
                                             />
                                         </div>
 
@@ -823,18 +781,6 @@ export default function CheckoutPage() {
                                                 onChange={(e) => setShippingAddress(prev => ({ ...prev, zip: e.target.value }))}
                                                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BA7E38]"
                                                 required
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-[#3C3C3C] mb-2">
-                                                Country
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={shippingAddress.country}
-                                                onChange={(e) => setShippingAddress(prev => ({ ...prev, country: e.target.value }))}
-                                                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BA7E38]"
                                             />
                                         </div>
                                     </div>
@@ -856,6 +802,7 @@ export default function CheckoutPage() {
                                 </>
                             )}
                         </div>
+                    )}
                     </div>
 
                     {/* Right: Order Summary (only show when cart has items) */}
@@ -882,7 +829,7 @@ export default function CheckoutPage() {
 
                             <button
                                 onClick={handleProceedToPayment}
-                                disabled={processing || cartData.length === 0 || !isAddressComplete() || !razorpayLoaded}
+                                disabled={processing || cartData.length === 0 || !razorpayLoaded}
                                 className="w-full bg-[#BA7E38] text-white py-3 rounded-[20px] text-lg font-semibold hover:bg-[#a96f2e] transition disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {processing ? 'Processing...' : !razorpayLoaded ? 'Loading Payment...' : 'Proceed to Payment'}
@@ -890,7 +837,6 @@ export default function CheckoutPage() {
                         </div>
                     )}
                 </div>
-            </div>
             </div>
 
             {/* Login Modal */}
@@ -910,6 +856,7 @@ export default function CheckoutPage() {
                     </div>
                 </div>
             )}
+            </div>
         </div>
     );
 }

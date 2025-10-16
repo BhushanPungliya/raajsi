@@ -6,6 +6,7 @@ import { getUserDetails, updateUser, getUserOrders, clearUserDataOnLogout } from
 import OrderItem from "@/app/components/account/order-item"
 import AccountDetails from "@/app/components/account/account-details"
 import HeroCard from "@/app/components/account/hero-card"
+import AddressFields from '@/app/components/AddressFields';
 import { FiLogOut, FiUser, FiHome } from 'react-icons/fi'; 
 // --- CONSTANTS AND DATA (Unchanged) ---
 const ORDERS = [
@@ -131,12 +132,45 @@ export default function AccountPage() {
     }, [activeTab]);
 
     // Flatten orders into per-product entries and sort by order date desc
+    // Group duplicate products within same order (in case backend sends duplicates)
     const productEntries = useMemo(() => {
         if (!orders || !orders.length) return [];
-        const entries = orders.flatMap((order) =>
-            (order.products || []).map((item) => ({ order, item }))
+        
+        const entries = orders.flatMap((order) => {
+            if (!order.products || !order.products.length) return [];
+            
+            // Group products by unique identifier (productId + variantId)
+            const productMap = new Map();
+            
+            order.products.forEach((item) => {
+                // Create unique key for each product (including variant if exists)
+                const productId = item.product?._id || item.productId;
+                const variantId = item.variant?._id || item.variantId || '';
+                const uniqueKey = `${productId}-${variantId}`;
+                
+                if (productMap.has(uniqueKey)) {
+                    // Product already exists, add quantity
+                    const existing = productMap.get(uniqueKey);
+                    existing.item.quantity += (item.quantity || 1);
+                } else {
+                    // New product, add to map
+                    productMap.set(uniqueKey, {
+                        order,
+                        item: { ...item }
+                    });
+                }
+            });
+            
+            // Convert map back to array
+            return Array.from(productMap.values());
+        });
+        
+        // Sort by order date descending
+        entries.sort((a, b) => 
+            new Date(b.order?.createdAt || b.order?._id) - 
+            new Date(a.order?.createdAt || a.order?._id)
         );
-        entries.sort((a, b) => new Date(b.order?.createdAt || b.order?._id) - new Date(a.order?.createdAt || a.order?._id));
+        
         return entries;
     }, [orders]);
 
@@ -347,6 +381,7 @@ export default function AccountPage() {
                                                         itemsCount={item.quantity}
                                                         imageAlt={item.product?.productTitle || ''}
                                                         imageSrc={item.product?.productImageUrl?.[0] || '/images/home/img3.jpg'}
+                                                        orderDate={order.createdAt}
                                                     />
                                                 </div>
                                             ))
@@ -408,17 +443,24 @@ export default function AccountPage() {
                                         {errors.street && <p className="text-sm text-red-600 mt-1">{errors.street}</p>}
                                     </div>
 
-                                    <div className="flex space-x-4">
-                                        <div className="w-1/2">
-                                            <label className="sr-only">Country</label>
-                                            <input value={addressForm.country} onChange={(e) => handleAddressChange('country', e.target.value)} type="text" placeholder="Country" className="w-full p-2 border border-gray-300 rounded" />
-                                            {errors.country && <p className="text-sm text-red-600 mt-1">{errors.country}</p>}
-                                        </div>
-                                        <div className="w-1/2">
-                                            <label className="sr-only">Zip</label>
-                                            <input value={addressForm.zip} onChange={(e) => handleAddressChange('zip', e.target.value)} type="text" placeholder="Zip Code" className="w-full p-2 border border-gray-300 rounded" />
-                                            {errors.zip && <p className="text-sm text-red-600 mt-1">{errors.zip}</p>}
-                                        </div>
+                                    {/* Address Fields: Country, State, City (Searchable Dropdowns) */}
+                                    <div>
+                                        <AddressFields
+                                            address={addressForm}
+                                            onChange={(updatedAddress) => {
+                                                setAddressForm(updatedAddress);
+                                            }}
+                                            errors={errors}
+                                            disabled={false}
+                                            showLabels={false}
+                                            layout="grid"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="sr-only">Zip</label>
+                                        <input value={addressForm.zip} onChange={(e) => handleAddressChange('zip', e.target.value)} type="text" placeholder="Zip Code" className="w-full p-2 border border-gray-300 rounded" />
+                                        {errors.zip && <p className="text-sm text-red-600 mt-1">{errors.zip}</p>}
                                     </div>
 
                                     <div>

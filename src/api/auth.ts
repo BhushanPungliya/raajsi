@@ -84,6 +84,17 @@ export const getProductById = async (productId) => {
   }
 };
 
+export const getRelatedProducts = async (productId, limit = 4) => {
+  try {
+    const response = await api.get(`product/${productId}/related`, {
+      params: { limit }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching related products:', error);
+    throw error.response?.data || error.message;
+  }
+};
 
 
 export const addToWishlist = async (productId, varientId = "") => {

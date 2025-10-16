@@ -209,7 +209,7 @@ export default function Home() {
                 <p className="font-avenir-400 lg:opacity-0 an group-hover:opacity-100 text-[16px] text-[#0C0C0C] lg:text-left text-center pb-[24px]">Rani Padmavati of Chittor indulged in luxurious ubtan rituals
                   —an age-old body remedy made with sandalwood, turmeric, lentils, and rose petals. Applied before her ceremonial baths, this exfoliating paste, followed by herbal oil massages, wasn’t just for beauty—it was a sacred act of self-rejuvenation. At Raajsi, we revive this royal tradition through our body oils, scrubs, and soaps, bringing timeless radiance to your modern-day rituals</p>
                 <p className="font-avenir-400 text-[16px] text-[#0C0C0C] lg:text-left text-center pb-[45px]">Step into royal indulgence.</p>
-                <Link href="/feature-products" className="flex items-start items-center">
+                <Link href="/feature-products" className="flex items-start">
                   <button className="font-avenir-400 text-[18px] rounded-full text-[#FFFFFF] py-[14px] px-[24px] bg-[#4C0A2E] border border-[#4C0A2E] an hover:bg-transparent hover:text-[#4C0A2E]">VIEW PRODUCTS</button>
                 </Link>
               </div>

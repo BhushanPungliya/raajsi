@@ -6,7 +6,7 @@ import * as FaIcons from "react-icons/fa";
 import { IoMdStar } from "react-icons/io";
 import ProductCard from "../../components/ProductCard";
 import { useParams } from "next/navigation";
-import { getProductById, addToCart, getUserCart, removeUserCart } from '@/api/auth';
+import { getProductById, addToCart, getUserCart, removeUserCart, getRelatedProducts } from '@/api/auth';
 import { toast } from 'react-toastify';
 
 const { FaStar, FaStarHalfAlt, FaRegStar, FaMinus, FaPlus } = FaIcons;
@@ -121,6 +121,9 @@ export default function ProductPage({ onAddToCart }) {
   const [activeTab, setActiveTab] = useState("description");
   const [selectedVariantIdx, setSelectedVariantIdx] = useState(0);
   const [debounceTimer, setDebounceTimer] = useState(null);
+  const [showIngredientsBenefitsModal, setShowIngredientsBenefitsModal] = useState(false);
+  const [showShlokModal, setShowShlokModal] = useState(false);
+  const [showAmazonModal, setShowAmazonModal] = useState(false);
   
   // Ref to prevent multiple simultaneous cart checks
   const isCheckingCartRef = useRef(false);
@@ -142,6 +145,10 @@ export default function ProductPage({ onAddToCart }) {
   // fetched product from backend
   const [fetchedProduct, setFetchedProduct] = useState(null);
   const [loadingProduct, setLoadingProduct] = useState(false);
+  
+  // Related products state
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [loadingRelated, setLoadingRelated] = useState(false);
 
   // Find product by ID from featureProducts array (fallback)
   const fallbackProduct = featureProducts.find((p) => p.id === parseInt(id));
@@ -166,6 +173,9 @@ export default function ProductPage({ onAddToCart }) {
           reviewCount: backendRaw.reviewCount ?? 0,
           highlights: backendRaw.highlights ?? [],
           ingredients: backendRaw.ingredients ?? '',
+          benefits: backendRaw.benefits ?? '',
+          shlok: backendRaw.shlok ?? { shlokText: '', shlokMeaning: '' },
+          amazonLink: backendRaw.amazonLink ?? '',
           howToUse: backendRaw.careHandling ?? backendRaw.howToUse ?? '',
           image: (Array.isArray(backendRaw.productImageUrl) && backendRaw.productImageUrl[0]) || '/images/home/img3.jpg',
         }
@@ -206,6 +216,54 @@ export default function ProductPage({ onAddToCart }) {
     };
 
     load();
+  }, [id]);
+
+  // Fetch related products
+  useEffect(() => {
+    const loadRelatedProducts = async () => {
+      if (!id) return;
+      
+      setLoadingRelated(true);
+      try {
+        const resp = await getRelatedProducts(id, 4);
+        const products = resp?.data?.products || resp?.products || [];
+        
+        // Transform backend products to match frontend format
+        const transformedProducts = products.map(p => ({
+          id: p._id,
+          name: p.productTitle,
+          desc: p.productDescription,
+          image: Array.isArray(p.productImageUrl) ? p.productImageUrl[0] : p.productImageUrl || '/images/home/img3.jpg',
+          images: Array.isArray(p.productImageUrl) ? p.productImageUrl : [p.productImageUrl || '/images/home/img3.jpg'],
+          price: p.salePrice ?? p.regularPrice ?? 0,
+          oldPrice: p.salePrice ? p.regularPrice : null,
+          rating: p.rating ?? 4.5,
+          reviewCount: p.reviewCount ?? 0,
+          availability: p.isActive ? 'In Stock' : 'Unavailable',
+          stock: p.stock || null,
+          highlights: p.highlights || [],
+          ingredients: p.ingredients || '',
+          benefits: p.benefits || '',
+          shlok: p.shlok || { shlokText: '', shlokMeaning: '' },
+          amazonLink: p.amazonLink || '',
+          howToUse: p.careHandling || p.howToUse || '',
+        }));
+        
+        setRelatedProducts(transformedProducts);
+      } catch (err) {
+        console.error('Failed to load related products:', err);
+        // Fallback to dummy products if API fails
+        setRelatedProducts(
+          featureProducts
+            .filter((p) => p.id !== parseInt(id))
+            .slice(0, 4)
+        );
+      } finally {
+        setLoadingRelated(false);
+      }
+    };
+
+    loadRelatedProducts();
   }, [id]);
 
   // Detect if product is already in cart (server-side for logged-in, or localStorage for guests)
@@ -475,7 +533,7 @@ export default function ProductPage({ onAddToCart }) {
             </div>
 
             {/* Add to Cart or Quantity Selector */}
-            <div className="flex items-start justify-end">
+            <div className="flex flex-col items-start sm:items-end justify-end gap-3">
               {checkingCart ? (
                 <div className="text-sm text-gray-500">Checking cart...</div>
               ) : inCart ? (
@@ -593,6 +651,20 @@ export default function ProductPage({ onAddToCart }) {
                   </button>
                 </div>
               )}
+
+              {/* Buy from Amazon - border style matching Add to Cart color */}
+              {product?.amazonLink && (
+                <div>
+                  <button
+                    onClick={() => window.open(product.amazonLink, '_blank')}
+                    aria-label="Buy from Amazon"
+                    title="Buy from Amazon"
+                    className="inline-flex items-center gap-2 border border-[#BA7E38] text-[#BA7E38] px-4 py-2 rounded hover:bg-[#FFF7ED] transition-all cursor-pointer"
+                  >
+                    Buy from Amazon
+                  </button>
+                </div>
+              )}
             </div>
             </div>
           </div>
@@ -666,6 +738,12 @@ export default function ProductPage({ onAddToCart }) {
               <div className="max-w-4xl mx-auto px-2 sm:px-0">
                 <h3 className="text-xl font-medium mb-4 text-gray-800">Natural Ingredients</h3>
                 <p className="text-gray-700 text-sm leading-relaxed">{product.ingredients}</p>
+                {product.benefits && (
+                  <div className="mt-4">
+                    <h4 className="text-lg font-medium mb-2 text-gray-800">Benefits:</h4>
+                    <p className="text-gray-700 text-sm leading-relaxed">{product.benefits}</p>
+                  </div>
+                )}
                 <div className="mt-4">
                   <h4 className="text-lg font-medium mb-2 text-gray-800">How to Use:</h4>
                   <p className="text-gray-700 text-sm leading-relaxed">{product.howToUse}</p>
@@ -701,14 +779,14 @@ export default function ProductPage({ onAddToCart }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/*
-              ProductCard is preserved. On mobile it is single column, on large it becomes two columns.
-            */}
-            {featureProducts
-              .filter((p) => p.id !== product.id)
-              .slice(0, 4)
-              .map((rp) => (
+          {loadingRelated ? (
+            <div className="text-center py-8">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#4C0A2E]"></div>
+              <p className="mt-2 text-gray-600">Loading related products...</p>
+            </div>
+          ) : relatedProducts.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {relatedProducts.map((rp) => (
                 <ProductCard
                   key={rp.id ?? rp._id}
                   product={rp}
@@ -718,9 +796,111 @@ export default function ProductPage({ onAddToCart }) {
                   className="mb-4"
                 />
               ))}
-          </div>
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-gray-600">No related products found.</p>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Modals */}
+      {showIngredientsBenefitsModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full max-h-[80vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-[#4C0A2E]">Ingredients & Benefits</h3>
+                <button
+                  onClick={() => setShowIngredientsBenefitsModal(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  ✕
+                </button>
+              </div>
+              {product?.ingredients && (
+                <div className="mb-4">
+                  <h4 className="font-medium text-gray-800 mb-2">Ingredients:</h4>
+                  <p className="text-gray-600 text-sm leading-relaxed">{product.ingredients}</p>
+                </div>
+              )}
+              {product?.benefits && (
+                <div>
+                  <h4 className="font-medium text-gray-800 mb-2">Benefits:</h4>
+                  <p className="text-gray-600 text-sm leading-relaxed">{product.benefits}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showShlokModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full max-h-[80vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-[#4C0A2E]">Shlok</h3>
+                <button
+                  onClick={() => setShowShlokModal(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  ✕
+                </button>
+              </div>
+              {product?.shlok?.shlokText && (
+                <div className="mb-4">
+                  <h4 className="font-medium text-gray-800 mb-2">Sanskrit Shlok:</h4>
+                  <p className="text-gray-600 text-sm leading-relaxed font-serif">{product.shlok.shlokText}</p>
+                </div>
+              )}
+              {product?.shlok?.shlokMeaning && (
+                <div>
+                  <h4 className="font-medium text-gray-800 mb-2">Meaning:</h4>
+                  <p className="text-gray-600 text-sm leading-relaxed">{product.shlok.shlokMeaning}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showAmazonModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-sm w-full">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-[#4C0A2E]">Buy on Amazon</h3>
+                <button
+                  onClick={() => setShowAmazonModal(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  ✕
+                </button>
+              </div>
+              <p className="text-gray-600 text-sm mb-4">You will be redirected to Amazon to purchase this product.</p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    window.open(product.amazonLink, '_blank');
+                    setShowAmazonModal(false);
+                  }}
+                  className="flex-1 px-4 py-2 bg-[#4C0A2E] text-white text-sm font-medium rounded-md hover:bg-[#3a0724] transition-colors"
+                >
+                  Continue to Amazon
+                </button>
+                <button
+                  onClick={() => setShowAmazonModal(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -8,50 +8,6 @@ import { getAllProducts } from '@/api/auth'
 import WishlistButton from '../components/WishlistButton';
 import CartButton from '../components/CartButton';
 
-// export const featureProducts = [
-//     {
-//         id: 1,
-//         name: "Cosmic Body Oil",
-//         desc: "Unlock celestial beauty in a bottle. A careful blend of essential oils and natural ingredients that melt into your skin, leaving you nourished and calm.",
-//         image: "/images/home/img3.jpg",
-//         logo: "/images/home/lag.svg",
-//         price: "₹1800",
-//         oldPrice: "₹2400",
-//         discount: "Get 50% OFF",
-//     },
-//     {
-//         id: 2,
-//         name: "Ayurvedic Face Cream",
-//         desc: "Infused with saffron and sandalwood, this cream brightens, hydrates, and rejuvenates your skin for a natural glow.",
-//         image: "/images/home/img8.jpg",
-//         logo: "/images/home/lag.svg",
-//         price: "₹950",
-//         oldPrice: "₹1200",
-//         discount: "Get 20% OFF",
-//     },
-//     {
-//         id: 3,
-//         name: "Herbal Hair Elixir",
-//         desc: "A nourishing blend of bhringraj, amla, and neem that strengthens roots, prevents hair fall, and adds shine.",
-//         image: "/images/home/img3.jpg",
-//         logo: "/images/home/lag.svg",
-//         price: "₹1250",
-//         oldPrice: "₹1600",
-//         discount: "Get 22% OFF",
-//     },
-//     {
-//         id: 4,
-//         name: "Organic Rose Water",
-//         desc: "Pure steam-distilled rose water that tones, refreshes, and hydrates your skin naturally.",
-//         image: "/images/home/img8.jpg",
-//         logo: "/images/home/lag.svg",
-//         price: "₹450",
-//         oldPrice: "₹600",
-//         discount: "Get 25% OFF",
-//     },
-// ];
-
-
 function Page() {
     const nextSectionRef = useRef(null);
 
@@ -61,6 +17,7 @@ function Page() {
     const [openModal, setOpenModal] = useState(false);
     const [benefits, setBenefits] = useState(false)
     const [openModal1, setOpenModal1] = useState(false)
+    const [currentProduct, setCurrentProduct] = useState(null);
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -114,46 +71,72 @@ function Page() {
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
-                <div className="text-[#BA7E38] text-[24px] font-bold animate-pulse">
-                    Loading...
-                </div>
+                <div className="text-[#BA7E38] text-[24px] font-bold animate-pulse">Loading...</div>
             </div>
         );
     }
     return (
         <div>
+            <style jsx global>{`
+                /* Aggressively hide scrollbars and scrollbar buttons inside modal-scroll while keeping scrolling functional */
+                .modal-scroll,
+                .modal-scroll * {
+                    -ms-overflow-style: none; /* IE and Edge */
+                    scrollbar-width: none; /* Firefox */
+                }
+
+                /* WebKit (Chrome, Safari, Edge Chromium) - hide track, thumb and buttons */
+                .modal-scroll::-webkit-scrollbar,
+                .modal-scroll *::-webkit-scrollbar {
+                    width: 0 !important;
+                    height: 0 !important;
+                    background: transparent !important;
+                }
+                .modal-scroll::-webkit-scrollbar-track,
+                .modal-scroll *::-webkit-scrollbar-track {
+                    background: transparent !important;
+                }
+                .modal-scroll::-webkit-scrollbar-thumb,
+                .modal-scroll *::-webkit-scrollbar-thumb {
+                    background: transparent !important;
+                }
+                .modal-scroll::-webkit-scrollbar-button,
+                .modal-scroll *::-webkit-scrollbar-button {
+                    display: none !important;
+                    height: 0 !important;
+                    width: 0 !important;
+                }
+
+                /* Ensure smooth scrolling on mobile/touch devices */
+                .modal-scroll { -webkit-overflow-scrolling: touch; }
+            `}</style>
             <section className="hero-section h-[600px] sm:h-[650px] md:h-[700px] lg:h-[778px] overflow-hidden">
                 <div className="relative w-full h-full lg:pl-[93px] pl-[20px] pt-[50px] sm:pt-[60px] md:pt-[70px] lg:pt-[83px]">
                     <div className="relative max-w-[474px] w-full">
-                        <h2 className="max-w-[90%] sm:max-w-[500px] md:max-w-[600px] lg:max-w-[634px] 
-                   w-full font-[400] text-[24px] sm:text-[28px] md:text-[34px] lg:text-[41px] 
-                   text-[#FFFAFA] leading-[30px] sm:leading-[36px] md:leading-[40px] lg:leading-[40px]">
+                        <h2 className="max-w-[90%] sm:max-w-[500px] md:max-w-[600px] lg:max-w-[634px] w-full font-[400] text-[24px] sm:text-[28px] md:text-[34px] lg:text-[41px] text-[#FFFAFA] leading-[30px] sm:leading-[36px] md:leading-[40px] lg:leading-[40px]">
                             शरीरमाद्यं खलु धर्मसाधनम्।
                         </h2>
                         <button className="absolute lg:bottom-0 bottom-[0px] lg:right-[-20px] right-[20px]" onClick={() => setOpenModal1(true)}>
                             <Image
-                                src="/images/home/lag.svg"
-                                height={40}
-                                width={40}
-                                alt="le"
-                            />
-                        </button>
+                                    src="/images/home/lag.svg"
+                                    height={40}
+                                    width={40}
+                                    alt="le"
+                                />
+                            </button>
+                            <p className="font-avenir-400 text-[20px] lg:text-[18px] text-[#FFFFFF] max-w-[100%] lg:max-w-[671px] w-full leading-[28px] lg:leading-[26px] pt-[12px] sm:pt-[14px] md:pt-[16px] lg:pt-[18px]">
+                                Explore our wide range of luxurious skincare and wellness products to celebrate beauty that is timeless.
+                            </p>
+                            <button onClick={handleScroll} className="absolute bottom-[90px] cursor-pointer sm:bottom-[110px] md:bottom-[120px] lg:bottom-[128px] left-1/2 -translate-x-1/2">
+                                <Image
+                                    src="/images/home/arrow.svg"
+                                    height={36}
+                                    width={36}
+                                    className="arrow-bounce"
+                                    alt="scroll arrow"
+                                />
+                            </button>
                     </div>
-                    <p className="font-avenir-400 text-[20px] lg:text-[18px] 
-                  text-[#FFFFFF] max-w-[100%] lg:max-w-[671px] 
-                  w-full leading-[28px] lg:leading-[26px] 
-                  pt-[12px] sm:pt-[14px] md:pt-[16px] lg:pt-[18px]">
-                        Explore our wide range of luxurious skincare and wellness products to celebrate beauty that is timeless.
-                    </p>
-                    <button onClick={handleScroll} className="absolute bottom-[90px] cursor-pointer sm:bottom-[110px] md:bottom-[120px] lg:bottom-[128px] left-1/2 -translate-x-1/2">
-                        <Image
-                            src="/images/home/arrow.svg"
-                            height={36}
-                            width={36}
-                            className="arrow-bounce"
-                            alt="scroll arrow"
-                        />
-                    </button>
                 </div>
             </section>
             <div ref={nextSectionRef}>
@@ -187,7 +170,7 @@ function Page() {
                                                 <div className="absolute top-0 w-full z-10 p-[15px] md:p-[30px]">
                                                     <div className="flex justify-between md:items-center items-start md:gap-0 gap-[10px] md:flex-row flex-col">
                                                         <div className="flex items-center gap-[10px] md:gap-[14px]">
-                                                            <button onClick={() => setOpenModal(true)}>
+                                                            <button onClick={() => { setOpenModal(true); setCurrentProduct(product); }}>
                                                                 <Image
                                                                     src="/images/home/lag.svg"
                                                                     height={30}
@@ -199,7 +182,7 @@ function Page() {
                                                                 {/* Optional Sanskrit text */}
                                                             </h6>
                                                         </div>
-                                                        <button onClick={() => setBenefits(true)} className="bg-[#3030304A] font-avenir-400 text-[12px] md:text-[14px] text-[#FFFFFF] py-[6px] px-[14px] md:py-[10px] md:px-[22px] rounded-full">
+                                                        <button onClick={() => { setBenefits(true); setCurrentProduct(product); }} className="bg-[#3030304A] font-avenir-400 text-[12px] md:text-[14px] text-[#FFFFFF] py-[6px] px-[14px] md:py-[10px] md:px-[22px] rounded-full">
                                                             Ingredients & Benefits
                                                         </button>
                                                     </div>
@@ -225,6 +208,14 @@ function Page() {
                                                     <div className="flex gap-[10px]">
                                                         <CartButton productId={product._id} />
                                                         <WishlistButton productId={product._id} />
+                                                        {product.amazonLink && (
+                                                            <button 
+                                                                onClick={() => window.open(product.amazonLink, '_blank')}
+                                                                className="border border-[#6a5013] px-3 py-3 rounded-full transition-all flex items-center justify-center cursor-pointer"
+                                                            >
+                                                                <Image src="/images/amazon.svg" alt="Amazon" height={35} width={35} className="object-cover md:h-[30px] md:w-[30px]" />
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 </div>
                                                 <div className="text-right w-full md:max-w-[170px]">
@@ -278,13 +269,13 @@ function Page() {
                     </div>
                 </div>
             </section>
-            {openModal && (
+            {openModal && currentProduct && (
                 <div
                     className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
                     onClick={() => setOpenModal(false)}
                 >
                     <div
-                        className="bg-white rounded-2xl shadow-lg w-[90%] max-w-md py-[30px] px-[34px] relative"
+                        className="bg-white rounded-2xl shadow-lg w-[90%] max-w-md py-[30px] px-[34px] relative max-h-[50vh] overflow-y-auto modal-scroll"
                         onClick={(e) => e.stopPropagation()}
                         role="dialog"
                         aria-modal="true"
@@ -292,19 +283,22 @@ function Page() {
                     >
                         <button className="auth-close-btn" onClick={() => setOpenModal(false)} aria-label="Close login">&times;</button>
                         <h6 className="text-center font-rose text-[24px] font-[400] text-[#4C0A2E] pb-[10px]">Shlok Meaning</h6>
-                        <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-center text-[#3C3C3C] max-w-[260px] pb-[30px] w-full mx-auto">मुग्धे! धानुष्कता केयमपूर्वा त्वयि दृश्यते ।
-                            यया विध्यसि चेतांसि गुणैरेव न सायकैः ॥</p>
-                        <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#191919]">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                        {currentProduct.shlok?.shlokText && (
+                            <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#3C3C3C] max-w-[260px] pb-[30px] w-full mx-auto">{currentProduct.shlok.shlokText}</p>
+                        )}
+                        {currentProduct.shlok?.shlokMeaning && (
+                            <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#191919]">{currentProduct.shlok.shlokMeaning}</p>
+                        )}
                     </div>
                 </div>
             )}
-            {openModal1 && (
+            {openModal1 && currentProduct && (
                 <div
                     className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
                     onClick={() => setOpenModal1(false)}
                 >
                     <div
-                        className="bg-white rounded-2xl shadow-lg w-[90%] max-w-md py-[30px] px-[34px] relative"
+                        className="bg-white rounded-2xl shadow-lg w-[90%] max-w-md py-[30px] px-[34px] relative max-h-[50vh] overflow-y-auto modal-scroll"
                         onClick={(e) => e.stopPropagation()}
                         role="dialog"
                         aria-modal="true"
@@ -312,28 +306,47 @@ function Page() {
                     >
                         <button className="auth-close-btn" onClick={() => setOpenModal1(false)} aria-label="Close login">&times;</button>
                         <h6 className="text-center font-rose text-[24px] font-[400] text-[#4C0A2E] pb-[10px]">Shlok Meaning</h6>
-                        <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-center text-[#3C3C3C] max-w-[260px] pb-[30px] w-full mx-auto">मुग्धे! धानुष्कता केयमपूर्वा त्वयि दृश्यते ।
-                            यया विध्यसि चेतांसि गुणैरेव न सायकैः ॥</p>
-                        <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#191919]">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                        {currentProduct.shlok?.shlokText && (
+                            <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#3C3C3C] max-w-[260px] pb-[30px] w-full mx-auto">{currentProduct.shlok.shlokText}</p>
+                        )}
+                        {currentProduct.shlok?.shlokMeaning && (
+                            <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#191919]">{currentProduct.shlok.shlokMeaning}</p>
+                        )}
                     </div>
                 </div>
             )}
-            {benefits && (
+            {benefits && currentProduct && (
                 <div
                     className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
                     onClick={() => setBenefits(false)}
                 >
                     <div
-                        className="bg-white rounded-2xl shadow-lg w-[90%] max-w-md py-[30px] px-[34px] relative"
+                        className="font-avenir-400 text-center bg-white rounded-2xl shadow-lg w-[90%] max-w-md py-[30px] px-[34px] relative max-h-[50vh] overflow-y-auto modal-scroll"
                         onClick={(e) => e.stopPropagation()}
                         role="dialog"
                         aria-modal="true"
                         aria-labelledby="authModalTitle"
                     >
                         <button className="auth-close-btn" onClick={() => setBenefits(false)} aria-label="Close login">&times;</button>
+                        {/* <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#3C3C3C] max-w-[260px] pb-[10px] w-full mx-auto">{currentProduct.productTitle}</p> */}
                         <h6 className="text-center font-rose text-[24px] font-[400] text-[#4C0A2E] pb-[10px]">Ingredients</h6>
-                        <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-center text-[#3C3C3C] max-w-[260px] pb-[10px] w-full mx-auto">Cosmic Body Oil</p>
-                        <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#191919]">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                        {currentProduct.ingredients ? (
+                            <div className="mb-4">
+                                {/* <h4 className="font-medium text-gray-800 mb-2">Ingredients:</h4> */}
+                                <p className="text-center font-avenir-400 text-[14px] leading-[20px] text-[#191919]">{currentProduct.ingredients}</p>
+                            </div>
+                        ) : (
+                            <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#191919]">No ingredients listed.</p>
+                        )}
+                        <h6 className="text-center font-rose text-[24px] font-[400] text-[#4C0A2E] py-[10px]">Benefits</h6>
+                        {currentProduct.benefits ? (
+                            <div>
+                                {/* <h4 className="font-medium text-gray-800 mb-2">Benefits:</h4> */}
+                                <p className="text-center font-avenir-400 text-[14px] leading-[20px] text-[#191919]">{currentProduct.benefits}</p>
+                            </div>
+                        ) : (
+                            <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#191919]">No benefits listed.</p>
+                        )}
                     </div>
                 </div>
             )}
