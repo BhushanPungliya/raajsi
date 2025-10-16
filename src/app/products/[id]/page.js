@@ -736,8 +736,11 @@ export default function ProductPage({ onAddToCart }) {
 
             {activeTab === "ingredients" && (
               <div className="max-w-4xl mx-auto px-2 sm:px-0">
-                <h3 className="text-xl font-medium mb-4 text-gray-800">Natural Ingredients</h3>
+                {product.ingredients && (
+                  <div className="mt-4">
+                <h4 className="text-lg font-medium mb-4 text-gray-800">Natural Ingredients</h4>
                 <p className="text-gray-700 text-sm leading-relaxed">{product.ingredients}</p>
+                </div>)}
                 {product.benefits && (
                   <div className="mt-4">
                     <h4 className="text-lg font-medium mb-2 text-gray-800">Benefits:</h4>

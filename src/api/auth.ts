@@ -19,6 +19,16 @@ export const getAllCategories = async () => {
   }
 };
 
+// Get only active categories for user frontend
+export const getActiveCategories = async () => {
+  try {
+    const response = await api.get("product/category/active");
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
 export const getProductsByCategory = async (slug) => {
   try {
     const response = await api.get(`/product/category/${slug}`);

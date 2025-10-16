@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Heading from '../components/Heading'
 import TestSlider from '../slider/TestSlider'
 import Link from 'next/link'
-import { getAllProducts } from '@/api/auth'
+import { getAllProducts, getActiveCategories } from '@/api/auth'
 import WishlistButton from '../components/WishlistButton';
 import CartButton from '../components/CartButton';
 
@@ -26,13 +26,21 @@ function Page() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const data = await getAllProducts();
-
-                const { categories, products } = separateCategories(
-                    data?.data?.products || []
+                // Fetch active categories directly from backend
+                const categoriesData = await getActiveCategories();
+                const productsData = await getAllProducts();
+                
+                const activeCategories = categoriesData?.data?.categories || [];
+                const allProducts = productsData?.data?.products || [];
+                
+                // Filter products to only show those in active categories
+                const activeCategoryIds = activeCategories.map(cat => cat._id);
+                const filteredProducts = allProducts.filter(product => 
+                    product.category && activeCategoryIds.includes(product.category._id)
                 );
-                console.log("Products:", products);
-                console.log("Categories:", categories);
+                
+                const { categories, products } = separateCategories(filteredProducts);
+                
                 setProducts(products);
                 setCategories(categories);
             } catch (err) {
@@ -200,11 +208,13 @@ function Page() {
                                             {/* Bottom actions */}
                                             <div className="flex justify-between md:items-center items-start md:gap-0 gap-[10px] flex-row py-[18px]">
                                                 <div className="flex gap-[6px] md:flex-row flex-col items-start w-full">
-                                                    <Link href={`/products/${product._id}`} className="w-full md:w-auto">
-                                                        <button className="font-avenir-400 cursor-pointer w-full md:max-w-[206px] text-[12px] md:text-[18px] text-[#FFFFFF] py-[8px] md:py-[12px] px-[10px] md:px-[30px] bg-[#BA7E38] rounded-full border border-[#BA7E38] hover:bg-transparent hover:text-[#BA7E38] transition-all">
-                                                            VIEW PRODUCT
-                                                        </button>
-                                                    </Link>
+                                                    <div className="w-full md:w-auto flex flex-col gap-[10px]">
+                                                        <Link href={`/products/${product._id}`}>
+                                                            <button className="font-avenir-400 cursor-pointer w-full md:max-w-[206px] text-[12px] md:text-[18px] text-[#FFFFFF] py-[8px] md:py-[12px] px-[10px] md:px-[30px] bg-[#BA7E38] rounded-full border border-[#BA7E38] hover:bg-transparent hover:text-[#BA7E38] transition-all">
+                                                                VIEW PRODUCT
+                                                            </button>
+                                                        </Link>
+                                                    </div>
                                                     <div className="flex gap-[10px]">
                                                         <CartButton productId={product._id} />
                                                         <WishlistButton productId={product._id} />
