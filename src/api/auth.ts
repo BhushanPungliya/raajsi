@@ -68,7 +68,6 @@ export const updateAddress = async (addressData) => {
   try {
     // ensure we send a predictable shape the backend accepts
     const payload = addressData && addressData.shippingAddress ? addressData : { shippingAddress: addressData };
-    console.debug('updateAddress payload:', payload);
     const response = await api.post("user/address/update", payload);
     return response.data;
   } catch (error) {

@@ -372,7 +372,7 @@ export default function CheckoutPage() {
 
             // Validate rzpOrder
             if (!rzpOrder || typeof rzpOrder.amount === 'undefined') {
-                toast.error('Failed to create Razorpay order. Please try again.');
+                toast.error('Failed to create Razorpay order. Please try again!');
                 setProcessing(false);
                 return;
             }
