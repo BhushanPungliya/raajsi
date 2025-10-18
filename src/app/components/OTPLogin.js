@@ -81,7 +81,7 @@ export default function OTPLogin({ setLoginOpen, onLoginSuccess }) {
             }
         } catch (err) {
             console.error("Verify OTP Failed:", err);
-            toast.error(err?.message || "Verification failed");
+            toast.error(err?.error?.message || "Verification failed");
         }
     };
 

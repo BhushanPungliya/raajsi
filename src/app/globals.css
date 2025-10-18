@@ -166,3 +166,8 @@ body {
 .ritual-slider .slick-dots li.slick-active div {
   background: #4D0B2F !important;
 }
+
+/* Ensure toast notifications appear above modal overlays (react-toastify) */
+.Toastify__toast-container {
+  z-index: 30000 !important;
+}
