@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { getUserDetails, updateUser, getUserOrders, clearUserDataOnLogout } from '@/api/auth';
@@ -51,7 +51,8 @@ const REALM_CONTENT = {
 
 // --- ACCOUNT PAGE COMPONENT ---
 
-export default function AccountPage() {
+// Inner component that uses useSearchParams
+function AccountPageContent() {
     const searchParams = useSearchParams();
     const tabFromUrl = searchParams.get('tab');
     
@@ -510,4 +511,20 @@ export default function AccountPage() {
             )}
         </div>
     )
+}
+
+// Main exported component with Suspense boundary
+export default function AccountPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#BA7E38] border-r-transparent"></div>
+                    <p className="mt-2 text-gray-600">Loading...</p>
+                </div>
+            </div>
+        }>
+            <AccountPageContent />
+        </Suspense>
+    );
 }
