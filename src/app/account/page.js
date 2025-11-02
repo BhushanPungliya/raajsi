@@ -294,7 +294,7 @@ function AccountPageContent() {
                 </div>
 
                 {/* Layout: sidebar | main | hero */}
-                <div className="grid gap-0 lg:grid-cols-[200px_1fr_minmax(300px,800px)] items-start">
+                <div className="grid gap-0 lg:grid-cols-[200px_1fr_minmax(300px,650px)] items-start">
                     
                     {/* Sidebar */}
                     <aside className="pr-4"> {/* Added pr-4 for spacing */}

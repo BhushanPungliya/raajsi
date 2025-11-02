@@ -30,6 +30,7 @@ export default function CheckoutPage() {
         country: 'India'
     });
     const [addressError, setAddressError] = useState('');
+    const [addressErrors, setAddressErrors] = useState({});
     const router = useRouter();
 
     useEffect(() => {
@@ -211,11 +212,52 @@ export default function CheckoutPage() {
         return requiredFields.every(field => shippingAddress[field] && shippingAddress[field].trim() !== '');
     };
 
+    const validateAddress = () => {
+        const errs = {};
+        const emailRe = /^\S+@\S+\.\S+$/;
+
+        if (!shippingAddress.firstName || !shippingAddress.firstName.trim()) {
+            errs.firstName = 'First name is required';
+        }
+
+        if (!shippingAddress.email || !emailRe.test(shippingAddress.email)) {
+            errs.email = 'Please enter a valid email address';
+        }
+
+        const digits = (shippingAddress.phoneNumber || '').replace(/\D/g, '');
+        if (!digits) {
+            errs.phoneNumber = 'Phone number is required';
+        } else if (digits.length < 10) {
+            errs.phoneNumber = 'Phone number must be at least 10 digits';
+        }
+
+        if (!shippingAddress.street || !shippingAddress.street.trim()) {
+            errs.street = 'Street address is required';
+        }
+
+        if (!shippingAddress.city || !shippingAddress.city.trim()) {
+            errs.city = 'City is required';
+        }
+
+        if (!shippingAddress.state || !shippingAddress.state.trim()) {
+            errs.state = 'State is required';
+        }
+
+        if (!shippingAddress.zip || !/^\d{6}$/.test((shippingAddress.zip || '').toString())) {
+            errs.zip = 'ZIP code must be a 6 digit number';
+        }
+
+        return errs;
+    };
+
     const handleSaveAddress = async () => {
         setAddressError('');
-        if (!isAddressComplete()) {
-            setAddressError('Please add all required details in the form.');
-            toast.error('Please add all required details in the form.');
+        setAddressErrors({});
+        const errs = validateAddress();
+        if (Object.keys(errs).length > 0) {
+            setAddressErrors(errs);
+            setAddressError('Please fix the errors in the form.');
+            toast.error('Please fix the errors in the form.');
             return;
         }
         const token = localStorage.getItem('token');
@@ -231,17 +273,21 @@ export default function CheckoutPage() {
             }
         }
 
+        setAddressErrors({});
         setIsEditingAddress(false);
     };
 
     const handleCancelEdit = () => {
         // Reset to original address from user data
         if (user?.shippingAddress) {
+            const addrRaw = user.shippingAddress;
+            const userAddr = Array.isArray(addrRaw) ? addrRaw[0] || {} : addrRaw || {};
             setShippingAddress(prev => ({
                 ...prev,
-                ...user.shippingAddress
+                ...userAddr
             }));
         }
+        setAddressErrors({});
         setIsEditingAddress(false);
     };
 
@@ -271,26 +317,32 @@ export default function CheckoutPage() {
             setCartData(cartResponse?.data?.products || []);
             
             // Pre-fill My Palace from user data if available
-            if (actualUser?.shippingAddress && actualUser.shippingAddress.length > 0) {
-                const userAddr = actualUser.shippingAddress[0];
-                setShippingAddress({
-                    firstName: userAddr.firstName || shippingAddress.firstName,
-                    lastName: userAddr.lastName || shippingAddress.lastName,
-                    email: userAddr.email || actualUser.email || shippingAddress.email,
-                    phoneNumber: userAddr.phoneNumber || actualUser.phoneNumber || shippingAddress.phoneNumber,
-                    street: userAddr.street || shippingAddress.street,
-                    city: userAddr.city || shippingAddress.city,
-                    state: userAddr.state || shippingAddress.state,
-                    zip: userAddr.zip || shippingAddress.zip,
-                    country: userAddr.country || shippingAddress.country || 'India',
-                });
-            } else if (actualUser) {
-                // If no saved address, at least pre-fill email and phone
-                setShippingAddress(prev => ({
-                    ...prev,
-                    email: actualUser.email || prev.email,
-                    phoneNumber: actualUser.phoneNumber || prev.phoneNumber,
-                }));
+            if (actualUser) {
+                // backend may return shippingAddress as object or as an array; normalize both shapes
+                const addrRaw = actualUser.shippingAddress;
+                const userAddr = Array.isArray(addrRaw) ? addrRaw[0] || {} : addrRaw || {};
+
+                if (Object.keys(userAddr).length > 0) {
+                    setShippingAddress(prev => ({
+                        ...prev,
+                        firstName: userAddr.firstName || prev.firstName,
+                        lastName: userAddr.lastName || prev.lastName,
+                        email: userAddr.email || actualUser.email || prev.email,
+                        phoneNumber: userAddr.phoneNumber || actualUser.phoneNumber || prev.phoneNumber,
+                        street: userAddr.street || prev.street,
+                        city: userAddr.city || prev.city,
+                        state: userAddr.state || prev.state,
+                        zip: userAddr.zip || prev.zip,
+                        country: userAddr.country || prev.country || 'India',
+                    }));
+                } else {
+                    // If no saved address, at least pre-fill email and phone
+                    setShippingAddress(prev => ({
+                        ...prev,
+                        email: actualUser.email || prev.email,
+                        phoneNumber: actualUser.phoneNumber || prev.phoneNumber,
+                    }));
+                }
             }
             
             toast.success('Login successful! You can now proceed with checkout');
@@ -703,10 +755,15 @@ export default function CheckoutPage() {
                                             <input
                                                 type="text"
                                                 value={shippingAddress.firstName}
-                                                onChange={(e) => setShippingAddress(prev => ({ ...prev, firstName: e.target.value }))}
+                                                onChange={(e) => {
+                                                    setShippingAddress(prev => ({ ...prev, firstName: e.target.value }));
+                                                    setAddressErrors(prev => ({ ...prev, firstName: '' }));
+                                                }}
                                                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BA7E38]"
                                                 required
+                                                aria-invalid={addressErrors.firstName ? 'true' : 'false'}
                                             />
+                                            {addressErrors.firstName && <p className="text-sm text-red-600 mt-1">{addressErrors.firstName}</p>}
                                         </div>
 
                                         <div>
@@ -716,7 +773,10 @@ export default function CheckoutPage() {
                                             <input
                                                 type="text"
                                                 value={shippingAddress.lastName}
-                                                onChange={(e) => setShippingAddress(prev => ({ ...prev, lastName: e.target.value }))}
+                                                onChange={(e) => {
+                                                    setShippingAddress(prev => ({ ...prev, lastName: e.target.value }));
+                                                    setAddressErrors(prev => ({ ...prev, lastName: '' }));
+                                                }}
                                                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BA7E38]"
                                             />
                                         </div>
@@ -728,10 +788,15 @@ export default function CheckoutPage() {
                                             <input
                                                 type="email"
                                                 value={shippingAddress.email}
-                                                onChange={(e) => setShippingAddress(prev => ({ ...prev, email: e.target.value }))}
+                                                onChange={(e) => {
+                                                    setShippingAddress(prev => ({ ...prev, email: e.target.value }));
+                                                    setAddressErrors(prev => ({ ...prev, email: '' }));
+                                                }}
                                                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BA7E38]"
                                                 required
+                                                aria-invalid={addressErrors.email ? 'true' : 'false'}
                                             />
+                                            {addressErrors.email && <p className="text-sm text-red-600 mt-1">{addressErrors.email}</p>}
                                         </div>
 
                                         <div>
@@ -741,10 +806,15 @@ export default function CheckoutPage() {
                                             <input
                                                 type="tel"
                                                 value={shippingAddress.phoneNumber}
-                                                onChange={(e) => setShippingAddress(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                                                onChange={(e) => {
+                                                    setShippingAddress(prev => ({ ...prev, phoneNumber: e.target.value }));
+                                                    setAddressErrors(prev => ({ ...prev, phoneNumber: '' }));
+                                                }}
                                                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BA7E38]"
                                                 required
+                                                aria-invalid={addressErrors.phoneNumber ? 'true' : 'false'}
                                             />
+                                            {addressErrors.phoneNumber && <p className="text-sm text-red-600 mt-1">{addressErrors.phoneNumber}</p>}
                                         </div>
 
                                         <div className="md:col-span-2">
@@ -754,21 +824,32 @@ export default function CheckoutPage() {
                                             <input
                                                 type="text"
                                                 value={shippingAddress.street}
-                                                onChange={(e) => setShippingAddress(prev => ({ ...prev, street: e.target.value }))}
+                                                onChange={(e) => {
+                                                    setShippingAddress(prev => ({ ...prev, street: e.target.value }));
+                                                    setAddressErrors(prev => ({ ...prev, street: '' }));
+                                                }}
                                                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BA7E38]"
                                                 required
+                                                aria-invalid={addressErrors.street ? 'true' : 'false'}
                                             />
+                                            {addressErrors.street && <p className="text-sm text-red-600 mt-1">{addressErrors.street}</p>}
                                         </div>
 
                                         {/* Address Fields: Country, State, City (Searchable Dropdowns) */}
                                         <div className="md:col-span-2">
                                             <AddressFields
                                                 address={shippingAddress}
-                                                onChange={(updatedAddress) => setShippingAddress(updatedAddress)}
+                                                onChange={(updatedAddress) => {
+                                                    setShippingAddress(updatedAddress);
+                                                    setAddressErrors(prev => ({ ...prev, city: '', state: '', country: '' }));
+                                                }}
                                                 disabled={false}
                                                 showLabels={true}
                                                 layout="grid"
                                             />
+                                            {(addressErrors.city || addressErrors.state || addressErrors.country) && (
+                                                <p className="text-sm text-red-600 mt-1">{addressErrors.city || addressErrors.state || addressErrors.country}</p>
+                                            )}
                                         </div>
 
                                         <div>
@@ -778,10 +859,15 @@ export default function CheckoutPage() {
                                             <input
                                                 type="text"
                                                 value={shippingAddress.zip}
-                                                onChange={(e) => setShippingAddress(prev => ({ ...prev, zip: e.target.value }))}
+                                                onChange={(e) => {
+                                                    setShippingAddress(prev => ({ ...prev, zip: e.target.value }));
+                                                    setAddressErrors(prev => ({ ...prev, zip: '' }));
+                                                }}
                                                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BA7E38]"
                                                 required
+                                                aria-invalid={addressErrors.zip ? 'true' : 'false'}
                                             />
+                                            {addressErrors.zip && <p className="text-sm text-red-600 mt-1">{addressErrors.zip}</p>}
                                         </div>
                                     </div>
 
