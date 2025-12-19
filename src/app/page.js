@@ -8,6 +8,7 @@ import Link from "next/link";
 import RitualSlider from "./slider/RitualSlider";
 import BlogSlider from "./slider/BlogSlider";
 import { getFeaturedProducts, getFaqs, getAllBlogs } from "@/api/auth";
+import VideoLoader from "./components/MainVideo/VideoLoader";
 
 // const featureData = ["BODY THERAPY ", "SKIN THERAPY ", "SKIN THERAPY ", "RITUAL KIT"]
 // const blogs = [
@@ -27,6 +28,7 @@ const faq = [
 ]
 
 export default function Home() {
+  const [videoActive, setVideoActive] = useState(true);
   const [selected, setSelected] = useState(0);
   const [openModal, setOpenModal] = useState(false)
   const [activeIndex, setActiveIndex] = useState(null);
@@ -36,6 +38,7 @@ export default function Home() {
   const [blogsLoading, setBlogsLoading] = useState(true);
   const nextSectionRef = useRef(null);
 
+  
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -85,6 +88,11 @@ export default function Home() {
 
   return (
     <div>
+      <div className="relative min-h-screen overflow-x-hidden">
+        <VideoLoader
+          isVisible={videoActive}
+          onFinished={() => setVideoActive(false)}
+        />
       <section className="hero-section h-[600px] sm:h-[650px] md:h-[700px] lg:h-[778px]">
         <div className="relative w-full h-full flex flex-col">
           <div className="relative max-w-[90%] lg:max-w-[734px]">
@@ -413,6 +421,7 @@ export default function Home() {
           ))}
         </div>
       </section>
+      </div>
     </div>
   );
 }
