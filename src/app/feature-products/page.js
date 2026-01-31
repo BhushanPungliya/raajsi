@@ -221,9 +221,17 @@ function Page() {
                                                         {product.amazonLink && (
                                                             <button 
                                                                 onClick={() => window.open(product.amazonLink, '_blank')}
-                                                                className="border border-[#6a5013] px-3 py-3 rounded-full transition-all flex items-center justify-center cursor-pointer"
+                                                                className="border border-[#6a5013] w-[40px] h-[40px] md:w-[52px] md:h-[52px] rounded-full transition-all flex items-center justify-center cursor-pointer"
+                                                                aria-label="Buy from Amazon"
+                                                                title="Buy from Amazon"
                                                             >
-                                                                <Image src="/images/amazon.svg" alt="Amazon" height={35} width={35} className="object-cover md:h-[30px] md:w-[30px]" />
+                                                                <Image 
+                                                                    src="/images/amazon.svg" 
+                                                                    alt="Amazon" 
+                                                                    height={24} 
+                                                                    width={24} 
+                                                                    className="object-contain md:h-[32px] md:w-[32px]" 
+                                                                />
                                                             </button>
                                                         )}
                                                     </div>

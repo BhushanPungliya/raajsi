@@ -6,10 +6,10 @@ import * as FaIcons from "react-icons/fa";
 import { IoMdStar } from "react-icons/io";
 import ProductCard from "../../components/ProductCard";
 import { useParams } from "next/navigation";
-import { getProductById, addToCart, getUserCart, removeUserCart, getRelatedProducts } from '@/api/auth';
+import { getProductById, addToCart, getUserCart, removeUserCart, getRelatedProducts, addToWishlist, removeFromWishlist, getWishlistByUser } from '@/api/auth';
 import { toast } from 'react-toastify';
 
-const { FaStar, FaStarHalfAlt, FaRegStar, FaMinus, FaPlus } = FaIcons;
+const { FaStar, FaStarHalfAlt, FaRegStar, FaMinus, FaPlus, FaHeart, FaRegHeart } = FaIcons;
 
 // Feature products data (same as in feature-products page)
 const featureProducts = [
@@ -116,6 +116,8 @@ export default function ProductPage({ onAddToCart }) {
   const [quantity, setQuantity] = useState(1);
   const [inCart, setInCart] = useState(false);
   const [cartLoading, setCartLoading] = useState(false);
+  const [inWishlist, setInWishlist] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
   const [checkingCart, setCheckingCart] = useState(true);
   const [lastUserCartActionAt, setLastUserCartActionAt] = useState(0);
   const [activeTab, setActiveTab] = useState("description");
@@ -340,27 +342,73 @@ export default function ProductPage({ onAddToCart }) {
     }
   }, [id, lastUserCartActionAt]);
 
+  // Check wishlist status
+  useEffect(() => {
+    const checkWishlist = async () => {
+      if (!id) return;
+      try {
+        const wishlist = await getWishlistByUser();
+        const items = wishlist?.data || [];
+        const found = items.some(item => (item.product?._id || item.product) === id);
+        setInWishlist(found);
+      } catch (err) {
+        console.error('Error checking wishlist status:', err);
+      }
+    };
+    checkWishlist();
+  }, [id]);
+
+  // Toggle wishlist
+  const toggleWishlist = async () => {
+    if (wishlistLoading) return;
+    setWishlistLoading(true);
+    try {
+      if (inWishlist) {
+        await removeFromWishlist(product?.id || id);
+        setInWishlist(false);
+        toast.success("Removed from wishlist");
+      } else {
+        await addToWishlist(product?.id || id);
+        setInWishlist(true);
+        toast.success("Added to wishlist");
+      }
+    } catch (err) {
+      console.error("Wishlist action failed:", err);
+      toast.error(err.message || "Something went wrong");
+    } finally {
+      setWishlistLoading(false);
+    }
+  };
+
   // Cross-tab sync: listen to localStorage changes and refresh cart state
   useEffect(() => {
     const handleStorageChange = (e) => {
       // Only respond to userCart changes
-      if (e.key !== 'userCart') return;
+      if (e.key === 'userCart') {
+        let cartData = [];
+        if (e.newValue) {
+          try { cartData = JSON.parse(e.newValue); } catch (err) { cartData = []; }
+        }
+        if (!Array.isArray(cartData)) cartData = [cartData];
 
-      // Parse new cart data
-      let cartData = [];
-      if (e.newValue) {
-        try { cartData = JSON.parse(e.newValue); } catch (err) { cartData = []; }
+        const found = cartData.find(item => (item.productId?._id || item.productId) == id);
+        if (found) {
+          setInCart(true);
+          setQuantity(found.quantity || 1);
+        } else {
+          setInCart(false);
+          setQuantity(1);
+        }
       }
-      if (!Array.isArray(cartData)) cartData = [cartData];
 
-      // Check if current product is in the updated cart
-      const found = cartData.find(item => (item.productId?._id || item.productId) == id);
-      if (found) {
-        setInCart(true);
-        setQuantity(found.quantity || 1);
-      } else {
-        setInCart(false);
-        setQuantity(1);
+      // Handle wishlist changes
+      if (e.key === 'wishlist') {
+        let wishlistData = [];
+        if (e.newValue) {
+          try { wishlistData = JSON.parse(e.newValue); } catch (err) { wishlistData = []; }
+        }
+        const found = wishlistData.some(item => (item.product?._id || item.product) === id);
+        setInWishlist(found);
       }
     };
 
@@ -625,7 +673,7 @@ export default function ProductPage({ onAddToCart }) {
                   </button>
                 </div>
               ) : (
-                <div>
+                <div className="flex gap-3">
                   <button
                     className="inline-flex items-center gap-2 bg-[#BA7E38] text-white px-4 py-2 rounded hover:bg-[#a36b2f] disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={async () => {
@@ -649,7 +697,37 @@ export default function ProductPage({ onAddToCart }) {
                   >
                     {cartLoading ? 'Adding...' : 'Add to Cart'}
                   </button>
+
+                  <button
+                    onClick={toggleWishlist}
+                    disabled={wishlistLoading}
+                    aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
+                    className="inline-flex items-center justify-center w-10 h-10 border border-[#4C0A2E] text-[#4C0A2E] rounded hover:bg-[#F5F1E8] transition-all disabled:opacity-50"
+                  >
+                    {wishlistLoading ? (
+                      <div className="w-4 h-4 border-2 border-[#4C0A2E] border-t-transparent rounded-full animate-spin"></div>
+                    ) : inWishlist ? (
+                      <FaHeart className="text-xl text-red-600" />
+                    ) : (
+                      <FaRegHeart className="text-xl" />
+                    )}
+                  </button>
                 </div>
+              )}
+
+              {/* Also show wishlist button if already in cart - maybe a different style? */}
+              {inCart && (
+                <button
+                onClick={toggleWishlist}
+                disabled={wishlistLoading}
+                className="inline-flex items-center gap-2 text-sm text-[#4C0A2E] hover:underline transition-all disabled:opacity-50 mt-1"
+              >
+                {inWishlist ? (
+                  <><FaHeart className="text-red-600" /> Remove from Wishlist</>
+                ) : (
+                  <><FaRegHeart /> Add to Wishlist</>
+                )}
+              </button>
               )}
 
               {/* Buy from Amazon - border style matching Add to Cart color */}
