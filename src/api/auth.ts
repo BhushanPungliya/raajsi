@@ -47,6 +47,15 @@ export const getFaqs = async () => {
   }
 };
 
+export const getBanners = async () => {
+  try {
+    const response = await api.get("/banners/active");
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
 export const getAllProducts = async () => {
   try {
     const response = await api.get("product/all");
@@ -614,6 +623,42 @@ export const getUserOrders = async () => {
   }
 };
 
+export const getOrderByOrderId = async (orderId) => {
+  try {
+    const response = await api.get(`user/order/${orderId}`);
+    return response.data?.data || response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const requestReturn = async (orderId, reason, proof_images = []) => {
+  try {
+    const response = await api.post(`user/order/${orderId}/return`, { reason, proof_images });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const requestReplacement = async (orderId, reason, proof_images = []) => {
+  try {
+    const response = await api.post(`user/order/${orderId}/replacement`, { reason, proof_images });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const cancelOrderByUser = async (orderId, reason) => {
+  try {
+    const response = await api.post(`user/order/${orderId}/cancel`, { reason });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
 export const placeOrder = async (orderData) => {
   try {
     const response = await api.post("user/order/place", orderData);
@@ -636,6 +681,35 @@ export const createRazorpayOrder = async (orderData) => {
 export const verifyRazorpayPayment = async (verificationData) => {
   try {
     const response = await api.post("rzp/payment-verification", verificationData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const validateCoupon = async (couponData) => {
+  try {
+    const response = await api.post("coupon/validate", couponData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const applyCoupon = async (couponData) => {
+  try {
+    const response = await api.post("coupon/apply", couponData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const getAvailableCoupons = async (cartAmount, categoryIds) => {
+  try {
+    const response = await api.get("user/coupons/available", {
+      params: { cartAmount, categoryIds }
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;

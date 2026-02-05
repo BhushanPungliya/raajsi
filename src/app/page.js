@@ -7,8 +7,11 @@ import Slider1 from "./slider/Slider1";
 import Link from "next/link";
 import RitualSlider from "./slider/RitualSlider";
 import BlogSlider from "./slider/BlogSlider";
-import { getFeaturedProducts, getFaqs, getAllBlogs } from "@/api/auth";
+import { getFeaturedProducts, getFaqs, getAllBlogs, getBanners } from "@/api/auth";
 import VideoLoader from "./components/MainVideo/VideoLoader";
+import Slider from 'react-slick';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 // const featureData = ["BODY THERAPY ", "SKIN THERAPY ", "SKIN THERAPY ", "RITUAL KIT"]
 // const blogs = [
@@ -35,11 +38,24 @@ export default function Home() {
   const [featureData, setFeatureData] = useState([]);
   // const [faqs, setFaqs] = useState([]);
   const [blogs, setBlogs] = useState([]);
+  const [banners, setBanners] = useState([]);
+  const [activeMeaning, setActiveMeaning] = useState("");
+  const [activeShlok, setActiveShlok] = useState("");
   const [blogsLoading, setBlogsLoading] = useState(true);
   const nextSectionRef = useRef(null);
 
   
   useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        const data = await getBanners();
+        if (data?.status === "success") {
+          setBanners(data?.data?.banners || []);
+        }
+      } catch (err) {
+        console.error("Error fetching banners:", err);
+      }
+    };
     const fetchProducts = async () => {
       try {
         const data = await getFeaturedProducts();
@@ -76,6 +92,7 @@ export default function Home() {
     fetchProducts();
     // fetchFaqs();
     fetchBlogs();
+    fetchBanners();
   }, []);
 
   const scrollToNext = () => {
@@ -86,6 +103,17 @@ export default function Home() {
     setActiveIndex(activeIndex === index ? null : index);
   };
 
+  const bannerSettings = {
+    dots: true,
+    infinite: banners.length > 1,
+    speed: 800,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 5000,
+    arrows: false,
+  };
+
   return (
     <div>
       <div className="relative min-h-screen overflow-x-hidden">
@@ -93,11 +121,24 @@ export default function Home() {
           isVisible={videoActive}
           onFinished={() => setVideoActive(false)}
         />
-      <section className="hero-section h-[600px] sm:h-[650px] md:h-[700px] lg:h-[778px]">
-        <div className="relative w-full h-full flex flex-col">
-          <div className="relative max-w-[90%] lg:max-w-[734px]">
-            <h2
-              className="
+
+        {banners.length > 0 ? (
+          <Slider {...bannerSettings}>
+            {banners.map((banner, index) => (
+              <div key={banner._id || index}>
+                <section
+                  className="hero-section h-[600px] sm:h-[650px] md:h-[700px] lg:h-[778px]"
+                  style={{
+                    backgroundImage: `url(${banner.bannerImages[0] || '/images/home/bg1.jpg'})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center'
+                  }}
+                >
+                  <div className="relative w-full h-full flex flex-col">
+                    <div className="relative max-w-[90%] lg:max-w-[734px]">
+                      {banner.content && (
+                        <h2
+                          className="
         font-[400] 
         text-[18px] md:text-[36px] lg:text-[41px] 
         leading-[30px] sm:leading-[38px] max-w-[90%] lg:max-w-[634px] md:leading-[48px] lg:leading-[56px]
@@ -105,39 +146,105 @@ export default function Home() {
         ml-[20px] lg:ml-[93px] lg:mr-0
         pt-[40px] sm:pt-[60px] md:pt-[70px] lg:pt-[83px]
       "
-            >
-              मुग्धे! धानुष्कता केयमपूर्वा त्वयि दृश्यते ।
-              यया विध्यसि चेतांसि गुणैरेव न सायकैः ॥
-            </h2>
-            <button className="pb-[14px] absolute lg:bottom-0 lg:pl- pl-[20px] bottom-[-60px] lg:right-[-20px]" onClick={() => setOpenModal(true)}>
-              <Image
-                src="/images/home/lag.svg"
-                height={40}
-                width={40}
-                alt="le"
-              />
-            </button>
-          </div>
+                        >
+                          {banner.content}
+                        </h2>
+                      )}
+                      {banner.meaning && (
+                        <button
+                          className="pb-[14px] absolute lg:bottom-0 lg:pl-0 pl-[20px] bottom-[-60px] lg:right-[-20px]"
+                          onClick={() => {
+                            setActiveShlok(banner.content);
+                            setActiveMeaning(banner.meaning);
+                            setOpenModal(true);
+                          }}
+                        >
+                          <Image
+                            src="/images/home/lag.svg"
+                            height={40}
+                            width={40}
+                            alt="translation"
+                          />
+                        </button>
+                      )}
+                    </div>
 
-          {/* Arrow Button */}
-          <button
-            onClick={scrollToNext}
-            className="
+                    {/* Arrow Button */}
+                    <button
+                      onClick={scrollToNext}
+                      className="
         absolute 
         bottom-[60px] sm:bottom-[90px] md:bottom-[110px] lg:bottom-[128px] 
         left-1/2 -translate-x-1/2
       "
-          >
-            <Image
-              src="/images/home/arrow.svg"
-              height={36}
-              width={36}
-              className="arrow-bounce sm:h-[40px] sm:w-[40px] md:h-[42px] md:w-[42px]"
-              alt="scroll arrow"
-            />
-          </button>
-        </div>
-      </section>
+                    >
+                      <Image
+                        src="/images/home/arrow.svg"
+                        height={36}
+                        width={36}
+                        className="arrow-bounce sm:h-[40px] sm:w-[40px] md:h-[42px] md:w-[42px]"
+                        alt="scroll arrow"
+                      />
+                    </button>
+                  </div>
+                </section>
+              </div>
+            ))}
+          </Slider>
+        ) : (
+          <section className="hero-section h-[600px] sm:h-[650px] md:h-[700px] lg:h-[778px]" style={{ backgroundImage: "url('/images/home/bg1.jpg')" }}>
+            <div className="relative w-full h-full flex flex-col">
+              <div className="relative max-w-[90%] lg:max-w-[734px]">
+                <h2
+                  className="
+        font-[400] 
+        text-[18px] md:text-[36px] lg:text-[41px] 
+        leading-[30px] sm:leading-[38px] max-w-[90%] lg:max-w-[634px] md:leading-[48px] lg:leading-[56px]
+        text-[#FFFAFA] 
+        ml-[20px] lg:ml-[93px] lg:mr-0
+        pt-[40px] sm:pt-[60px] md:pt-[70px] lg:pt-[83px]
+      "
+                >
+                  मुग्धे! धानुष्कता केयमपूर्वा त्वयि दृश्यते ।
+                  यया विध्यसि चेतांसि गुणैरेव न सायकैः ॥
+                </h2>
+                <button
+                  className="pb-[14px] absolute lg:bottom-0 lg:pl-0 pl-[20px] bottom-[-60px] lg:right-[-20px]"
+                  onClick={() => {
+                    setActiveShlok("मुग्धे! धानुष्कता केयमपूर्वा त्वयि दृश्यते । यया विध्यसि चेतांसि गुणैरेव न सायकैः ॥");
+                    setActiveMeaning(""); // or the default meaning if there is one
+                    setOpenModal(true);
+                  }}
+                >
+                  <Image
+                    src="/images/home/lag.svg"
+                    height={40}
+                    width={40}
+                    alt="le"
+                  />
+                </button>
+              </div>
+
+              {/* Arrow Button */}
+              <button
+                onClick={scrollToNext}
+                className="
+        absolute 
+        bottom-[60px] sm:bottom-[90px] md:bottom-[110px] lg:bottom-[128px] 
+        left-1/2 -translate-x-1/2
+      "
+              >
+                <Image
+                  src="/images/home/arrow.svg"
+                  height={36}
+                  width={36}
+                  className="arrow-bounce sm:h-[40px] sm:w-[40px] md:h-[42px] md:w-[42px]"
+                  alt="scroll arrow"
+                />
+              </button>
+            </div>
+          </section>
+        )}
       <section ref={nextSectionRef} className="py-[50px] lg:py-[62px] overflow-hidden">
         <div className="flex items-center flex-col-reverse lg:flex-row lg:gap-[96px] gap-[50px]">
 
@@ -198,9 +305,14 @@ export default function Home() {
               >
                 <button className="auth-close-btn" onClick={() => setOpenModal(false)} aria-label="Close login">&times;</button>
                 <h6 className="text-center font-rose text-[24px] font-[400] text-[#4C0A2E] pb-[10px]">Shlok Meaning</h6>
-                <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#3C3C3C] max-w-[260px] pb-[30px] w-full mx-auto">मुग्धे! धानुष्कता केयमपूर्वा त्वयि दृश्यते ।
-                  यया विध्यसि चेतांसि गुणैरेव न सायकैः ॥</p>
-                <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#191919]">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                {activeShlok && (
+                  <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#3C3C3C] max-w-[260px] pb-[20px] w-full mx-auto italic">
+                    {activeShlok}
+                  </p>
+                )}
+                <p className="text-center font-avenir-400 text-[16px] leading-[20px] text-[#191919]">
+                  {activeMeaning || "मुग्धे! धानुष्कता केयमपूर्वा त्वयि दृश्यते । यया विध्यसि चेतांसि गुणैरेव न सायकैः ॥"}
+                </p>
               </div>
             </div>
           )}

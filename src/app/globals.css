@@ -36,7 +36,7 @@ body {
   .nav-link-active { font-size: 12px; padding: 10px 10px; text-align: left; border-bottom: 2px solid #000000; }
 }
 
-.hero-section { background-image: url('/images/home/bg1.jpg'); margin-top: 87px; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;}
+.hero-section { margin-top: 87px; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;}
 
 @media(max-width: 768px) {
   .hero-section { margin-top: 70px;}
