@@ -1,4 +1,26 @@
-export default function OrderItem({ title, price, statusLabel, itemsCount, imageAlt = "Product image", imageSrc, orderDate }) {
+export default function OrderItem({ 
+  title, 
+  price, 
+  statusLabel, 
+  itemsCount, 
+  imageAlt = "Product image", 
+  imageSrc, 
+  orderDate,
+  orderId,
+  order,
+  onCancel,
+  onReturn,
+  onReplace,
+  canCancel,
+  canReturn,
+  canReplace,
+  canBuyAgain,
+  rejectionReason,
+  returnRequest,
+  replacementRequest,
+  onViewDetails,
+  onBuyAgain,
+}) {
   const src = imageSrc || "/images/home/img3.jpg";
 
   // Map backend order_status values to badge colors and friendly labels
@@ -7,10 +29,19 @@ export default function OrderItem({ title, price, statusLabel, itemsCount, image
     SHIPPED: { background: '#DBEAFE', color: '#1E3A8A' }, // blue
     DELIVERED: { background: 'var(--success-bg)', color: 'var(--success-fg)' }, // green
     CANCELLED_BY_ADMIN: { background: '#FECACA', color: '#991B1B' }, // red
+    CANCELLED_BY_USER: { background: '#FECACA', color: '#991B1B' }, // red
+    RETURN_REQUESTED: { background: '#E0E7FF', color: '#312E81' }, // indigo
+    RETURN_APPROVED: { background: '#D1FAE5', color: '#065F46' }, // green
+    RETURN_REJECTED: { background: '#FECACA', color: '#991B1B' }, // red
+    RETURNED: { background: 'var(--success-bg)', color: 'var(--success-fg)' }, // green
+    REPLACEMENT_REQUESTED: { background: '#E0E7FF', color: '#312E81' }, // indigo
+    REPLACEMENT_APPROVED: { background: '#D1FAE5', color: '#065F46' }, // green
+    REPLACEMENT_REJECTED: { background: '#FECACA', color: '#991B1B' }, // red
+    REPLACEMENT_IN_PROGRESS: { background: '#FED7AA', color: '#92400E' }, // orange
   };
 
   const style = statusStyles[statusLabel] || { background: 'var(--success-bg)', color: 'var(--success-fg)' };
-  const displayStatus = statusLabel === 'CANCELLED_BY_ADMIN' ? 'CANCELLED' : (statusLabel || '');
+  const displayStatus = statusLabel?.replace(/_/g, ' ') || '';
 
   // Format date and time
   const formatDateTime = (date) => {
@@ -30,7 +61,7 @@ export default function OrderItem({ title, price, statusLabel, itemsCount, image
   };
 
   return (
-    <article className="flex items-start gap-4 w-full pb-2">
+    <article className="flex items-start gap-4 w-full pb-4 border-b cursor-pointer hover:bg-gray-50 transition p-2" onClick={() => onViewDetails?.()}>
       <img
         src={src}
         width={96}
@@ -42,8 +73,8 @@ export default function OrderItem({ title, price, statusLabel, itemsCount, image
       <div className="min-w-0 flex-1 flex flex-col justify-between">
         <div className="text-sm text-muted-foreground">{title}</div>
         <div className="mt-2 flex items-center gap-3">
-        <span className="text-sm">₹{price * itemsCount}</span>
-        <span className="text-xs text-muted-foreground">
+          <span className="text-sm">₹{price * itemsCount}</span>
+          <span className="text-xs text-muted-foreground">
             {"Quantity: "}
             {String(itemsCount).padStart(2, "0")}
           </span>
@@ -60,6 +91,24 @@ export default function OrderItem({ title, price, statusLabel, itemsCount, image
               {formatDateTime(orderDate)}
             </span>
           )}
+        </div>
+
+        {/* Action buttons */}
+        <div className="mt-3 flex items-center gap-2 flex-wrap" onClick={(e) => e.stopPropagation()}>
+          {canBuyAgain && (
+            <button
+              onClick={() => onBuyAgain?.()}
+              className="text-xs px-3 py-1 bg-[#BA7E38] text-white rounded hover:bg-[#a96f2e] transition"
+            >
+              Buy Again
+            </button>
+          )}
+          <button
+              onClick={() => onViewDetails?.()}
+              className="text-xs px-3 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition ml-auto"
+          >
+              View Details
+          </button>
         </div>
       </div>
     </article>

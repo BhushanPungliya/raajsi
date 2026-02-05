@@ -2,13 +2,12 @@
 import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'react-toastify';
-import { getUserDetails, updateUser, getUserOrders, clearUserDataOnLogout } from '@/api/auth';
+import { getUserDetails, updateUser, getUserOrders, clearUserDataOnLogout, addToCart } from '@/api/auth';
 import OrderItem from "@/app/components/account/order-item"
 import AccountDetails from "@/app/components/account/account-details"
 import HeroCard from "@/app/components/account/hero-card"
 import AddressFields from '@/app/components/AddressFields';
-import { FiLogOut, FiUser, FiHome } from 'react-icons/fi'; 
-// --- CONSTANTS AND DATA (Unchanged) ---
+import { FiLogOut, FiUser, FiHome } from 'react-icons/fi';
 const ORDERS = [
   {
     id: "1",
@@ -365,13 +364,23 @@ function AccountPageContent() {
                                 <>
                                     <div style={{ maxHeight: 320, overflowY: 'auto' }} className="space-y-4">
                                         {productEntries && productEntries.length ? (
-                                            productEntries.map(({ order, item }, idx) => (
-                                                <div key={(order._id || '') + '-' + idx} className=" bg-white">
-                                                    {/* <div className="text-xs text-muted-foreground mb-2">{new Date(order.createdAt).toLocaleDateString()} • {order.order_status}</div> */}
-                                                    {
-                                                        // derive display values from product/variant
-                                                    }
+                                            productEntries.map(({ order, item }, idx) => {
+                                              // Calculate hours since placement and delivery
+                                              const hoursElapsed = (Date.now() - new Date(order.createdAt)) / (1000 * 60 * 60);
+                                              const deliveryDate = order.deliveredAt ? new Date(order.deliveredAt) : new Date(order.updatedAt);
+                                              const daysElapsed = (Date.now() - deliveryDate) / (1000 * 60 * 60 * 24);
+                                              
+                                              // Determine available actions
+                                              const canCancel = order.order_status === 'PLACED' && hoursElapsed <= 48;
+                                              const canReturn = order.order_status === 'DELIVERED' && daysElapsed <= 7;
+                                              const canReplace = order.order_status === 'DELIVERED' && daysElapsed <= 7;
+                                              const canBuyAgain = ['DELIVERED', 'CANCELLED_BY_USER', 'CANCELLED_BY_ADMIN', 'RETURNED'].includes(order.order_status);
+                                              
+                                              return (
+                                                <div key={(order._id || '') + '-' + idx} className=" bg-white" onClick={() => router.push(`/account/order/${order._id}`)}>
                                                     <OrderItem
+                                                        orderId={order._id}
+                                                        order={order}
                                                         title={item.product?.productTitle || 'Product'}
                                                         price={
                                                             (item.price != null && item.price !== '')
@@ -383,9 +392,28 @@ function AccountPageContent() {
                                                         imageAlt={item.product?.productTitle || ''}
                                                         imageSrc={item.product?.productImageUrl?.[0] || '/images/home/img3.jpg'}
                                                         orderDate={order.createdAt}
+                                                        canBuyAgain={canBuyAgain}
+                                                        onBuyAgain={(e) => { 
+                                                            e.stopPropagation(); 
+                                                            // Inline handleBuyAgain for simplicity or restore it
+                                                            const fastBuyAgain = async () => {
+                                                                try {
+                                                                    for (const p of order.products) {
+                                                                        await addToCart(p.product?._id || p.product, p.variant?._id || p.variant || "", p.quantity);
+                                                                    }
+                                                                    toast.success('Items added to cart');
+                                                                    router.push('/checkout');
+                                                                } catch (err) {
+                                                                    toast.error('Failed to add items to cart');
+                                                                }
+                                                            };
+                                                            fastBuyAgain();
+                                                        }}
+                                                        onViewDetails={() => router.push(`/account/order/${order._id}`)}
                                                     />
                                                 </div>
-                                            ))
+                                              );
+                                            })
                                         ) : (
                                             <div className="text-sm text-muted-foreground">No orders found.</div>
                                         )}
