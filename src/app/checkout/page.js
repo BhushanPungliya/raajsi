@@ -5,7 +5,19 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
-import { getUserCart, getUserDetails, placeOrder, createRazorpayOrder, verifyRazorpayPayment, updateAddress, removeUserCart, mergeGuestCartWithUserCart } from '@/api/auth';
+import { 
+    getUserCart, 
+    getUserDetails, 
+    placeOrder, 
+    createRazorpayOrder, 
+    verifyRazorpayPayment, 
+    updateAddress, 
+    removeUserCart, 
+    mergeGuestCartWithUserCart,
+    validateCoupon,
+    applyCoupon,
+    getAvailableCoupons
+} from '@/api/auth';
 import OTPLogin from '@/app/components/OTPLogin';
 import AddressFields from '@/app/components/AddressFields';
 
@@ -31,6 +43,13 @@ export default function CheckoutPage() {
     });
     const [addressError, setAddressError] = useState('');
     const [addressErrors, setAddressErrors] = useState({});
+    
+    const [couponCode, setCouponCode] = useState('');
+    const [appliedCoupon, setAppliedCoupon] = useState(null);
+    const [validatingCoupon, setValidatingCoupon] = useState(false);
+    const [discountAmount, setDiscountAmount] = useState(0);
+    const [availableCoupons, setAvailableCoupons] = useState([]);
+
     const router = useRouter();
 
     useEffect(() => {
@@ -62,6 +81,21 @@ export default function CheckoutPage() {
                     const actualUser = userData?.data || userData || null;
                     setUser(actualUser);
                     setCartData(cartResponse?.data?.products || []);
+
+                    // Fetch available coupons
+                    if (cartResponse?.data?.products?.length > 0) {
+                        const total = cartResponse.data.products.reduce(
+                            (acc, item) => acc + (item.productId?.salePrice || item.productId?.price || 0) * item.quantity,
+                            0
+                        );
+                        const categoryIds = cartResponse.data.products.map(item => item.productId?.category).filter(Boolean);
+                        try {
+                            const couponsResp = await getAvailableCoupons(total, categoryIds.join(','));
+                            setAvailableCoupons(couponsResp?.data?.coupons || []);
+                        } catch (err) {
+                            console.error('Error fetching coupons:', err);
+                        }
+                    }
 
                     // Pre-fill address from user's shippingAddress
                     const addr = actualUser?.shippingAddress || {};
@@ -291,12 +325,99 @@ export default function CheckoutPage() {
         setIsEditingAddress(false);
     };
 
+    const handleValidateCoupon = async (options = {}) => {
+        // Robust check: if options is a React Event (object with preventDefault), or any object that isn't {silent: true}, it's NOT silent.
+        const isSilent = options === true || (options && options.silent === true);
+        
+        if (!couponCode.trim()) {
+            if (!isSilent) toast.error('Please enter a coupon code');
+            return;
+        }
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            if (!isSilent) {
+                toast.info('Please login to use coupons');
+                setShowLoginModal(true);
+            }
+            return;
+        }
+
+        if (!isSilent) setValidatingCoupon(true);
+        console.log(`Validating coupon: ${couponCode.trim()} (Silent: ${isSilent})`);
+        
+        try {
+            const currentSubtotal = cartData.reduce(
+                (acc, item) => acc + (item.productId?.salePrice || item.productId?.price || 0) * item.quantity,
+                0
+            );
+
+            const cartItems = cartData.map(item => ({
+                productId: item.productId?._id,
+                categoryId: item.productId?.category,
+                quantity: item.quantity,
+                price: item.productId?.salePrice || item.productId?.price || 0
+            }));
+
+            const response = await validateCoupon({
+                couponCode: couponCode.trim(),
+                cartAmount: currentSubtotal,
+                cartItems
+            });
+
+            console.log('Coupon validation response:', response);
+
+            if (response.data && response.data.isValid) {
+                setAppliedCoupon(response.data.coupon);
+                setDiscountAmount(response.data.discount);
+                if (!isSilent) toast.success(response.data.message || 'Coupon applied successfully!');
+            } else {
+                if (!isSilent) {
+                    toast.error(response.data?.errors?.[0] || response.data?.message || 'Invalid coupon code');
+                } else {
+                    // If it was applied but now invalid, remove it
+                    setAppliedCoupon(null);
+                    setDiscountAmount(0);
+                    setCouponCode('');
+                    toast.warn('Coupon removed as it is no longer valid for your cart.');
+                }
+            }
+        } catch (error) {
+            console.error('Error validating coupon:', error);
+            if (!isSilent) toast.error(error?.message || error?.error?.message || 'Failed to validate coupon');
+        } finally {
+            if (!isSilent) setValidatingCoupon(false);
+        }
+    };
+
+    const handleRemoveCoupon = () => {
+        setAppliedCoupon(null);
+        setDiscountAmount(0);
+        setCouponCode('');
+        toast.info('Coupon removed');
+    };
+
     const subtotal = cartData.reduce(
         (acc, item) => acc + (item.productId?.salePrice || item.productId?.price || 0) * item.quantity,
         0
     );
-    const shipping = subtotal > 100 ? 50 : 0;
-    const total = subtotal + shipping;
+    const shipping = subtotal > 0 && subtotal < 1000 ? 100 : 0; // Updated shipping logic if needed, but keeping it consistent with discount
+    const total = Math.max(0, subtotal + shipping - discountAmount);
+
+    useEffect(() => {
+        if (appliedCoupon) {
+            handleValidateCoupon(true); // Silent re-validation on cart changes
+        }
+    }, [cartData.length]); // Re-validate if items are added/removed
+
+    useEffect(() => {
+        if (appliedCoupon && subtotal < (appliedCoupon.minCartAmount || 0)) {
+            setAppliedCoupon(null);
+            setDiscountAmount(0);
+            setCouponCode('');
+            toast.warn(`Coupon removed as subtotal is below ₹${appliedCoupon.minCartAmount}`);
+        }
+    }, [subtotal, appliedCoupon]);
 
     // Handle successful login from modal
     const handleLoginSuccess = async () => {
@@ -315,6 +436,21 @@ export default function CheckoutPage() {
             const actualUser = userData?.data || userData || null;
             setUser(actualUser);
             setCartData(cartResponse?.data?.products || []);
+
+            // Fetch available coupons
+            if (cartResponse?.data?.products?.length > 0) {
+                const total = cartResponse.data.products.reduce(
+                    (acc, item) => acc + (item.productId?.salePrice || item.productId?.price || 0) * item.quantity,
+                    0
+                );
+                const categoryIds = cartResponse.data.products.map(item => item.productId?.category).filter(Boolean);
+                try {
+                    const couponsResp = await getAvailableCoupons(total, categoryIds.join(','));
+                    setAvailableCoupons(couponsResp?.data?.coupons || []);
+                } catch (err) {
+                    console.error('Error fetching coupons:', err);
+                }
+            }
             
             // Pre-fill My Palace from user data if available
             if (actualUser) {
@@ -400,7 +536,9 @@ export default function CheckoutPage() {
                 })),
                 shippingAddress,
                 order_price: total,
-                payment_mode: 'ONLINE'
+                payment_mode: 'ONLINE',
+                coupon_applied: appliedCoupon?._id || null,
+                coupon_discount: discountAmount
             };
 
             const orderResponse = await placeOrder(orderData);
@@ -496,7 +634,8 @@ export default function CheckoutPage() {
                                 quantity: item.quantity
                             })),
                             order_price: total,
-                            coupon_applied: null,
+                            coupon_applied: appliedCoupon?._id || null,
+                            coupon_discount: discountAmount,
                             shippingAddress,
                             payment_mode: 'ONLINE',
                             isGuestOrder: !isLoggedIn,
@@ -526,6 +665,29 @@ export default function CheckoutPage() {
 
                         // Verify payment
                         const verificationResp = await verifyRazorpayPayment(verificationData);
+
+                        if (verificationResp) {
+                            // If coupon was used, commit it (increment usage)
+                            if (appliedCoupon && isLoggedIn) {
+                                try {
+                                    const cartItems = cartData.map(item => ({
+                                        productId: item.productId?._id,
+                                        categoryId: item.productId?.category,
+                                        quantity: item.quantity,
+                                        price: item.productId?.salePrice || item.productId?.price || 0
+                                    }));
+
+                                    await applyCoupon({
+                                        couponCode: appliedCoupon.couponCode,
+                                        cartAmount: subtotal,
+                                        cartItems
+                                    });
+                                    console.log('✅ Coupon usage committed');
+                                } catch (couponErr) {
+                                    console.error('Failed to commit coupon usage:', couponErr);
+                                }
+                            }
+                        }
 
                         if (isLoggedIn) {
                             // For logged-in users, update cart from server response
@@ -905,6 +1067,75 @@ export default function CheckoutPage() {
                                 <p className="text-[#3C3C3C]">Shipping</p>
                                 <p className="font-semibold">₹ {shipping}.00</p>
                             </div>
+
+                            {/* Coupon Section */}
+                            <div className="mt-4 mb-4">
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        placeholder="Enter coupon code"
+                                        value={couponCode}
+                                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                                        className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#BA7E38] text-sm"
+                                        disabled={appliedCoupon || validatingCoupon}
+                                    />
+                                    {appliedCoupon ? (
+                                        <button
+                                            onClick={handleRemoveCoupon}
+                                            className="bg-red-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-red-600 transition"
+                                        >
+                                            Remove
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={handleValidateCoupon}
+                                            disabled={validatingCoupon || !couponCode.trim()}
+                                            className="bg-[#BA7E38] text-white px-3 py-2 rounded-lg text-sm hover:bg-[#a96f2e] transition disabled:opacity-50"
+                                        >
+                                            {validatingCoupon ? "..." : "Apply"}
+                                        </button>
+                                    )}
+                                </div>
+                                {appliedCoupon && (
+                                    <p className="text-green-600 text-xs mt-1 font-medium">
+                                        Code {appliedCoupon.couponCode} applied!
+                                    </p>
+                                )}
+                                
+                                {availableCoupons.length > 0 && !appliedCoupon && (
+                                    <div className="mt-3">
+                                        <p className="text-xs text-gray-500 mb-2 uppercase font-semibold">Available Coupons</p>
+                                        <div className="space-y-2 max-h-[150px] overflow-y-auto pr-1">
+                                            {availableCoupons.map((coupon) => (
+                                                <div 
+                                                    key={coupon._id}
+                                                    onClick={() => {
+                                                        setCouponCode(coupon.couponCode);
+                                                        // Automatically validate when clicking
+                                                        setTimeout(() => handleValidateCoupon(), 0);
+                                                    }}
+                                                    className="border border-dashed border-[#BA7E38] p-2 rounded-lg cursor-pointer hover:bg-orange-50 transition"
+                                                >
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-sm font-bold text-[#BA7E38]">{coupon.couponCode}</span>
+                                                        <span className="text-[10px] bg-[#BA7E3826] text-[#BA7E38] px-2 py-0.5 rounded">
+                                                            {coupon.couponType === 'PERCENTAGE' ? `${coupon.couponAmount}% OFF` : `₹${coupon.couponAmount} OFF`}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-[10px] text-gray-600 mt-1 line-clamp-1">{coupon.description}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {discountAmount > 0 && (
+                                <div className="flex justify-between mb-3 text-green-600">
+                                    <p>Discount</p>
+                                    <p className="font-semibold">- ₹ {discountAmount}.00</p>
+                                </div>
+                            )}
 
                             <hr className="my-4" />
 
