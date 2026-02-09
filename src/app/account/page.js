@@ -369,15 +369,51 @@ function AccountPageContent() {
                                               const hoursElapsed = (Date.now() - new Date(order.createdAt)) / (1000 * 60 * 60);
                                               const deliveryDate = order.deliveredAt ? new Date(order.deliveredAt) : new Date(order.updatedAt);
                                               const daysElapsed = (Date.now() - deliveryDate) / (1000 * 60 * 60 * 24);
-                                              
+
+                                              // Check if this specific item is cancelled
+                                              const itemProductId = item.product?._id || item.product;
+                                              const itemVariantId = item.variant?._id || item.variant || null;
+                                              const isItemCancelled = order.cancelled_items?.some(
+                                                c => c.product.toString() === itemProductId?.toString() &&
+                                                     (itemVariantId ? c.variant?.toString() === itemVariantId.toString() : !c.variant)
+                                              );
+
+                                              // Check for item-level return/replacement requests
+                                              const itemReturnReq = order.item_return_requests?.find(
+                                                r => r.product?.toString() === itemProductId?.toString()
+                                              );
+                                              const itemReplacementReq = order.item_replacement_requests?.find(
+                                                r => r.product?.toString() === itemProductId?.toString()
+                                              );
+
+                                              // Determine item status: use item-level request status, not order-level
+                                              let itemStatus;
+                                              if (isItemCancelled) {
+                                                itemStatus = 'CANCELLED_BY_USER';
+                                              } else if (itemReturnReq) {
+                                                const statusMap = { PENDING: 'RETURN_REQUESTED', APPROVED: 'RETURN_APPROVED', REJECTED: 'RETURN_REJECTED' };
+                                                itemStatus = statusMap[itemReturnReq.status] || order.order_status;
+                                              } else if (itemReplacementReq) {
+                                                const statusMap = { PENDING: 'REPLACEMENT_REQUESTED', APPROVED: 'REPLACEMENT_APPROVED', REJECTED: 'REPLACEMENT_REJECTED' };
+                                                itemStatus = statusMap[itemReplacementReq.status] || order.order_status;
+                                              } else if (
+                                                (order.item_return_requests?.length > 0 || order.item_replacement_requests?.length > 0) &&
+                                                ['RETURN_REQUESTED', 'RETURN_APPROVED', 'RETURN_REJECTED', 'REPLACEMENT_REQUESTED', 'REPLACEMENT_APPROVED', 'REPLACEMENT_REJECTED'].includes(order.order_status)
+                                              ) {
+                                                // Order status changed due to another item's request - this item is still DELIVERED
+                                                itemStatus = 'DELIVERED';
+                                              } else {
+                                                itemStatus = order.order_status;
+                                              }
+
                                               // Determine available actions
-                                              const canCancel = order.order_status === 'PLACED' && hoursElapsed <= 48;
-                                              const canReturn = order.order_status === 'DELIVERED' && daysElapsed <= 7;
-                                              const canReplace = order.order_status === 'DELIVERED' && daysElapsed <= 7;
-                                              const canBuyAgain = ['DELIVERED', 'CANCELLED_BY_USER', 'CANCELLED_BY_ADMIN', 'RETURNED'].includes(order.order_status);
-                                              
+                                              const canCancel = !isItemCancelled && order.order_status === 'PLACED' && hoursElapsed <= 48;
+                                              const canReturn = !isItemCancelled && order.order_status === 'DELIVERED' && daysElapsed <= 7;
+                                              const canReplace = !isItemCancelled && order.order_status === 'DELIVERED' && daysElapsed <= 7;
+                                              const canBuyAgain = isItemCancelled || ['DELIVERED', 'CANCELLED_BY_USER', 'CANCELLED_BY_ADMIN', 'RETURNED'].includes(order.order_status);
+
                                               return (
-                                                <div key={(order._id || '') + '-' + idx} className=" bg-white" onClick={() => router.push(`/account/order/${order._id}`)}>
+                                                <div key={(order._id || '') + '-' + idx} className=" bg-white" onClick={() => router.push(`/account/order/${order._id}?productId=${itemProductId}`)}>
                                                     <OrderItem
                                                         orderId={order._id}
                                                         order={order}
@@ -387,7 +423,7 @@ function AccountPageContent() {
                                                                 ? item.price
                                                                 : (item.product?.salePrice ?? '')
                                                         }
-                                                        statusLabel={order.order_status || 'Pending'}
+                                                        statusLabel={itemStatus || 'Pending'}
                                                         itemsCount={item.quantity}
                                                         imageAlt={item.product?.productTitle || ''}
                                                         imageSrc={item.product?.productImageUrl?.[0] || '/images/home/img3.jpg'}
@@ -409,7 +445,7 @@ function AccountPageContent() {
                                                             };
                                                             fastBuyAgain();
                                                         }}
-                                                        onViewDetails={() => router.push(`/account/order/${order._id}`)}
+                                                        onViewDetails={() => router.push(`/account/order/${order._id}?productId=${item.product?._id || item.product}`)}
                                                     />
                                                 </div>
                                               );

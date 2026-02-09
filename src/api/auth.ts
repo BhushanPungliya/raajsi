@@ -142,7 +142,7 @@ export const addToWishlist = async (productId, varientId = "") => {
       }
       
       // Add to local if not exists
-      const exists = localWishlist.some(item => 
+      const exists = localWishlist.some(item =>
         (item.product?._id || item.product) === productId
       );
       if (!exists) {
@@ -154,6 +154,9 @@ export const addToWishlist = async (productId, varientId = "") => {
         });
         localStorage.setItem("wishlist", JSON.stringify(localWishlist));
       }
+
+      // Dispatch custom event for same-tab updates
+      window.dispatchEvent(new CustomEvent('wishlistUpdated'));
 
       return response.data;
     } else {
@@ -186,13 +189,16 @@ export const addToWishlist = async (productId, varientId = "") => {
 
       localWishlist.push(newItem);
       localStorage.setItem("wishlist", JSON.stringify(localWishlist));
-      
+
       // Dispatch storage event for cross-tab sync
       window.dispatchEvent(new StorageEvent('storage', {
         key: 'wishlist',
         newValue: JSON.stringify(localWishlist),
         url: window.location.href
       }));
+
+      // Dispatch custom event for same-tab updates
+      window.dispatchEvent(new CustomEvent('wishlistUpdated'));
 
       return {
         status: "success",
@@ -379,6 +385,9 @@ export const addToCart = async (productId: string, varientId = "", quantity = 1)
         localStorage.setItem("userCart", JSON.stringify(response.data.cart.products));
       }
 
+      // Dispatch custom event for same-tab updates
+      window.dispatchEvent(new CustomEvent('cartUpdated'));
+
       return response.data;
     } else {
       // Guest user - handle locally
@@ -403,6 +412,10 @@ export const addToCart = async (productId: string, varientId = "", quantity = 1)
         // Product exists - update quantity instead of returning error
         cartData[existingProductIndex].quantity = quantity;
         localStorage.setItem("userCart", JSON.stringify(cartData));
+
+        // Dispatch custom event for same-tab updates
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
+
         return {
           status: "success",
           data: { products: cartData },
@@ -422,6 +435,9 @@ export const addToCart = async (productId: string, varientId = "", quantity = 1)
         });
         // Save to localStorage
         localStorage.setItem("userCart", JSON.stringify(cartData));
+
+        // Dispatch custom event for same-tab updates
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
 
         return {
           status: "success",
@@ -632,27 +648,44 @@ export const getOrderByOrderId = async (orderId) => {
   }
 };
 
-export const requestReturn = async (orderId, reason, proof_images = []) => {
+export const requestReturn = async (orderId, reason, proof_images = [], product_id = null, variant_id = null, quantity = null) => {
   try {
-    const response = await api.post(`user/order/${orderId}/return`, { reason, proof_images });
+    const response = await api.post(`user/order/${orderId}/return`, {
+      reason,
+      proof_images,
+      product_id,
+      variant_id,
+      quantity
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
   }
 };
 
-export const requestReplacement = async (orderId, reason, proof_images = []) => {
+export const requestReplacement = async (orderId, reason, proof_images = [], product_id = null, variant_id = null, quantity = null) => {
   try {
-    const response = await api.post(`user/order/${orderId}/replacement`, { reason, proof_images });
+    const response = await api.post(`user/order/${orderId}/replacement`, {
+      reason,
+      proof_images,
+      product_id,
+      variant_id,
+      quantity
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
   }
 };
 
-export const cancelOrderByUser = async (orderId, reason) => {
+export const cancelOrderByUser = async (orderId, reason, product_id = null, variant_id = null, quantity = null) => {
   try {
-    const response = await api.post(`user/order/${orderId}/cancel`, { reason });
+    const response = await api.post(`user/order/${orderId}/cancel`, {
+      reason,
+      product_id,
+      variant_id,
+      quantity
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -710,6 +743,15 @@ export const getAvailableCoupons = async (cartAmount, categoryIds) => {
     const response = await api.get("user/coupons/available", {
       params: { cartAmount, categoryIds }
     });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const getConstants = async () => {
+  try {
+    const response = await api.get("/user/constants");
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;

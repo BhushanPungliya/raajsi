@@ -41,7 +41,10 @@ export default function OrderItem({
   };
 
   const style = statusStyles[statusLabel] || { background: 'var(--success-bg)', color: 'var(--success-fg)' };
-  const displayStatus = statusLabel?.replace(/_/g, ' ') || '';
+  let displayStatus = statusLabel?.replace(/_/g, ' ') || '';
+  if (statusLabel === 'CANCELLED_BY_USER' || statusLabel === 'CANCELLED_BY_ADMIN') {
+    displayStatus = 'CANCELLED';
+  }
 
   // Format date and time
   const formatDateTime = (date) => {
@@ -72,14 +75,12 @@ export default function OrderItem({
 
       <div className="min-w-0 flex-1 flex flex-col justify-between">
         <div className="text-sm text-muted-foreground">{title}</div>
-        <div className="mt-2 flex items-center gap-3">
-          <span className="text-sm">₹{price * itemsCount}</span>
-          <span className="text-xs text-muted-foreground">
-            {"Quantity: "}
-            {String(itemsCount).padStart(2, "0")}
-          </span>
-        </div>
         <div className="mt-2 flex items-center gap-3 flex-wrap">
+          {order?.parent_order && (
+            <span className="inline-flex items-center px-2 py-1 text-xs rounded bg-purple-100 text-purple-800 font-semibold">
+              Replacement
+            </span>
+          )}
           <span
             className="inline-flex items-center px-2 py-1 text-xs rounded"
             style={{ background: style.background, color: style.color }}
