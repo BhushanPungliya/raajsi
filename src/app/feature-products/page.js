@@ -118,7 +118,15 @@ function Page() {
                 /* Ensure smooth scrolling on mobile/touch devices */
                 .modal-scroll { -webkit-overflow-scrolling: touch; }
             `}</style>
-            <section className="hero-section h-[600px] sm:h-[650px] md:h-[700px] lg:h-[778px] overflow-hidden">
+            <section
+                className="hero-section h-[600px] sm:h-[650px] md:h-[700px] lg:h-[778px] overflow-hidden"
+                style={{
+                    backgroundImage: "url('/images/home/bg1.jpg')",
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat'
+                }}
+            >
                 <div className="relative w-full h-full lg:pl-[93px] pl-[20px] pt-[50px] sm:pt-[60px] md:pt-[70px] lg:pt-[83px]">
                     <div className="relative max-w-[474px] w-full">
                         <h2 className="max-w-[90%] sm:max-w-[500px] md:max-w-[600px] lg:max-w-[634px] w-full font-[400] text-[24px] sm:text-[28px] md:text-[34px] lg:text-[41px] text-[#FFFAFA] leading-[30px] sm:leading-[36px] md:leading-[40px] lg:leading-[40px]">

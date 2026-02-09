@@ -11,8 +11,16 @@ function Page() {
     };
     return (
         <div>
-            <section className="hero-section h-[778px] overflow-hidden">
-                <div className="relative w-full h-full lg:pl-[93px] pl-[0px] lg:pl-0 pl-[20px] pt-[83px]">
+            <section
+                className="hero-section h-[778px] overflow-hidden"
+                style={{
+                    backgroundImage: "url('/images/home/bg1.jpg')",
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat'
+                }}
+            >
+                <div className="relative w-full h-full lg:pl-[93px] pl-[20px] pt-[83px]">
                     <h2 className='font-rose text-[32px] text-[#FFFFFF] pb-[20px]'>At Raajsi, luxury meets responsibility.</h2>
                     <p className="font-avenir-400 text-[18px] text-[#FFFFFF] max-w-[671px] w-full">Our royal promise is built on integrity, transparency, and timeless care - for you and the planet.</p>
                     {/* <h2 className="max-w-[634px] w-full font-[400] lg:text-[41px] text-[26px] text-[#FFFAFA] ">मुग्धे! धानुष्कता केयमपूर्वा त्वयि दृश्यते ।
@@ -25,8 +33,8 @@ function Page() {
             <section ref={nextSectionRef} className='pt-[66px] overflow-hidden bg-[#F9F3EC]'>
                 <div className="max-w-[1440px] w-full mx-auto lg:px-[54px] px-[20px]">
                     <Heading title="The Royal Promise" />
-                    <div className='lg:py-[0px] py-[60px] overflow-hidden lg:my-[104px] mt-[0px] relative rounded-[20px] relative'>
-                        <div className="lg:flex hidden flex-col gap-[68px] absolute top-[50%] left-[50%] -translate-1/2">
+                    <div className='lg:py-[0px] py-[60px] overflow-hidden lg:my-[104px] mt-[0px] relative rounded-[20px]'>
+                        <div className="lg:flex hidden flex-col gap-[68px] absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2">
                             <div className="flex flex-col items-center gap-[30px]">
                                 <Image alt='wrap' height={19} width={27} src="/images/royal/wrap1.svg" />
                                 <div className="h-[222px] w-[1px] bg-[#D7BA98]"></div>
@@ -96,7 +104,7 @@ function Page() {
                                         alt='img1'
                                     />
                                 </div>
-                                <div className='lg:pt-[42px] max-w-[638px] w-full pt-[12px] lg:text-right text-'>
+                                <div className='lg:pt-[42px] max-w-[638px] w-full pt-[12px] lg:text-right text-left'>
                                     <h6 className="font-rose lg:text-[36px] text-[16px] lg:leading-[45px] leading-[24px]  text-[#4C0A2E]">
                                         Cruelty-free and sustainable practices
                                     </h6>
@@ -124,7 +132,7 @@ function Page() {
                                         alt='img1'
                                     />
                                 </div>
-                                <div className='lg:pt-[42px] max-w-[638px] w-full lg:text-right text- pt-[12px]'>
+                                <div className='lg:pt-[42px] max-w-[638px] w-full lg:text-right text-left pt-[12px]'>
                                     <h6 className="font-rose lg:text-[36px] text-[16px] lg:leading-[45px] leading-[24px]  text-[#4C0A2E]">
                                         Certificates of Analysis
                                     </h6>

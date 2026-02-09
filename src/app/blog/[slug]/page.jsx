@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, use } from "react";
 import { getBlogBySlug } from "@/api/auth";
 
 export default function BlogDetail({ params }) {
-    const { slug } = params;
+    const { slug } = use(params);
     const nextSectionRef = useRef(null);
 
     const handleScroll = () => {
@@ -57,7 +57,15 @@ export default function BlogDetail({ params }) {
 
     return (
         <div>
-            <section className="hero-section h-[778px] overflow-hidden">
+            <section
+                className="hero-section h-[778px] overflow-hidden"
+                style={{
+                    backgroundImage: "url('/images/home/bg1.jpg')",
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat'
+                }}
+            >
                 <div className="relative w-full h-full lg:pl-[93px] pl-[20px] pt-[83px]">
                     <div className="relative max-w-[474px] w-full">
                         <h2 className="max-w-[90%] sm:max-w-[500px] md:max-w-[600px] lg:max-w-[634px] 
