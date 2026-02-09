@@ -8,11 +8,13 @@ import OTPLogin from "./OTPLogin";
 import { getUserCart, removeUserCart, getWishlistByUser, removeFromWishlist } from "@/api/auth";
 import { toast } from "react-toastify";
 
-const CartModal = ({ onClose, }) => {
+const CartModal = ({ onClose }) => {
     const [cartData, setCartData] = useState([]);
+    const [loading, setLoading] = useState(true);
 
    useEffect(() => {
     const fetchCart = async () => {
+        setLoading(true);
         try {
             const token = localStorage.getItem("token"); // or however you store auth
             if (token) {
@@ -35,6 +37,8 @@ const CartModal = ({ onClose, }) => {
             }
         } catch (err) {
             console.error("Error fetching cart:", err);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -65,10 +69,18 @@ const CartModal = ({ onClose, }) => {
 
     window.addEventListener("storage", handleStorageChange);
 
+    // Listen for custom cart update events
+    const handleCartUpdate = () => {
+        fetchCart();
+    };
+
+    window.addEventListener("cartUpdated", handleCartUpdate);
+
     return () => {
         window.removeEventListener("storage", handleStorageChange);
+        window.removeEventListener("cartUpdated", handleCartUpdate);
     };
-}, []); // Only run on mount - cart data is static during modal session
+}, []); // Only run on mount
 
 
     // Update localStorage whenever cartData changes, but only for logged-in users
@@ -112,19 +124,32 @@ const CartModal = ({ onClose, }) => {
         }
     };
     return (
-        <div
-            className="fixed lg:right-[73px] mt-[20px] p-6 max-w-[434px] w-full bg-white rounded-3xl shadow-2xl border border-gray-100 z-[200]"
-        >
-            <div className="flex justify-between items-start">
-                <h3 className="text-[24px] font-light font-rose text-[#600B04] tracking-[1.5px] uppercase">SHOPPING CART</h3>
-                <button onClick={() => onClose(false)} className="text-gray-500 cursor-pointer hover:text-gray-700">
+        <>
+            {/* Backdrop Overlay */}
+            <div
+                className="fixed inset-0 bg-black/50 z-[199]"
+                onClick={() => onClose(false)}
+            />
+
+            {/* Modal Content */}
+            <div
+                className="fixed lg:right-[73px] right-[20px] top-[107px] p-6 max-w-[434px] w-full bg-white rounded-3xl shadow-2xl border border-gray-100 z-[200]"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className="flex justify-between items-start">
+                    <h3 className="text-[24px] font-light font-rose text-[#600B04] tracking-[1.5px] uppercase">SHOPPING CART</h3>
+                    <button onClick={() => onClose(false)} className="text-gray-500 cursor-pointer hover:text-gray-700">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
             <div>
-                {cartData?.length === 0 ? (
+                {loading ? (
+                    <p className="mt-2 text-base text-gray-600 font-avenir-400 pb-[28px]">
+                        Loading cart...
+                    </p>
+                ) : cartData?.length === 0 ? (
                     <p className="mt-2 text-base text-gray-600 font-avenir-400 pb-[28px]">
                         Your cart is currently empty. Start adding some products!
                     </p>
@@ -214,7 +239,8 @@ const CartModal = ({ onClose, }) => {
                 </button>
             </Link>
             )}
-        </div>
+            </div>
+        </>
     );
 };
 
@@ -271,8 +297,17 @@ const FavoritesModal = ({ onClose }) => {
 
         window.addEventListener("storage", handleStorageChange);
 
+        // Listen for custom wishlist update events
+        const handleWishlistUpdate = () => {
+            console.log("Wishlist update event received, refetching...");
+            fetchWishlist();
+        };
+
+        window.addEventListener("wishlistUpdated", handleWishlistUpdate);
+
         return () => {
             window.removeEventListener("storage", handleStorageChange);
+            window.removeEventListener("wishlistUpdated", handleWishlistUpdate);
         };
     }, []);
 
@@ -299,13 +334,22 @@ const FavoritesModal = ({ onClose }) => {
     };
 
     return (
-        <div
-            className="fixed lg:right-[73px] mt-[20px] p-6 max-w-[434px] w-full bg-white rounded-3xl shadow-2xl border border-gray-100 z-[200]"
-        >
-            <div className="flex justify-between items-start relative">
-                <h3 className="text-[24px] font-light font-rose text-[#600B04] tracking-[1.5px] uppercase">FAVORITE ITEMS</h3>
+        <>
+            {/* Backdrop Overlay */}
+            <div
+                className="fixed inset-0 bg-black/50 z-[199]"
+                onClick={() => onClose(false)}
+            />
 
-                <button onClick={() => onClose(false)} className="text-gray-500 hover:text-gray-700">
+            {/* Modal Content */}
+            <div
+                className="fixed lg:right-[73px] right-[20px] top-[107px] p-6 max-w-[434px] w-full bg-white rounded-3xl shadow-2xl border border-gray-100 z-[200]"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className="flex justify-between items-start relative">
+                    <h3 className="text-[24px] font-light font-rose text-[#600B04] tracking-[1.5px] uppercase">FAVORITE ITEMS</h3>
+
+                    <button onClick={() => onClose(false)} className="text-gray-500 hover:text-gray-700">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -390,7 +434,8 @@ const FavoritesModal = ({ onClose }) => {
                     </>
                 )}
             </div>
-        </div>
+            </div>
+        </>
     );
 };
 

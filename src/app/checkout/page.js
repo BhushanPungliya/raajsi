@@ -5,18 +5,19 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
-import { 
-    getUserCart, 
-    getUserDetails, 
-    placeOrder, 
-    createRazorpayOrder, 
-    verifyRazorpayPayment, 
-    updateAddress, 
-    removeUserCart, 
+import {
+    getUserCart,
+    getUserDetails,
+    placeOrder,
+    createRazorpayOrder,
+    verifyRazorpayPayment,
+    updateAddress,
+    removeUserCart,
     mergeGuestCartWithUserCart,
     validateCoupon,
     applyCoupon,
-    getAvailableCoupons
+    getAvailableCoupons,
+    getConstants
 } from '@/api/auth';
 import OTPLogin from '@/app/components/OTPLogin';
 import AddressFields from '@/app/components/AddressFields';
@@ -50,7 +51,43 @@ export default function CheckoutPage() {
     const [discountAmount, setDiscountAmount] = useState(0);
     const [availableCoupons, setAvailableCoupons] = useState([]);
 
+    // Web settings from admin panel
+    const [shippingCharges, setShippingCharges] = useState(100); // Default fallback
+    const [purchaseThreshold, setPurchaseThreshold] = useState(1000); // Default fallback
+
     const router = useRouter();
+
+    // Fetch web settings (constants) from backend
+    useEffect(() => {
+        const fetchConstants = async () => {
+            try {
+                const response = await getConstants();
+                const constants = response?.data?.constants || [];
+
+                // Find shipping charges constant
+                const shippingConstant = constants.find(c => c.name === 'shipping-charges');
+                if (shippingConstant) {
+                    setShippingCharges(Number(shippingConstant.value) || 100);
+                }
+
+                // Find purchase threshold constant
+                const thresholdConstant = constants.find(c => c.name === 'purchase-threshold');
+                if (thresholdConstant) {
+                    setPurchaseThreshold(Number(thresholdConstant.value) || 1000);
+                }
+
+                console.log('✅ Web settings loaded:', {
+                    shippingCharges: shippingConstant?.value,
+                    threshold: thresholdConstant?.value
+                });
+            } catch (error) {
+                console.error('Failed to fetch constants:', error);
+                // Use default values on error
+            }
+        };
+
+        fetchConstants();
+    }, []);
 
     useEffect(() => {
         // Load Razorpay script dynamically
@@ -401,7 +438,8 @@ export default function CheckoutPage() {
         (acc, item) => acc + (item.productId?.salePrice || item.productId?.price || 0) * item.quantity,
         0
     );
-    const shipping = subtotal > 0 && subtotal < 1000 ? 100 : 0; // Updated shipping logic if needed, but keeping it consistent with discount
+    // Use dynamic shipping charges and threshold from admin web settings
+    const shipping = subtotal > 0 && subtotal < purchaseThreshold ? shippingCharges : 0;
     const total = Math.max(0, subtotal + shipping - discountAmount);
 
     useEffect(() => {
