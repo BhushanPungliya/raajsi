@@ -276,8 +276,28 @@ export default function OrderDetailsPage({ params }) {
     } else {
         featuredItemStatus = order.order_status === 'CANCELLED_BY_USER' || order.order_status === 'CANCELLED_BY_ADMIN'
             ? 'CANCELLED'
-            : order.order_status?.replace(/_/g, ' ');
+            : order.order_status;
     }
+
+    // Map backend order_status values to badge colors and friendly labels
+    const statusStyles = {
+        PLACED: { background: '#FEF3C7', color: '#92400E' }, // amber
+        SHIPPED: { background: '#DBEAFE', color: '#1E3A8A' }, // blue
+        DELIVERED: { background: 'var(--success-bg)', color: 'var(--success-fg)' }, // green
+        CANCELLED: { background: '#FECACA', color: '#991B1B' }, // red
+        CANCELLED_BY_ADMIN: { background: '#FECACA', color: '#991B1B' }, // red
+        CANCELLED_BY_USER: { background: '#FECACA', color: '#991B1B' }, // red
+        RETURN_REQUESTED: { background: '#E0E7FF', color: '#312E81' }, // indigo
+        RETURN_APPROVED: { background: '#D1FAE5', color: '#065F46' }, // green
+        RETURN_REJECTED: { background: '#FECACA', color: '#991B1B' }, // red
+        RETURNED: { background: 'var(--success-bg)', color: 'var(--success-fg)' }, // green
+        REPLACEMENT_REQUESTED: { background: '#E0E7FF', color: '#312E81' }, // indigo
+        REPLACEMENT_APPROVED: { background: '#D1FAE5', color: '#065F46' }, // green
+        REPLACEMENT_REJECTED: { background: '#FECACA', color: '#991B1B' }, // red
+        REPLACEMENT_IN_PROGRESS: { background: '#FED7AA', color: '#92400E' }, // orange
+    };
+
+    const currentStatusStyle = statusStyles[featuredItemStatus] || { background: 'var(--success-bg)', color: 'var(--success-fg)' };
 
     // Allow returns/replacements when the order was delivered (or status shifted due to another item's request)
     const wasDelivered = order.order_status === 'DELIVERED' ||
@@ -289,7 +309,13 @@ export default function OrderDetailsPage({ params }) {
     const canBuyAgain = isFeaturedItemCancelled || ['DELIVERED', 'CANCELLED_BY_USER', 'CANCELLED_BY_ADMIN', 'RETURNED'].includes(order.order_status);
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 font-avenir-400">
+        <div 
+            className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 font-avenir-400"
+            style={{
+                "--success-bg": "oklch(0.93 0.09 145)",
+                "--success-fg": "oklch(0.32 0.05 145)",
+            }}
+        >
             <div className="max-w-4xl mx-auto">
                 <button 
                     onClick={() => router.push('/account?tab=realm')}
@@ -311,13 +337,10 @@ export default function OrderDetailsPage({ params }) {
                                     Replacement
                                 </span>
                             )}
-                            <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                                isFeaturedItemCancelled || featuredItemStatus === 'CANCELLED'
-                                    ? 'bg-red-100 text-red-800'
-                                    : featuredItemStatus?.includes('RETURN') || featuredItemStatus?.includes('REPLACEMENT')
-                                        ? 'bg-blue-100 text-blue-800'
-                                        : 'bg-[#FEF3C7] text-[#92400E]'
-                            }`}>
+                            <span 
+                                className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider"
+                                style={{ background: currentStatusStyle.background, color: currentStatusStyle.color }}
+                            >
                                 {featuredItemStatus?.replace(/_/g, ' ')}
                             </span>
                             <span className="text-sm text-gray-500">

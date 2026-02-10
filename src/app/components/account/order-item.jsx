@@ -30,6 +30,7 @@ export default function OrderItem({
     DELIVERED: { background: 'var(--success-bg)', color: 'var(--success-fg)' }, // green
     CANCELLED_BY_ADMIN: { background: '#FECACA', color: '#991B1B' }, // red
     CANCELLED_BY_USER: { background: '#FECACA', color: '#991B1B' }, // red
+    CANCELLED: { background: '#FECACA', color: '#991B1B' }, // red
     RETURN_REQUESTED: { background: '#E0E7FF', color: '#312E81' }, // indigo
     RETURN_APPROVED: { background: '#D1FAE5', color: '#065F46' }, // green
     RETURN_REJECTED: { background: '#FECACA', color: '#991B1B' }, // red
